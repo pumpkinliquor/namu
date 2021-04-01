@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+	<!-- 세션(Session) 방식 인증시에만 AuthenticInterceptor 동작  -->
+    <beans profile="session">  
+	    <mvc:interceptors>
+	        <bean class="egovframework.com.cmm.interceptor.IpObtainInterceptor" />        
+	        <!-- IP 정보 기록 및 로그인 체크가 필요한 URL과 로그인 여부를 체크해줄 인터셉터를 등록한다. -->
+	        <mvc:interceptor>
+	            <mvc:mapping path="/admin/**/*.do" />
+	            <mvc:exclude-mapping path="/admin/lgn/*.do" />
+	            <mvc:exclude-mapping path="/index.do" />
+	            <mvc:exclude-mapping path="/cmm/com/ajax/*.do" />
+	            <mvc:exclude-mapping path="/cmm/fms/fileDown.do" />
+	            <bean class="egovframework.com.cmm.interceptor.AuthenticInterceptor">
+	           	<!-- 관리자 권한 Ant style Pattern List -->
+				<property name="adminAuthPatternList">
+				<list>
+					<!-- 보안 > 권한관리 -->
+					<value>/sec/ram/*.do</value>
+					<value>/admin/**/*.do</value>
+				</list>
+				</property>
+	            </bean>
+	        </mvc:interceptor>
+	        <mvc:interceptor>
+	            <mvc:mapping path="/user/cmm/mod/**/*.do" />		<!-- 회원정보수정 -->
+	            <mvc:mapping path="/user/cts/cst/**/*.do" />		<!-- 의료상담 -->
+	            <mvc:mapping path="/user/cts/rsv/userRSVCheckup*.do" />		<!-- 검진상담예약 -->
+	            <mvc:mapping path="/user/cts/rsv/userRSVList.do" />		<!-- 예약 조회 -->
+	            <mvc:mapping path="/mobile/cmm/mod/**/*.do" />		<!-- 회원정보수정 -->
+	            <mvc:mapping path="/mobile/cts/cst/**/*.do" />		<!-- 의료상담 -->
+	            <mvc:mapping path="/mobile/cts/rsv/userRSVCheckup*.do" />		<!-- 검진상담예약 -->
+	            <mvc:mapping path="/mobile/cts/rsv/userRSVList.do" />		<!-- 예약 조회 -->
+	            <mvc:exclude-mapping path="/user/cts/cst/medicalConsultation.do" /> <!-- Q&A -->
+	            <mvc:exclude-mapping path="/user/cts/rsv/nonMember*.do" />		<!-- 비회원 예약 조회 -->
+	            <mvc:exclude-mapping path="/mobile/cts/cst/medicalConsultation.do" /> <!-- Q&A -->
+	            <mvc:exclude-mapping path="/mobile/cts/rsv/nonMember*.do" />		<!-- 비회원 예약 조회 -->
+	            <bean class="egovframework.com.cmm.interceptor.UserAuthenticInterceptor">
+	           	<!-- 관리자 권한 Ant style Pattern List -->
+				<property name="userAuthPatternList">
+				<list>
+					<!-- 보안 > 권한관리 -->
+					<value>/sec/ram/*.do</value>
+					<value>/user/cmm/mod/*.do</value>
+					<value>/user/cts/cst/*.do</value>
+					<value>/mobile/cmm/mod/*.do</value>
+					<value>/mobile/cts/cst/*.do</value>
+				</list>
+				</property>
+	            </bean>
+	        </mvc:interceptor>
+	    </mvc:interceptors> 
+	</beans>
+</beans>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="adminOcsSBMDAO">
+	<resultMap id="Subject" type="fbcms.admin.hpm.sbm.service.Impl.SubjectVO">
+        <result property="MNG_CD" 				column="MNG_CD"/>
+        <result property="MNG_NM" 		column="MNG_NM"/>
+    </resultMap>
+	<select id="selectOCSSBMList" parameterType="fbcms.admin.hpm.sbm.service.Impl.SubjectVO" resultMap="Subject">
+		SELECT (CASE DPTCD WHEN 'GS' THEN '소화기외과' WHEN 'BE' THEN '유방·갑상선외과' WHEN 'AO' THEN '안티에이징·비만센터' ELSE DPTNM END) AS MNG_NM
+			 , DPTCD AS MNG_CD
+		  FROM TA09 CT
+		  WHERE DPTCD NOT IN ('HM','TEST','DRG', 'DR')
+		    AND DPTCD IN ('GI', 'GS', 'NE', 'FM', 'BE', 'GY', 'XR', 'AO')
+	</select>
+	
+</mapper>

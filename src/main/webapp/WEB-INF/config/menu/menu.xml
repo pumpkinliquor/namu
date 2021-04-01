@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+메뉴는 2자리씩 depth를 가리킨다. 
+ -->
+ <menus>
+ 	<menu id="010000">
+ 		<name>병원소개</name>
+ 		<url>/user/itd/itd/vievis.do</url>
+ 		<depth>1</depth>
+ 		<menu id="010100">
+	 		<name>비에비스 나무병원은</name>
+	 		<url>/user/itd/itd/vievis.do</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="010200">
+	 		<name>진료실적</name>
+	 		<url>/user/itd/res/result.do</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="010300">
+	 		<name>층별안내</name>
+	 		<url>/user/itd/flg/floorguide.do</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="010400">
+	 		<name>장비소개</name>
+	 		<url>/user/itd/eqm/equipment.do</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="010500">
+	 		<name>언론보도</name>
+	 		<url>/user/itd/prs/selectPRSList.do</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="010600">
+	 		<name>협력병원</name>
+	 		<url>/user/itd/ptn/partner.do</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="010700">
+	 		<name>채용안내</name>
+	 		<url>/user/itd/epm/employmentGuide.do</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 	</menu>
+ 	<menu id="020000">
+ 		<name>진료과<![CDATA[&middot;]]>의료진</name>
+ 		<url>/user/hpm/smt/SMTPage.do?code=GI</url>
+ 		<depth>1</depth>
+ 		<menu id="020100">
+	 		<name>소화기내과</name>
+	 		<url>/user/hpm/smt/SMTPage.do?code=GI</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="020200">
+	 		<name>소화기외과</name>
+	 		<url>/user/hpm/smt/SMTPage.do?code=GS</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="020300">
+	 		<name>신장내과</name>
+	 		<url>/user/hpm/smt/SMTPage.do?code=NE</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="020400">
+	 		<name>가정의학과</name>
+	 		<url>/user/hpm/smt/SMTPage.do?code=FM</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="020500">
+	 		<name>유방·갑상선외과</name>
+	 		<url>/user/hpm/smt/SMTPage.do?code=BE</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="020600">
+	 		<name>부인과</name>
+	 		<url>/user/hpm/smt/SMTPage.do?code=GY</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="020700">
+	 		<name>영상의학과</name>
+	 		<url>/user/hpm/smt/SMTPage.do?code=XR</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 	</menu>
+ 	<menu id="030000">
+ 		<name>특화센터</name>
+ 		<url>/user/spc/cti/selectCTIInfo.do?custom1=SPC001</url>
+ 		<depth>1</depth>
+ 		<menu id="030100">
+	 		<name>당일내시경센터</name>
+	 		<url>/user/spc/cti/selectCTIInfo.do?custom1=SPC001</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="030200">
+	 		<name>용종<![CDATA[&middot;]]>암 치료내시경센터</name>
+	 		<url>/user/spc/cti/selectCTIInfo.do?custom1=SPC002</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="030800">
+	 		<name>간센터</name>
+	 		<url>/user/spc/cti/selectCTIInfo.do?custom1=SPC008</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="030500">
+	 		<name>당뇨센터</name>
+	 		<url>/user/spc/cti/selectCTIInfo.do?custom1=SPC005</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="030300">
+	 		<name>담석수술센터</name>
+	 		<url>/user/spc/cti/selectCTIInfo.do?custom1=SPC003</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="030400">
+	 		<name>유방<![CDATA[&middot;]]>갑상선센터</name>
+	 		<url>/user/spc/cti/selectCTIInfo.do?custom1=SPC004</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="030600">
+	 		<name>안티에이징센터</name>
+	 		<url>/user/spc/cti/selectCTIInfo.do?custom1=SPC006</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="030700">
+	 		<name>비만센터</name>
+	 		<url>/user/spc/cti/selectCTIInfo.do?custom1=SPC007</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 	</menu>
+ 	<menu id="040000">
+ 		<name>검진센터</name>
+ 		<url>/user/cuc/hcu/infoHCU.do</url>
+ 		<depth>1</depth>
+ 		<menu id="040100">
+	 		<name>나무병원 건강검진은</name>
+	 		<url>/user/cuc/hcu/infoHCU.do</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="040200">
+	 		<name>종합검진센터</name>
+	 		<url>/user/cuc/ccc/infoCCC.do</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="040300">
+	 		<name>공단검진센터</name>
+	 		<url>/user/cuc/icc/infoICC.do</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="040400">
+	 		<name>검사 전 주의사항</name>
+	 		<url>/user/cuc/pct/precautions.do</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 	</menu>
+ 	<menu id="050000">
+ 		<name>건강정보</name>
+ 		<url>/user/hti/dsi/selectDSIList.do</url>
+ 		<depth>1</depth>
+ 		<menu id="050100">
+	 		<name>질환정보</name>
+	 		<url>/user/hti/dsi/selectDSIList.do</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="050200">
+	 		<name>Dr.민영일의 건강백서</name>
+	 		<url>/user/hti/dct/selectDCTList.do</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="050300">
+	 		<name>영양정보</name>
+	 		<url>/user/hti/nti/selectNTIList.do</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="050400">
+	 		<name>운동정보</name>
+	 		<url>/user/hti/mvi/selectMVIList.do</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="050500">
+	 		<name>건강동영상</name>
+	 		<url>/user/hti/htm/selectHTMList.do</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="050600">
+	 		<name>운동동영상</name>
+	 		<url>/user/hti/mvm/selectMVMList.do</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 	</menu>
+ 	<menu id="060000">
+ 		<name>고객서비스</name>
+ 		<url>/user/cts/rsv/drScheduleView.do</url>
+ 		<depth>1</depth>
+ 		<menu id="060100">
+	 		<name>진료시간표</name>
+	 		<url>/user/cts/rsv/drScheduleView.do</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="060200">
+	 		<name>예약 및 조회</name>
+	 		<url>/user/cts/rsv/userRSVMain.do</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="060300">
+	 		<name>찾아오시는 길</name>
+	 		<url>/user/cts/location/map.do</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="060400">
+	 		<name>입원안내</name>
+	 		<url>/user/cts/gui/guide.do</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="060500">
+	 		<name>제증명발급</name>
+	 		<url>/user/cts/pro/proof.do</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="060600">
+	 		<name>공지사항</name>
+	 		<url>/user/cts/ntc/selectNTCList.do</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="060700">
+	 		<name>자주하는 질문</name>
+	 		<url>/user/cts/faq/selectFaqList.do</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 		<menu id="060800">
+	 		<name><![CDATA[의료상담(Q&A)]]></name>
+	 		<url>/user/cts/cst/medicalConsultation.do</url>
+	 		<depth>2</depth>
+ 		</menu>
+ 	</menu>
+ </menus>

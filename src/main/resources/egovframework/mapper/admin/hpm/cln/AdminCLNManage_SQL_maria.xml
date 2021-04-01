@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="AdminCLNDAO">
+
+	<resultMap id="Center" type="fbcms.admin.hpm.cln.service.Impl.CenterVO">
+        <result property="MNG_GUBN_CD" 			column="MNG_GUBN_CD"/>
+        <result property="MNG_CD" 				column="MNG_CD"/>
+        <result property="MNG_NM" 				column="MNG_NM"/>
+        <result property="MNG_SEQ" 				column="MNG_SEQ"/>
+        <result property="SEQ" 					column="SEQ"/>
+        <result property="DTIL_SEQ" 			column="DTIL_SEQ"/>
+        <result property="CLINIC_NM" 			column="CLINIC_NM"/>
+        <result property="TEMPL_CD" 			column="TEMPL_CD"/>
+        <result property="REG_DT" 				column="REG_DT"/>
+        <result property="POST_YN" 				column="POST_YN"/>
+        <result property="ORDER_NO" 			column="ORDER_NO"/>
+        <result property="RLT_MEDI_USE_YN" 		column="RLT_MEDI_USE_YN"/>
+        <result property="MAJOR_DISS_CDS" 		column="MAJOR_DISS_CDS"/>
+        <result property="DR_IDS" 				column="DR_IDS"/>
+        <result property="SEARCH_TAGS" 			column="SEARCH_TAGS"/>
+        <result property="USER_ID" 				column="USER_ID"/>
+    </resultMap>
+    
+	<resultMap id="CenterTempl" type="fbcms.admin.hpm.cln.service.Impl.CenterTemplVO">
+        <result property="MNG_GUBN_CD" 			column="MNG_GUBN_CD"/>
+        <result property="MNG_CD" 				column="MNG_CD"/>
+        <result property="MNG_SEQ" 				column="MNG_SEQ"/>
+        <result property="SEQ" 					column="SEQ"/>
+        <result property="AREA_TITLE_CT" 		column="AREA_TITLE_CT"/>
+        <result property="SHOW_CNT_CD" 			column="SHOW_CNT_CD"/>
+        <result property="VS_MARK_USE_YN" 		column="VS_MARK_USE_YN"/>
+        <result property="USE_YN" 				column="USE_YN"/>
+    </resultMap>
+    
+    <resultMap id="CenterTemplDetail" type="fbcms.admin.hpm.cln.service.Impl.CenterTemplDetailVO">
+        <result property="MNG_GUBN_CD" 			column="MNG_GUBN_CD"/>
+        <result property="MNG_CD" 				column="MNG_CD"/>
+        <result property="MNG_SEQ" 				column="MNG_SEQ"/>
+        <result property="SEQ" 					column="SEQ"/>
+        <result property="DTIL_SEQ" 			column="DTIL_SEQ"/>
+        <result property="TITLE_CT" 			column="TITLE_CT"/>
+        <result property="TEXT_TX" 				column="TEXT_TX"/>
+        <result property="IMG_ATCH_NO" 			column="IMG_ATCH_NO"/>
+        <result property="VIDEO_ATCH_NO" 		column="VIDEO_ATCH_NO"/>
+        <result property="FILE_EXTSN" 			column="FILE_EXTSN"/>
+        <result property="FIGR_NO" 				column="FIGR_NO"/>
+		<result property="EXPL_TX" 				column="EXPL_TX"/>
+    </resultMap>
+    
+    <resultMap id="CodeDetailVo" type="fbcms.admin.hpm.cln.service.Impl.CodeDetailVO">
+    	<result property="CODE_ID" 				column="CODE_ID"/>
+    	<result property="CODE" 				column="CODE"/>
+    	<result property="CODE_NM" 				column="CODE_NM"/>
+    	<result property="CODE_CN" 				column="CODE_CN"/>
+    </resultMap>
+    
+    <resultMap id="Doctor" type="fbcms.admin.hpm.drm.service.impl.DoctorVO">
+    	<result property="DR_ID" column="DR_ID"/>
+    	<result property="DR_NM" column="DR_NM"/>
+    </resultMap> 
+	
+	<!-- 센터 리스트 조회 -->
+	<select id="selectCLNCenterList" parameterType="fbcms.admin.hpm.cln.service.Impl.CenterVO" resultMap="Center">
+		SELECT CODE_ID AS MNG_CD
+			 , CODE_ID_DC AS MNG_NM
+		  FROM COMTCCMMNCODE
+		 WHERE CL_CODE = 'SPC'
+		   AND USE_AT = 'Y'
+		 ORDER BY CODE_ID ASC
+	</select>
+	
+	<!-- 클리닉 리스트 조회 -->
+	<select id="selectCLNList" parameterType="fbcms.admin.hpm.cln.service.Impl.CenterVO" resultMap="Center">
+		SELECT MNG_CD
+			 , MNG_SEQ
+			 , CLINIC_NM
+			 , TEMPL_CD
+			 , DATE_FORMAT(REG_DT,'%Y.%m.%d') AS REG_DT
+			 , POST_YN
+			 , ORDER_NO
+		  FROM HP_HOSPITAL_MNG
+		 WHERE 1 = 1
+		   AND MNG_GUBN_CD = '03'
+ 		   AND IFNULL(DEL_YN,'N') NOT IN ('Y')
+		   AND MNG_CD = #{MNG_CD}
+		 ORDER BY ORDER_NO
+	</select>
+	
+	<!-- 클리닉 조회 -->
+	<select id="selectCLN" parameterType="fbcms.admin.hpm.cln.service.Impl.CenterVO" resultMap="Center">
+		SELECT MNG_CD
+			 , MNG_SEQ
+			 , CLINIC_NM
+			 , POST_YN
+			 , TEMPL_CD
+			 , RLT_MEDI_USE_YN
+			 , MAJOR_DISS_CDS
+			 , DR_IDS
+			 , SEARCH_TAGS
+		  FROM HP_HOSPITAL_MNG
+		 WHERE 1 = 1
+		   AND MNG_GUBN_CD = '03'
+		   AND MNG_CD = #{MNG_CD}
+		   AND MNG_SEQ = #{MNG_SEQ}
+	</select>
+	
+	<!-- 클리닉 상세 조회 -->
+	<select id="selectCLNTmpList" parameterType="fbcms.admin.hpm.cln.service.Impl.CenterVO" resultMap="CenterTempl">
+		SELECT MNG_CD
+			 , MNG_SEQ
+			 , SEQ
+			 , AREA_TITLE_CT
+			 , SHOW_CNT_CD
+			 , VS_MARK_USE_YN
+			 , USE_YN
+		  FROM HP_MNG_TEMPL
+		 WHERE 1 = 1
+		   AND MNG_GUBN_CD = '03'
+		   AND MNG_CD = #{MNG_CD}
+		   AND MNG_SEQ = #{MNG_SEQ}
+	</select>
+	
+	<!-- 클리닉 상세 상세 조회 -->
+	<select id="selectCLNTmpDtilList" parameterType="fbcms.admin.hpm.cln.service.Impl.CenterVO" resultMap="CenterTemplDetail">
+		SELECT MNG_CD
+			 , MNG_SEQ
+			 , SEQ
+			 , DTIL_SEQ
+			 , TITLE_CT
+			 , TEXT_TX
+			 , IMG_ATCH_NO
+			 , VIDEO_ATCH_NO
+			 , FIGR_NO
+			 , EXPL_TX
+		  FROM HP_MNG_TEMPL_DTIL
+		 WHERE 1 = 1
+		   AND MNG_GUBN_CD = '03'
+		   AND MNG_CD = #{MNG_CD}
+		   AND MNG_SEQ = #{MNG_SEQ}
+		   AND SEQ = #{SEQ}
+	</select>
+	
+	<!-- 클리닉 Delete -->
+	<update id="deleteCLN" parameterType="fbcms.admin.hpm.cln.service.Impl.CenterVO">
+		UPDATE HP_HOSPITAL_MNG
+		   SET DEL_YN = 'Y'
+		   	 , UPDT_ID = #{USER_ID}
+		   	 , UPDT_DT = NOW()
+		 WHERE MNG_GUBN_CD = '03'
+		   AND MNG_CD = #{MNG_CD}
+		   AND MNG_SEQ = #{MNG_SEQ}
+	</update>
+	
+	<select id="selectMngSeq" parameterType="fbcms.admin.hpm.cln.service.Impl.CenterVO" resultType="string">
+			SELECT IFNULL(MAX(MNG_SEQ),0)+1 AS MNG_SEQ
+			  FROM HP_HOSPITAL_MNG
+	 		 WHERE MNG_GUBN_CD = '03'
+	 		   AND MNG_CD = #{MNG_CD}
+	</select>
+	<!-- 클리닉 등록 -->
+	<insert id="insertCLN" parameterType="fbcms.admin.hpm.cln.service.Impl.CenterVO">
+	 	<selectKey order="BEFORE" keyProperty="MNG_SEQ" resultType="string">
+			SELECT IFNULL(MAX(MNG_SEQ),0)+1 AS MNG_SEQ
+			  FROM HP_HOSPITAL_MNG
+	 		 WHERE MNG_GUBN_CD = '03'
+	 		   AND MNG_CD = #{MNG_CD}
+	 	</selectKey>
+ 		
+		INSERT 
+		  INTO HP_HOSPITAL_MNG
+		     (
+		       MNG_GUBN_CD
+		     , MNG_CD
+		     , MNG_SEQ
+		     , CLINIC_NM
+		     , POST_YN
+		     , TEMPL_CD
+		     , MAJOR_DISS_CDS
+		     , DR_IDS
+		     , RLT_MEDI_USE_YN
+		     , IMP_DISS_USE_YN
+		     , SEARCH_TAGS
+		     , REG_DT
+		     , ADD_DT
+		     )
+		VALUES
+		     (
+		       '03'
+			 , #{MNG_CD}
+			 , #{MNG_SEQ}
+			 , #{CLINIC_NM}
+			 , #{POST_YN}
+			 , #{TEMPL_CD}
+			 , #{MAJOR_DISS_CDS}
+			 , #{DR_IDS}
+			 , #{RLT_MEDI_USE_YN}
+		     , #{IMP_DISS_USE_YN}
+		     , #{SEARCH_TAGS}
+			 , NOW()
+			 , NOW()
+		     )
+	        ON DUPLICATE KEY 
+		UPDATE 
+		       MAJOR_DISS_CDS = #{MAJOR_DISS_CDS}
+		     , DR_IDS = #{DR_IDS}
+		     , RLT_MEDI_USE_YN = #{RLT_MEDI_USE_YN}
+		     , IMP_DISS_USE_YN = #{IMP_DISS_USE_YN}
+		     , SEARCH_TAGS = #{SEARCH_TAGS}
+		     , UPDT_DT = NOW()
+	</insert>
+	
+	<!-- 클리닉 수정 -->
+	<insert id="updateCLN" parameterType="fbcms.admin.hpm.cln.service.Impl.CenterVO">
+		INSERT 
+		  INTO HP_HOSPITAL_MNG
+		     (
+		       MNG_GUBN_CD
+		     , MNG_CD
+		     , MNG_SEQ
+		     , CLINIC_NM
+		     , POST_YN
+		     , TEMPL_CD
+			 , MAJOR_DISS_CDS
+			 , DR_IDS
+		     , RLT_MEDI_USE_YN
+		     , IMP_DISS_USE_YN
+		     , SEARCH_TAGS
+		     , REG_DT
+		     , ADD_DT
+		     )
+		VALUES
+		     (
+		       '03'
+			 , #{MNG_CD}
+			 , #{MNG_SEQ}
+			 , #{CLINIC_NM}
+			 , #{POST_YN}
+			 , #{TEMPL_CD}
+			 , #{MAJOR_DISS_CDS}
+			 , #{DR_IDS}
+			 , #{RLT_MEDI_USE_YN}
+		     , #{IMP_DISS_USE_YN}
+		     , #{SEARCH_TAGS}
+			 , NOW()
+			 , NOW()
+		     )
+	        ON DUPLICATE KEY 
+		UPDATE 
+		       MAJOR_DISS_CDS = #{MAJOR_DISS_CDS}
+		     , CLINIC_NM = #{CLINIC_NM}
+		     , DR_IDS = #{DR_IDS}
+		     , RLT_MEDI_USE_YN = #{RLT_MEDI_USE_YN}
+		     , IMP_DISS_USE_YN = #{IMP_DISS_USE_YN}
+		     , SEARCH_TAGS = #{SEARCH_TAGS}
+		     , UPDT_DT = NOW()
+	</insert>
+	
+	<!-- 클리닉 템플릿 저장 -->
+	<insert id="updateCLNTmp" parameterType="fbcms.admin.hpm.cln.service.Impl.CenterTemplVO">
+		INSERT
+		  INTO HP_MNG_TEMPL
+		     (
+		       MNG_GUBN_CD
+		     , MNG_CD
+		     , MNG_SEQ
+		     , SEQ
+		     , AREA_TITLE_CT
+		     , SHOW_CNT_CD
+		     , USE_YN
+		     , VS_MARK_USE_YN
+		     , ADD_DT
+		     )
+		VALUES 
+		     (
+			   '03'
+		     , #{MNG_CD}
+		     , #{MNG_SEQ}
+		     , #{SEQ}
+		     , #{AREA_TITLE_CT}
+		     , #{SHOW_CNT_CD}
+		     , #{USE_YN}
+		     , #{VS_MARK_USE_YN}
+		     , NOW() 
+		     )
+		   ON DUPLICATE KEY 
+		UPDATE 
+			   AREA_TITLE_CT = #{AREA_TITLE_CT}
+		     , SHOW_CNT_CD = #{SHOW_CNT_CD}
+		     , USE_YN = #{USE_YN}
+		     , VS_MARK_USE_YN = #{VS_MARK_USE_YN}
+		     , UPDT_DT = NOW()
+	</insert>
+	
+	<!-- 클리닉 템플릿 저장 -->
+	<insert id="updateCLNTmpDetail" parameterType="fbcms.admin.hpm.cln.service.Impl.CenterTemplVO">
+		INSERT
+		  INTO HP_MNG_TEMPL_DTIL
+		     (
+		       MNG_GUBN_CD
+		     , MNG_CD
+		     , MNG_SEQ
+		     , SEQ
+		     , DTIL_SEQ
+		     , TITLE_CT
+		     , TEXT_TX
+		     , IMG_ATCH_NO
+		     , VIDEO_ATCH_NO
+		     , ADD_DT
+		     )
+		VALUES 
+		     (
+		       '03'
+		     , #{MNG_CD}
+		     , #{MNG_SEQ}
+		     , #{SEQ}
+		     , ${DTIL_SEQ}
+		     , #{TITLE_CT}
+		     , #{TEXT_TX}
+		     , #{IMG_ATCH_NO}
+		     , #{VIDEO_ATCH_NO}
+		     , NOW()
+		     )
+		    ON DUPLICATE KEY 
+		UPDATE
+	           TITLE_CT = #{TITLE_CT}
+	         , TEXT_TX = #{TEXT_TX}
+	         , IMG_ATCH_NO = #{IMG_ATCH_NO}
+	         , VIDEO_ATCH_NO = #{VIDEO_ATCH_NO}
+		     , UPDT_DT = NOW()
+	</insert>
+	
+	<!-- 정렬 순서 수정 -->
+	<update id="updateOrderChange" parameterType="fbcms.admin.hpm.cln.service.Impl.CenterVO">
+		UPDATE HP_HOSPITAL_MNG
+		   SET ORDER_NO = #{ORDER_NO}
+		     , UPDT_DT = NOW()  
+		 WHERE MNG_GUBN_CD = #{MNG_GUBN_CD}
+		   AND MNG_CD = #{MNG_CD}
+ 		   AND MNG_SEQ = #{MNG_SEQ}
+	</update>
+	
+	<select id="selectCLIDetail" parameterType="adminBoardVO" resultMap="CenterTemplDetail">
+		SELECT B.AREA_TITLE_CT
+      		 , C.TEXT_TX
+    		 , B.USER_YN
+    		 , C.IMG_ATCH_NO
+    		 , D.FILE_EXTSN 
+    		 , C.TITLE_CT
+    		 , B.VS_MARK_USE_YN 
+    		 , C.FIGR_NO
+	      FROM HP_HOSPITAL_MNG A
+		 INNER JOIN HP_MNG_TEMPL B
+	    	ON A.MNG_GUBN_CD = B.MNG_GUBN_CD
+	       AND A.MNG_CD = B.MNG_CD 
+		   AND A.MNG_SEQ = B.MNG_SEQ 
+		 INNER JOIN HP_MNG_TEMPL_DTIL C
+		    ON B.MNG_GUBN_CD = C.MNG_GUBN_CD
+		   AND B.MNG_CD = C.MNG_CD 
+		   AND B.MNG_SEQ = C.MNG_SEQ
+		   AND B.SEQ = C.SEQ
+		  LEFT JOIN COMTNFILEDETAIL D
+		    ON D.ATCH_FILE_ID = C.IMG_ATCH_NO 
+		 WHERE A.MNG_GUBN_CD = '03'
+		   AND A.MNG_CD = #{custom1}
+		   AND A.MNG_SEQ = '1'
+		   AND A.TEMPL_CD = 'A';
+	</select>
+	
+	<select id="selectDissCode" parameterType="fbcms.admin.hpm.cln.service.Impl.CodeDetailVO" resultMap="CodeDetailVo" >
+		SELECT B.NTT_ID AS CODE_ID
+		     , B.NTT_SJ AS CODE
+		     , (SELECT M.BBS_NM FROM COMTNBBSMASTER M WHERE M.BBS_ID = B.BBS_ID) AS CODE_NM
+		  FROM COMTNBBS B
+		 WHERE B.BBS_ID IN ('BBSMSTR_000000000003', 'BBSMSTR_000000000004', 'BBSMSTR_000000000005', 'BBSMSTR_000000000006', 'BBSMSTR_000000000007', 'BBSMSTR_000000000008')
+		   AND B.USE_AT = 'Y'
+		   AND B.POSTING_YN = 'Y'
+	  ORDER BY B.BBS_ID ASC
+	</select>
+	
+	<select id="selectDissNm" parameterType="fbcms.admin.hpm.cln.service.Impl.CenterVO" resultType="String">
+		SELECT NTT_SJ AS CODE_NM
+		  FROM COMTNBBS
+		 WHERE NTT_ID = #{code}
+		   AND USE_AT = 'Y'
+		   AND POSTING_YN = 'Y'
+	</select>
+	
+	
+	<select id="selectDrNm" parameterType="fbcms.user.cts.rsv.service.ReservationVO" resultType="String">
+		SELECT DR_NM
+		  FROM HP_DR 
+		 WHERE DR_ID = #{drCode}
+	</select>
+	
+	
+	<select id="selectDrList" resultType="egovMap">
+		SELECT 
+			DR_ID AS drId
+			, DR_NM AS drNm
+		FROM HP_DR
+		WHERE IFNULL(DEL_YN, 'N') = 'N'
+	</select>
+	
+	<delete id="dropCLNTag" parameterType="fbcms.admin.hpm.cln.service.Impl.CenterVO">
+		DELETE
+		   FROM HP_HOSPITAL_MNG_TAG
+		  WHERE MNG_GUBN_CD = '03'
+		    AND MNG_CD = #{MNG_CD}
+		    AND MNG_SEQ = #{MNG_SEQ}
+	</delete>
+	
+	<insert id="insertCLNTag" parameterType="fbcms.admin.hpm.cln.service.Impl.CenterVO">
+		INSERT
+		  INTO HP_HOSPITAL_MNG_TAG
+		      (MNG_GUBN_CD
+		     , MNG_CD
+		     , MNG_SEQ
+		     , TAG_NM)
+		VALUES 
+		<foreach collection="SEARCH_TAG_ARRAY" item="tag" separator=",">
+		       ('03'
+		     , #{MNG_CD}
+		     , #{MNG_SEQ}
+		     , #{tag})
+		</foreach>
+	</insert>
+	
+</mapper>

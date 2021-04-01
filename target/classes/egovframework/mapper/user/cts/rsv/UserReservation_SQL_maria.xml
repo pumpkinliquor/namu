@@ -1,0 +1,571 @@
+<?xml version="1.0" encoding="UTF-8"?><!--Converted at: Wed May 11 15:50:59 KST 2016-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="UserReservationDAO">
+	
+	<resultMap id="UserReservation" type="fbcms.user.cts.rsv.service.ReservationVO">
+		<result property="MEDI_SBJ_CD" 				column="REQUST_ID"/>
+		<result property="MEDI_SBJ_NM" 				column="SVC_NM"/>
+		<result property="MEDI_SBJ_CD" 				column="MEDI_SBJ_CD"/>
+		<result property="MEDI_SBJ_NM" 				column="MEDI_SBJ_NM"/>
+		<result property="APPO_GUBN_CD" 			column="PROCESS_SE_CODE"/>
+		<result property="APPO_DT" 					column="OCCRRNC_DE"/>
+		<result property="MOBILE_PHONE_NO"			column="RQESTER_IP"/>
+		<result property="PHONE_NO"					column="TRGET_MENU_NM"/>
+		<result property="DR_ID"					column="DR_ID"/>
+		<result property="DR_NM"					column="DR_NM"/>
+		<result property="PC_IMG_ATCH_NO"			column="PC_IMG_ATCH_NO"/>
+		<result property="MOBILE_IMG_ATCH_NO"		column="MOBILE_IMG_ATCH_NO"/>
+		<result property="PC_IMG_ATCH_EXT_SN"		column="PC_IMG_ATCH_EXT_SN"/>
+		<result property="MOBILE_IMG_ATCH_EXT_SN"	column="MOBILE_IMG_ATCH_EXT_SN"/>
+		<result property="FIELD_CT"					column="FIELD_CT"/>
+		<result property="POSITION_CT"				column="POSITION_CT"/>
+		<result property="CLINIC_APPO_WORD_CT"		column="CLINIC_APPO_WORD_CT"/>
+	</resultMap>
+	
+		<resultMap id="Appointment" type="fbcms.user.cts.rsv.service.AppointmentVO">
+		<result property="APPO_NO"			column="APPO_NO"/>
+		<result property="APPO_GUBN_CD"		column="APPO_GUBN_CD"/>
+		<result property="MEDI_SBJ_CD"		column="MEDI_SBJ_CD"/>
+		<result property="MEDI_SBJ_NM"		column="MEDI_SBJ_NM"/>
+		<result property="DR_ID"			column="DR_ID"/>
+		<result property="DR_NM"			column="DR_NM"/>
+		<result property="APPO_PRSN_NM"		column="APPO_PRSN_NM"/>
+		<result property="APPO_RLT_CD"		column="APPO_RLT_CD"/>
+		<result property="GENDER_CD"		column="GENDER_CD"/>
+		<result property="APPO_DT"			column="APPO_DT"/>
+		<result property="APPO_TIME"		column="APPO_TIME"/>
+		<result property="BIRTH_DT"			column="BIRTH_DT"/>
+		<result property="MOBILE_PHONE_NO"	column="MOBILE_PHONE_NO"/>
+		<result property="PHONE_NO"			column="PHONE_NO"/>
+		<result property="FIRST_ADD_DT"		column="FIRST_ADD_DT"/>
+		<result property="APPO_STAT_CD"		column="APPO_STAT_CD"/>
+		<result property="EXMN_PROG_CD"		column="EXMN_PROG_CD"/>
+		<result property="EXMN_PROG_NM"		column="EXMN_PROG_NM"/>
+		<result property="EMAIL_ID"			column="EMAIL_ID"/>
+		<result property="POST_NO"			column="POST_NO"/>
+		<result property="ADDR_TX"			column="ADDR_TX"/>
+		<result property="ADDR_DTIL_TX"		column="ADDR_DTIL_TX"/>
+		<result property="USER_ID"			column="USER_ID"/>
+		<result property="ADD_ID"			column="ADD_ID"/>
+		<result property="ADD_DT"			column="ADD_DT"/>
+		<result property="UPDT_ID"			column="UPDT_ID"/>
+		<result property="UPDT_DT"			column="UPDT_DT"/>
+		<result property="DEL_YN"			column="DEL_YN"/>
+		<result property="INQR_SEND_TX"		column="INQR_SEND_TX"/>
+	</resultMap>
+	
+	<!-- 의사리스트 처리를 위한 resultMap -->
+	<resultMap id="DrListVO" type="fbcms.user.hpm.hpm.DRListVO">
+		<result property="DR_ID" column="DR_ID"/>
+		<result property="MEDI_SBJ_CD" column="MEDI_SBJ_CD"/>
+		<result property="DR_NM" column="DR_NM"/>
+		<result property="SPCL_CLINIC_CT" column="SPCL_CLINIC_CT"/>
+		<result property="FIELD_CT" column="FIELD_CT"/>
+		<result property="POSITION_CT" column="POSITION_CT"/>
+		<result property="PC_IMG_ATCH_NO" column="PC_IMG_ATCH_NO"/>
+		<result property="MOBILE_IMG_ATCH_NO" column="MOBILE_IMG_ATCH_NO"/>
+		<result property="FILE_EXTSN" column="FILE_EXTSN"/>		
+		<result property="MNG_CENTER_CD" column="MNG_CENTER_CD"/>
+		<result property="SPCL_FIELD_TX" column="SPCL_FIELD_TX"/>
+		<result property="HISTORY_TX" column="HISTORY_TX"/>
+		<result property="HISTORY_TX2" column="HISTORY_TX2"/>
+		<result property="BLOG_ADD_TX" column="BLOG_ADD_TX"/>
+		<result property="ADD_OPEN_SET_CD" column="ADD_OPEN_SET_CD"/>
+		<result property="SEARCH_TAG_CT" column="SEARCH_TAG_CT"/>
+		<result property="BROAD_APPEAR_TX" column="BROAD_APPEAR_TX"/>
+		<result property="BLOG_USE_YN" column="BLOG_USE_YN"/>
+		<result property="CLINIC_APPO_WORD_CT" column="CLINIC_APPO_WORD_CT"/>
+		<result property="ORDER_NO" column="ORDER_NO"/>
+	</resultMap>
+	
+	<resultMap id="UserCheckup" type="fbcms.user.cts.rsv.service.UserCheckupVO">
+		<result property="APPO_SCHE_DT" column="APPO_SCHE_DT"/>
+		<result property="POSB_YN" 		column="POSB_YN"/>
+		<result property="gender" 		column="SEXDSTN_CODE"/>
+		<result property="gender" 		column="gender"/>
+	</resultMap>
+	
+	<select id="selectUserReservationList" parameterType="fbcms.user.cts.rsv.service.ReservationVO" resultMap="UserReservation">
+			SELECT A.REQUST_ID
+				 , A.SVC_NM
+				 , A.PROCESS_SE_CODE
+				 , A.OCCRRNC_DE
+				 , A.RQESTER_IP
+				 , A.TRGET_MENU_NM
+			  FROM COMTNSYSLOG A  
+			 WHERE 1 = 1
+			<if test="searchKeyword != null and searchKeyword != ''">
+				<if test="searchCondition == 1">AND
+					   A.REQUST_ID LIKE CONCAT('%' , #{searchKeyword}, '%')  
+				</if>
+			</if>
+			 LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+
+	<select id="selectUserReservationTotCnt" parameterType="fbcms.user.cts.rsv.service.ReservationVO" resultType="int">
+		SELECT COUNT(*) AS totcnt
+		  FROM COMTNSYSLOG
+		 WHERE 1 = 1
+<!-- 		<if test="searchCondition == 1"> -->
+<!-- 			AND BANNER_NM LIKE CONCAT('%' , #{searchKeyword}, '%') -->
+<!-- 		</if> -->
+<!-- 		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(postingYn)"> -->
+<!-- 			AND IFNULL(POSTING_YN, 'N') = #{postingYn} -->
+<!-- 		</if> -->
+<!-- 		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(ntceBgnde)"> -->
+<!-- 			AND NTCE_BGNDE <![CDATA[ >= ]]> #{ntceBgnde} -->
+<!-- 		</if> -->
+<!-- 		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(ntceEndDe)"> -->
+<!-- 			AND NTCE_ENDDE <![CDATA[ <= ]]> #{ntceEndDe} -->
+<!-- 		</if> -->
+	</select>
+
+	<select id="selectUserReservation" parameterType="fbcms.user.cts.rsv.service.AppointmentVO" resultMap="Appointment">
+		SELECT APPO_NO
+			 , APPO_GUBN_CD
+			 , MEDI_SBJ_CD
+			 , (SELECT (CASE MEDI_SBJ_CD WHEN 'GS' THEN '소화기외과' WHEN 'BE' THEN '유방·갑상선외과' WHEN 'AO' THEN '안티에이징·비만센터' ELSE CD.DTIL_CODE_NM END) FROM HP_CODE_DTIL CD WHERE CD.COMM_CD = 'MNG_CD' AND CD.DTIL_CD = MEDI_SBJ_CD AND CD.USE_YN = 'Y') AS MEDI_SBJ_NM 
+			 , DR_ID
+			 , FNC_GET_DR_NAME (DR_ID) AS DR_NM
+			 , APPO_PRSN_NM
+			 , APPO_RLT_CD
+			 , GENDER_CD
+			 , APPO_DT
+			 , APPO_TIME
+			 , BIRTH_DT
+			 , MOBILE_PHONE_NO
+			 , PHONE_NO
+			 , FIRST_ADD_DT
+			 , APPO_STAT_CD
+			 , EXMN_PROG_CD
+			 , FNC_GET_CODE_NAME ('EXMN_PROG_CD', EXMN_PROG_CD) AS EXMN_PROG_NM
+			 , EMAIL_ID
+			 , POST_NO
+			 , ADDR_TX
+			 , ADDR_DTIL_TX
+			 , USER_ID
+			 , INQR_SEND_TX
+		  FROM HP_APPOINTMENT
+		 WHERE APPO_NO = #{searchKeyword}
+		   AND IFNULL(DEL_YN,'N') = 'N'
+	</select>
+	
+	<update id="updateUserReservation" parameterType="fbcms.user.cts.rsv.service.AppointmentVO">
+		UPDATE HP_APPOINTMENT 
+		   SET APPO_DT = #{APPO_DT}
+			 , APPO_TIME = #{APPO_TIME}
+			 , UPDT_ID = #{UPDT_ID}
+			 , UPDT_DT = NOW()
+			<if test="MEDI_SBJ_CD != null and MEDI_SBJ_CD != ''">
+			 , MEDI_SBJ_CD = #{MEDI_SBJ_CD}
+			</if>
+			<if test="DR_ID != null and DR_ID != ''">
+			 , DR_ID = #{DR_ID}
+			</if>
+			<if test="MOBILE_PHONE_NO != null and MOBILE_PHONE_NO != ''">
+			 , MOBILE_PHONE_NO = #{MOBILE_PHONE_NO}
+			</if>
+			<if test="PHONE_NO != null and PHONE_NO != ''">
+			 , PHONE_NO = #{PHONE_NO}
+			</if>
+			<if test="EXMN_PROG_CD != null and EXMN_PROG_CD != ''">
+			 , EXMN_PROG_CD = #{EXMN_PROG_CD}
+			</if>
+			<if test="EMAIL_ID != null and EMAIL_ID != ''">
+			 , EMAIL_ID = #{EMAIL_ID}
+			</if>
+			<if test="POST_NO != null and POST_NO != ''">
+			 , POST_NO = #{POST_NO}
+			</if>
+			<if test="ADDR_TX != null and ADDR_TX != ''">
+			 , ADDR_TX = #{ADDR_TX}
+			</if>
+			<if test="ADDR_DTIL_TX != null and ADDR_DTIL_TX != ''">
+			 , ADDR_DTIL_TX = #{ADDR_DTIL_TX}
+			</if>
+			<if test="INQR_SEND_TX != null and INQR_SEND_TX != ''">
+			 , INQR_SEND_TX = #{INQR_SEND_TX}
+			</if>
+		WHERE APPO_NO = #{searchKeyword}
+	</update>
+	<update id="updateReservationCancel" parameterType="fbcms.user.cts.rsv.service.AppointmentVO">
+		UPDATE HP_APPOINTMENT 
+		   SET APPO_STAT_CD = '04'
+			 , UPDT_ID = #{UPDT_ID}
+			 , UPDT_DT = NOW()
+			 <if test="DEL_YN != null and DEL_YN != ''">
+			 , DEL_YN = #{DEL_YN}
+			 </if>
+		WHERE APPO_NO = #{searchKeyword}
+	</update>
+	
+	<select id="selectMediSbjList" resultMap="UserReservation">
+		<!-- 2020-12-21 안티에이징 제거 현업 재조정 요청 
+		2020.12.22 부인과 제거 현업 재조정 요청 
+		SELECT DTIL_CD AS MEDI_SBJ_CD
+			 , (CASE DTIL_CD WHEN 'GS' THEN '소화기외과' WHEN 'BE' THEN '유방·갑상선외과' WHEN 'AO' THEN '안티에이징·비만센터' ELSE DTIL_CODE_NM END) AS MEDI_SBJ_NM
+		  FROM HP_CODE_DTIL
+		 WHERE COMM_CD = 'MEDI_SBJ_CD'
+		   AND USE_YN = 'Y'
+		   AND DTIL_CD IN ('GI', 'GS', 'NE', 'FM', 'BE', 'GY', 'AO')
+		 ORDER BY ORDER_NO ASC 
+		 -->
+		 SELECT DTIL_CD AS MEDI_SBJ_CD
+			 , (CASE DTIL_CD WHEN 'GS' THEN '소화기외과' WHEN 'BE' THEN '유방·갑상선외과' WHEN 'AO' THEN '안티에이징·비만센터' ELSE DTIL_CODE_NM END) AS MEDI_SBJ_NM
+		  FROM HP_CODE_DTIL
+		 WHERE COMM_CD = 'MEDI_SBJ_CD'
+		   AND USE_YN = 'Y'
+		   AND DTIL_CD IN ('GI', 'GS', 'NE', 'FM', 'BE')
+		 ORDER BY ORDER_NO ASC 
+	</select>
+	
+	<select id="selectMediDrListAll" resultMap="UserReservation">
+	<!-- 2020-12-21 안티에이징 제거 현업 재조정 요청 
+	2020.12.22 부인과 제거 현업 재조정 요청 
+		SELECT DR_ID
+			 , DR_NM
+			 , MEDI_SBJ_CD
+			 , (CASE MEDI_SBJ_CD WHEN 'GS' THEN '소화기외과' WHEN 'BE' THEN '유방·갑상선외과' WHEN 'AO' THEN '안티에이징·비만센터' ELSE FNC_GET_CODE_NAME('MNG_CD', MEDI_SBJ_CD) END) AS MEDI_SBJ_NM
+			 , FIELD_CT
+			 , POSITION_CT
+			 , PC_IMG_ATCH_NO
+			 , MOBILE_IMG_ATCH_NO
+			 , (SELECT FILE_EXTSN FROM COMTNFILEDETAIL WHERE ATCH_FILE_ID = PC_IMG_ATCH_NO) AS PC_IMG_ATCH_EXT_SN
+			 , (SELECT FILE_EXTSN FROM COMTNFILEDETAIL WHERE ATCH_FILE_ID = MOBILE_IMG_ATCH_NO) AS MOBILE_IMG_ATCH_EXT_SN
+		  FROM HP_DR
+		 WHERE IFNULL(DEL_YN,'N') = 'N' 
+		   AND MEDI_SBJ_CD IN ('GI', 'GS', 'NE', 'FM', 'BE', 'GY', 'AO')
+		 ORDER BY DR_NM ASC
+	-->
+		SELECT DR_ID
+			 , DR_NM
+			 , MEDI_SBJ_CD
+			 , (CASE MEDI_SBJ_CD WHEN 'GS' THEN '소화기외과' WHEN 'BE' THEN '유방·갑상선외과' WHEN 'AO' THEN '안티에이징·비만센터' ELSE FNC_GET_CODE_NAME('MNG_CD', MEDI_SBJ_CD) END) AS MEDI_SBJ_NM
+			 , FIELD_CT
+			 , POSITION_CT
+			 , (SELECT STRE_FILE_NM FROM COMTNFILEDETAIL WHERE ATCH_FILE_ID = PC_IMG_ATCH_NO) AS PC_IMG_ATCH_NO
+			 , (SELECT STRE_FILE_NM FROM COMTNFILEDETAIL WHERE ATCH_FILE_ID = MOBILE_IMG_ATCH_NO) AS MOBILE_IMG_ATCH_NO
+<!-- 			 , (SELECT FILE_EXTSN FROM COMTNFILEDETAIL WHERE ATCH_FILE_ID = PC_IMG_ATCH_NO) AS PC_IMG_ATCH_EXT_SN -->
+<!-- 			 , (SELECT FILE_EXTSN FROM COMTNFILEDETAIL WHERE ATCH_FILE_ID = MOBILE_IMG_ATCH_NO) AS MOBILE_IMG_ATCH_EXT_SN -->
+		  FROM HP_DR
+		 WHERE IFNULL(DEL_YN,'N') = 'N' 
+		   AND MEDI_SBJ_CD IN ('GI', 'GS', 'NE', 'FM', 'BE')
+		 ORDER BY CONCAT(CASE MEDI_SBJ_CD WHEN 'GI' THEN '1' WHEN 'GS' THEN '2' WHEN 'NE' THEN '3' WHEN 'FM' THEN '4' WHEN 'BE' THEN '5' ELSE '6' END, MEDI_SBJ_CD, LPAD(ORDER_NO, 3, '0')) ASC
+	</select>
+	<select id="selectMediDrList" resultMap="UserReservation" parameterType="fbcms.user.cts.rsv.service.ReservationVO">
+	<!-- 2020-12-21 안티에이징 제거 현업 재조정 요청 
+		SELECT DR_ID
+			 , DR_NM
+			 , MEDI_SBJ_CD
+			 , (CASE MEDI_SBJ_CD WHEN 'GS' THEN '소화기외과' WHEN 'BE' THEN '유방·갑상선외과' WHEN 'AO' THEN '안티에이징·비만센터' ELSE FNC_GET_CODE_NAME('MNG_CD', MEDI_SBJ_CD) END) AS MEDI_SBJ_NM
+			 , FIELD_CT
+			 , POSITION_CT
+			 , PC_IMG_ATCH_NO
+			 , MOBILE_IMG_ATCH_NO
+			 , (SELECT FILE_EXTSN FROM COMTNFILEDETAIL WHERE ATCH_FILE_ID = PC_IMG_ATCH_NO) AS PC_IMG_ATCH_EXT_SN
+			 , (SELECT FILE_EXTSN FROM COMTNFILEDETAIL WHERE ATCH_FILE_ID = MOBILE_IMG_ATCH_NO) AS MOBILE_IMG_ATCH_EXT_SN
+			 , CLINIC_APPO_WORD_CT
+		  FROM HP_DR
+		 WHERE MEDI_SBJ_CD = #{MEDI_SBJ_CD}
+		   AND IFNULL(DEL_YN,'N') = 'N' --> 
+		   <!-- AND MEDI_SBJ_CD IN ('GI', 'GS', 'NE', 'FM', 'BE', 'GY', 'XR') -->
+		   <!-- AND MEDI_SBJ_CD IN ('GI', 'GS', 'NE', 'FM', 'BE', 'GY', 'XR', 'AO')
+		 ORDER BY ORDER_NO ASC
+	-->
+		SELECT DR_ID
+			 , DR_NM
+			 , MEDI_SBJ_CD
+			 , (CASE MEDI_SBJ_CD WHEN 'GS' THEN '소화기외과' WHEN 'BE' THEN '유방·갑상선외과' WHEN 'AO' THEN '안티에이징·비만센터' ELSE FNC_GET_CODE_NAME('MNG_CD', MEDI_SBJ_CD) END) AS MEDI_SBJ_NM
+			 , FIELD_CT
+			 , POSITION_CT
+			 , (SELECT STRE_FILE_NM FROM COMTNFILEDETAIL WHERE ATCH_FILE_ID = PC_IMG_ATCH_NO) AS PC_IMG_ATCH_NO
+			 , (SELECT STRE_FILE_NM FROM COMTNFILEDETAIL WHERE ATCH_FILE_ID = MOBILE_IMG_ATCH_NO) AS MOBILE_IMG_ATCH_NO
+<!-- 			 , (SELECT FILE_EXTSN FROM COMTNFILEDETAIL WHERE ATCH_FILE_ID = PC_IMG_ATCH_NO) AS PC_IMG_ATCH_EXT_SN -->
+<!-- 			 , (SELECT FILE_EXTSN FROM COMTNFILEDETAIL WHERE ATCH_FILE_ID = MOBILE_IMG_ATCH_NO) AS MOBILE_IMG_ATCH_EXT_SN -->
+			 , CLINIC_APPO_WORD_CT
+		  FROM HP_DR
+		 WHERE MEDI_SBJ_CD = #{MEDI_SBJ_CD}
+		   AND IFNULL(DEL_YN,'N') = 'N' 
+		   <!-- AND MEDI_SBJ_CD IN ('GI', 'GS', 'NE', 'FM', 'BE', 'GY', 'XR') -->
+		   AND MEDI_SBJ_CD IN ('GI', 'GS', 'NE', 'FM', 'BE', 'GY', 'XR')
+		 ORDER BY ORDER_NO ASC
+	</select>
+	
+	<resultMap id="Checkup" type="fbcms.admin.rcm.cpm.service.impl.CheckupVO">
+		<result property="DTIL_CD" 			column="DTIL_CD"/>
+		<result property="DTIL_CODE_NM" 	column="DTIL_CODE_NM"/>
+	</resultMap>
+	
+	<select id="selectEXMNList" resultMap="Checkup">
+		SELECT DTIL_CD
+			 , DTIL_CODE_NM
+		  FROM HP_CODE_DTIL
+		 WHERE COMM_CD = 'EXMN_PROG_CD'
+ 		   AND IFNULL(USE_YN ,'N') IN ('Y')
+ 		   AND IFNULL(DEL_YN,'N') NOT IN ('Y')
+	 	 ORDER BY ORDER_NO
+	</select>
+	
+	<!-- 전체 의사 리스트 -->
+	<select id="DrDeInfo" resultMap="DrListVO" parameterType="HashMap">
+		 SELECT DR_ID
+			 , MEDI_SBJ_CD
+			 , DR_NM
+			 , SPCL_CLINIC_CT
+			 , FIELD_CT
+			 , POSITION_CT
+			 , PC_IMG_ATCH_NO
+			 , MOBILE_IMG_ATCH_NO	 
+			 , C.FILE_EXTSN AS FILE_EXTSN		  		 
+			 , MNG_CENTER_CD
+			 , SPCL_FIELD_TX
+			 , HISTORY_TX
+			 , HISTORY_TX2
+			 , BLOG_ADD_TX
+			 , ADD_OPEN_SET_CD
+			 , SEARCH_TAG_CT
+			 , BROAD_APPEAR_TX
+			 , BLOG_USE_YN
+			 , CLINIC_APPO_WORD_CT
+			 , H.ORDER_NO
+		  FROM fbdev.HP_DR H
+		  JOIN fbdev.COMTNFILEDETAIL C
+			ON H.PC_IMG_ATCH_NO = C.ATCH_FILE_ID
+		 WHERE H.DR_ID = #{DR_ID}
+	</select>
+
+	<select id="selectCheckupCalendar" resultMap="UserCheckup" parameterType="fbcms.user.cts.rsv.service.UserCheckupVO">
+		SELECT APPO_SCHE_DT
+			 , POSB_YN
+		  FROM HP_EXMN_APPO_SCHE
+		 WHERE DATEDIFF(DATE_FORMAT(APPO_SCHE_DT, '%Y%m%d'), DATE_FORMAT(NOW(), '%Y%m%d')) <![CDATA[ > ]]> 5
+		  AND IFNULL(DEL_YN,'N') = 'N'
+		  AND APPO_SCHE_DT LIKE CONCAT(#{RSVDT}, '%')
+	</select>
+	
+	<insert id="insertClinic" parameterType="fbcms.user.cts.rsv.service.UserClinicVO">
+		INSERT INTO HP_APPOINTMENT (APPO_NO
+								  , APPO_GUBN_CD
+								  , MEDI_SBJ_CD
+								  , DR_ID
+								  , APPO_PRSN_NM
+								  , APPO_RLT_CD
+								  , GENDER_CD
+								  , APPO_DT
+								  , APPO_TIME
+								  , BIRTH_DT
+								  , MOBILE_PHONE_NO
+								  , PHONE_NO
+								  , FIRST_ADD_DT
+								  , APPO_STAT_CD
+								  , USER_ID
+								  , ADD_ID
+								  , ADD_DT)
+						  VALUES ((SELECT CONCAT(CONCAT(DATE_FORMAT(NOW(), '%Y%m%d'), '01') ,LPAD(COUNT(*)+1, '3', '0')) AS APPO_NO FROM HP_APPOINTMENT A WHERE A.APPO_NO LIKE CONCAT(CONCAT(DATE_FORMAT(NOW(), '%Y%m%d'), '01'), '%'))
+								  , '01'
+								  , #{MEDI_SBJ_CD}
+								  , #{DR_ID}
+								  , #{usrNm}
+								  , #{APPO_RLT_CD}
+								  , #{gender}
+								  , #{RSV_DT}
+								  , #{RSV_TM}
+								  , #{usrBd}
+								  , CONCAT(#{fCtn},'-',#{mCtn},'-',#{lCtn})
+								  , CONCAT(#{fTel},'-',#{mTel},'-',#{lTel})
+								  , NOW()
+								  , '01'
+								  , #{USER_ID}
+								  , #{USER_ID}
+								  , NOW())
+	</insert>
+
+	
+	<select id="existCheckup" parameterType="fbcms.user.cts.rsv.service.UserCheckupVO" resultType="int">
+		SELECT COUNT(*)
+		  FROM HP_APPOINTMENT
+		 WHERE APPO_GUBN_CD = '02'
+		   AND APPO_PRSN_NM = #{usrNm}
+		   AND GENDER_CD = #{gender}
+		   AND APPO_DT = #{RSVDT}
+		   AND APPO_TIME = #{RSVTM}
+		   AND BIRTH_DT = #{usrBd}
+		   AND MOBILE_PHONE_NO = CONCAT(#{fCtn},'-',#{mCtn},'-',#{lCtn})
+		   AND PHONE_NO = CONCAT(#{fTel},'-',#{mTel},'-',#{lTel})
+		   AND EXMN_PROG_CD = #{DTIL_CD}
+		   AND EMAIL_ID = #{EMAIL_ID}
+		   AND USER_ID = #{USER_ID}
+		   AND ADD_ID = #{USER_ID}
+		   AND INQR_SEND_TX = #{content}
+		   AND APPO_RLT_CD = #{APPO_RLT_CD}
+		   AND APPO_STAT_CD = '01'
+		   AND POST_NO = #{POST_NO}
+		   AND ADDR_TX = #{ADDR_TX}
+		   AND ADDR_DTIL_TX = #{ADDR_DTIL_TX}
+
+	</select>
+	<insert id="insertCheckup" parameterType="fbcms.user.cts.rsv.service.UserCheckupVO">
+		INSERT INTO
+			HP_APPOINTMENT (APPO_NO
+						  , APPO_GUBN_CD
+						  , APPO_PRSN_NM
+						  , GENDER_CD
+						  , APPO_DT
+						  , APPO_TIME
+						  , BIRTH_DT
+						  , MOBILE_PHONE_NO
+						  , PHONE_NO
+						  , EXMN_PROG_CD
+						  , EMAIL_ID
+						  , USER_ID
+						  , ADD_ID
+						  , INQR_SEND_TX
+						  , APPO_RLT_CD
+						  , ADD_DT
+						  , APPO_STAT_CD
+						  , POST_NO
+						  , ADDR_TX
+						  , ADDR_DTIL_TX
+						  , FIRST_ADD_DT)
+		 VALUES ((SELECT CONCAT(CONCAT(DATE_FORMAT(NOW(), '%Y%m%d'), '02') ,LPAD(COUNT(*)+1, '3', '0')) AS APPO_NO FROM HP_APPOINTMENT A WHERE A.APPO_NO LIKE CONCAT(CONCAT(DATE_FORMAT(NOW(), '%Y%m%d'), '02'), '%'))
+		 		, '02'
+		 		, #{usrNm}
+		 		, #{gender}
+		 		, #{RSVDT}
+		 		, #{RSVTM}
+		 		, #{usrBd}
+		 		, CONCAT(#{fCtn},'-',#{mCtn},'-',#{lCtn})
+		 		, CONCAT(#{fTel},'-',#{mTel},'-',#{lTel})
+		 		, #{DTIL_CD}
+		 		, #{EMAIL_ID}
+		 		, #{USER_ID}
+		 		, #{USER_ID}
+		 		, #{content}
+		 		, #{APPO_RLT_CD}
+		 		, NOW()
+		 		, '01'
+		 		, #{POST_NO}
+		 		, #{ADDR_TX}
+		 		, #{ADDR_DTIL_TX}
+		 		, NOW())
+		 		
+	</insert>
+	
+	<select id="selectUserGender" resultMap="UserCheckup" parameterType="fbcms.user.cts.rsv.service.UserCheckupVO">
+		SELECT SEXDSTN_CODE AS gender
+		  FROM COMTNGNRLMBER
+		 WHERE MBER_ID = #{USER_ID}
+	</select>
+	
+	<select id="selectResListTotCnt" parameterType="fbcms.user.cts.rsv.service.AppointmentVO" resultType="int">
+		SELECT COUNT(*)
+		  FROM HP_APPOINTMENT
+		 WHERE APPO_GUBN_CD = #{APPO_GUBN_CD}
+		   AND IFNULL(DEL_YN,'N') = 'N'
+		<if test="USER_ID == null or USER_ID == ''">
+		   AND APPO_PRSN_NM = #{APPO_PRSN_NM}
+		   AND MOBILE_PHONE_NO = #{MOBILE_PHONE_NO}
+		</if>
+		<if test="USER_ID != null and USER_ID != ''">
+		   AND USER_ID = #{USER_ID}
+		</if>
+	</select>
+	
+	<select id="selectResList" parameterType="fbcms.user.cts.rsv.service.AppointmentVO" resultMap="Appointment">
+		SELECT APPO_NO
+			 , APPO_STAT_CD
+			 , MEDI_SBJ_CD
+			 , DR_ID
+			 , FNC_GET_DR_NAME (DR_ID) AS DR_NM
+			 , APPO_DT
+			 , APPO_TIME
+		  FROM HP_APPOINTMENT
+		 WHERE APPO_GUBN_CD = #{APPO_GUBN_CD}
+		   AND IFNULL(DEL_YN,'N') = 'N'
+		<if test="USER_ID == null or USER_ID == ''">
+		   AND APPO_PRSN_NM = #{APPO_PRSN_NM}
+		   AND MOBILE_PHONE_NO = #{MOBILE_PHONE_NO}
+		</if>
+		<if test="USER_ID != null and USER_ID != ''">
+		   AND USER_ID = #{USER_ID}
+		</if>
+		 ORDER BY APPO_NO DESC
+	</select>
+	
+	<select id="selectUserResListTotCnt" parameterType="fbcms.user.cts.rsv.service.AppointmentVO" resultType="int">
+		SELECT COUNT(*)
+		  FROM HP_APPOINTMENT
+		 WHERE APPO_GUBN_CD = #{APPO_GUBN_CD}
+		   AND IFNULL(DEL_YN,'N') = 'N'
+		<if test="USER_ID == null or USER_ID == ''">
+		   AND APPO_PRSN_NM = #{APPO_PRSN_NM}
+		   AND MOBILE_PHONE_NO = #{MOBILE_PHONE_NO}
+		</if>
+		<if test="USER_ID != null and USER_ID != ''">
+		   AND USER_ID = #{USER_ID}
+		</if>
+	</select>
+	
+	<select id="selectUserResList" parameterType="fbcms.user.cts.rsv.service.AppointmentVO" resultMap="Appointment">
+		SELECT APPO_NO
+			 , APPO_STAT_CD
+			 , MEDI_SBJ_CD
+			 , DR_ID
+			 , FNC_GET_DR_NAME (DR_ID) AS DR_NM
+			 , APPO_DT
+			 , APPO_TIME
+		  FROM HP_APPOINTMENT
+		 WHERE APPO_GUBN_CD = #{APPO_GUBN_CD}
+		   AND IFNULL(DEL_YN,'N') = 'N'
+		<if test="USER_ID == null or USER_ID == ''">
+		   AND APPO_PRSN_NM = #{APPO_PRSN_NM}
+		   AND MOBILE_PHONE_NO = #{MOBILE_PHONE_NO}
+		</if>
+		<if test="USER_ID != null and USER_ID != ''">
+		   AND USER_ID = #{USER_ID}
+		</if>
+		   <if test="searchKeyword != null and searchKeyword != ''">
+				<if test="searchCondition == 1">AND
+					   A.REQUST_ID LIKE CONCAT('%' , #{searchKeyword}, '%')  
+				</if>
+			</if>
+		 ORDER BY APPO_NO DESC
+		 LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+	
+	<select id="selectChkUpList" parameterType="fbcms.user.cts.rsv.service.AppointmentVO" resultMap="Appointment">
+		SELECT APPO_NO
+			 , APPO_STAT_CD
+			 , EXMN_PROG_CD
+			 , FNC_GET_CODE_NAME ('EXMN_PROG_CD', EXMN_PROG_CD) AS EXMN_PROG_NM
+			 , APPO_DT
+			 , APPO_TIME
+		  FROM HP_APPOINTMENT
+		 WHERE APPO_GUBN_CD = #{APPO_GUBN_CD}
+		   AND IFNULL(DEL_YN,'N') = 'N'
+		<if test="USER_ID == null or USER_ID == ''">
+		   AND APPO_PRSN_NM = #{APPO_PRSN_NM}
+		   AND MOBILE_PHONE_NO = #{MOBILE_PHONE_NO}
+		</if>
+		<if test="USER_ID != null and USER_ID != ''">
+		   AND USER_ID = #{USER_ID}
+		</if>
+		   <if test="searchKeyword != null and searchKeyword != ''">
+				<if test="searchCondition == 1">AND
+					   A.REQUST_ID LIKE CONCAT('%' , #{searchKeyword}, '%')  
+				</if>
+			</if>
+		 ORDER BY APPO_NO DESC
+		 LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+
+	<select id="selectLoginUserInfo" parameterType="fbcms.user.cts.rsv.service.AppointmentVO" resultMap="Appointment">
+		SELECT MBER_NM AS APPO_PRSN_NM
+			 , MBTLNUM AS MOBILE_PHONE_NO
+			 , SEXDSTN_CODE AS GENDER_CD
+		  FROM COMTNGNRLMBER
+		 WHERE MBER_ID = #{USER_ID}
+	</select>
+	
+</mapper>

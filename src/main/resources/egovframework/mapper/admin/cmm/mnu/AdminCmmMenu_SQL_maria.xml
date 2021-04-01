@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AdminCmmMenu">
+	
+	<select id="selectMenuGnb" parameterType="hashMap" resultType="hashMap">
+	<![CDATA[
+		WITH RECURSIVE MENU AS (
+			SELECT 
+				1 AS depth 
+				, CONVERT(MENU_ORDR, CHAR(100)) AS path
+				, MENU_NO AS menuNo
+				, MENU_ORDR AS menuOrdr
+				, MENU_NM AS menuNm
+				, UPPER_MENU_NO AS upperMenuNo
+				, MENU_DC AS menuDc
+				, RELATE_IMAGE_PATH AS relateImagePath
+				, RELATE_IMAGE_NM AS relateImageNm
+				, PROGRM_FILE_NM AS progrmFileNm
+			FROM COMTNMENUINFO
+			WHERE MENU_NO > 0
+				AND UPPER_MENU_NO = 0
+			UNION SELECT
+				1 + depth AS depth 
+				, CONCAT(path, '-', MENU_ORDR) AS path
+				, MENU_NO AS menuNo
+				, MENU_ORDR AS menuOrdr
+				, MENU_NM AS menuNm
+				, UPPER_MENU_NO AS upperMenuNo
+				, MENU_DC AS menuDc
+				, RELATE_IMAGE_PATH AS relateImagePath
+				, RELATE_IMAGE_NM AS relateImageNm
+				, PROGRM_FILE_NM AS progrmFileNm
+			FROM COMTNMENUINFO C, MENU M
+			WHERE C.UPPER_MENU_NO = M.menuNo
+		) 
+		SELECT
+			depth
+			, path
+			, menuNo
+			, menuOrdr
+			, menuNm
+			, upperMenuNo
+			, menuDc
+			, relateImagePath
+			, relateImageNm
+			, progrmFileNm
+			, (SELECT URL FROM COMTNPROGRMLIST CP WHERE M.progrmFileNm = CP.PROGRM_FILE_NM) AS chkURL
+		FROM COMTNADMINMENU CA, menu M
+		WHERE CA.MENU_NO  = M.menuNo 
+			AND depth < 3
+			AND CA.ADMIN_ID = #{userId}
+		ORDER BY path
+	 ]]>		 
+	</select>
+	
+	<select id="selectMenuLnb" parameterType="hashMap" resultType="hashMap">
+	<![CDATA[
+		WITH RECURSIVE MENU AS (
+			SELECT 
+				1 AS depth 
+				, CONVERT(MENU_ORDR, CHAR(100)) AS path
+				, MENU_NO AS menuNo
+				, MENU_ORDR AS menuOrdr
+				, MENU_NM AS menuNm
+				, UPPER_MENU_NO AS upperMenuNo
+				, MENU_DC AS menuDc
+				, RELATE_IMAGE_PATH AS relateImagePath
+				, RELATE_IMAGE_NM AS relateImageNm
+				, PROGRM_FILE_NM AS progrmFileNm
+			FROM COMTNMENUINFO
+			WHERE MENU_NO > 0
+				AND UPPER_MENU_NO = 0
+			UNION SELECT
+				1 + depth AS depth 
+				, CONCAT(path, '-', MENU_ORDR) AS path
+				, MENU_NO AS menuNo
+				, MENU_ORDR AS menuOrdr
+				, MENU_NM AS menuNm
+				, UPPER_MENU_NO AS upperMenuNo
+				, MENU_DC AS menuDc
+				, RELATE_IMAGE_PATH AS relateImagePath
+				, RELATE_IMAGE_NM AS relateImageNm
+				, PROGRM_FILE_NM AS progrmFileNm
+			FROM COMTNMENUINFO C, MENU M
+			WHERE C.UPPER_MENU_NO = M.menuNo
+		) 
+		SELECT
+			depth
+			, path
+			, menuNo
+			, menuOrdr
+			, menuNm
+			, upperMenuNo
+			, menuDc
+			, relateImagePath
+			, relateImageNm
+			, progrmFileNm
+			, (SELECT URL FROM COMTNPROGRMLIST CP WHERE M.progrmFileNm = CP.PROGRM_FILE_NM) AS chkURL
+		FROM COMTNADMINMENU CA, menu M
+		WHERE CA.MENU_NO  = M.menuNo 
+			AND CA.ADMIN_ID = #{userId}
+		ORDER BY path
+	 ]]>
+	</select>
+	
+	<select id="selectCurrentMenu" parameterType="hashMap" resultType="hashMap">
+		SELECT 
+			CASE oneDepthNo WHEN 0 THEN twoDepthNo ELSE oneDepthNo END AS oneDepthNo
+			, CASE oneDepthNo WHEN 0 THEN threeDepthNo ELSE twoDepthNo END AS twoDepthNo
+			, CASE oneDepthNo WHEN 0 THEN 0 ELSE threeDepthNo END AS threeDepthNo
+		FROM (
+			SELECT
+				CM.MENU_NO AS threeDepthNo
+				, CM.UPPER_MENU_NO AS twoDepthNo
+				, (
+					SELECT UPPER_MENU_NO FROM COMTNMENUINFO
+					WHERE MENU_NO = CM.UPPER_MENU_NO 
+				) AS oneDepthNo 
+			FROM COMTNMENUINFO CM, COMTNPROGRMLIST CP
+			WHERE CM.PROGRM_FILE_NM = CP.PROGRM_FILE_NM
+				AND (
+					CP.URL = #{chkURL}
+					OR CP.PROGRM_FILE_NM in (
+						SELECT PROGRM_FILE_NM FROM COMTNPROGRMDETAILURL
+						WHERE PROGRM_FILE_NM = CP.PROGRM_FILE_NM
+							AND URL = #{chkURL}
+					)
+				)
+				AND CM.MENU_NO != '0'
+				AND CM.UPPER_MENU_NO != '0'
+			ORDER BY oneDepthNo DESC
+			LIMIT 1
+		) A 
+	</select>
+</mapper>

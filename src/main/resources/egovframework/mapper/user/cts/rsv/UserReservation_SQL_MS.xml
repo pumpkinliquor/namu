@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?><!--Converted at: Wed May 11 15:50:59 KST 2016-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="UserReservationMSDAO">
+	<resultMap id="Schedule" type="fbcms.user.cts.rsv.service.ScheduleVO">
+		<result property="DPT_CD"		column="DPT_CD"/>
+		<result property="DR_ID"		column="DR_ID"/>
+		<result property="RSV_DT"		column="RSV_DT"/>
+		<result property="DPT_CD"		column="DPTCD"/>
+		<result property="DR_ID"		column="DRID"/>
+		<result property="RSV_DT"		column="RSVDT"/>
+		<result property="RSV_HR"		column="RSV_HR"/>
+		<result property="RSV_MN"		column="RSV_MN"/>
+		<result property="RSV_CNT"		column="RSV_CNT"/>
+		<result property="RSV_AVL"		column="RSV_AVL"/>
+		<result property="RSV_HR"		column="RSVHR"/>
+		<result property="RSV_MN"		column="RSVMN"/>
+		<result property="YOIL"			column="YOIL"/>
+		<result property="RSV_CNT"		column="RSVCNT"/>
+		<result property="RSV_AVL"		column="RSVAVL"/>
+		<result property="AM_FG"		column="AM_FG"/>
+		<result property="PM_FG"		column="PM_FG"/>
+		<result property="R1_AVL"		column="R1_AVL"/>
+		<result property="R2_AVL"		column="R2_AVL"/>
+		<result property="AM_FG"		column="AMFG"/>
+		<result property="PM_FG"		column="PMFG"/>
+		<result property="R1_AVL"		column="R1AVL"/>
+		<result property="R2_AVL"		column="R2AVL"/>
+	</resultMap>
+	
+	<resultMap id="Appointment" type="fbcms.user.cts.rsv.service.AppointmentVO">
+		<result property="APPO_NO"			column="APPO_NO"/>
+		<result property="APPO_GUBN_CD"		column="APPO_GUBN_CD"/>
+		<result property="MEDI_SBJ_CD"		column="MEDI_SBJ_CD"/>
+		<result property="MEDI_SBJ_NM"		column="MEDI_SBJ_NM"/>
+		<result property="DR_ID"			column="DR_ID"/>
+		<result property="DR_NM"			column="DR_NM"/>
+		<result property="APPO_PRSN_NM"		column="APPO_PRSN_NM"/>
+		<result property="APPO_RLT_CD"		column="APPO_RLT_CD"/>
+		<result property="GENDER_CD"		column="GENDER_CD"/>
+		<result property="APPO_DT"			column="APPO_DT"/>
+		<result property="APPO_TIME"		column="APPO_TIME"/>
+		<result property="BIRTH_DT"			column="BIRTH_DT"/>
+		<result property="MOBILE_PHONE_NO"	column="MOBILE_PHONE_NO"/>
+		<result property="PHONE_NO"			column="PHONE_NO"/>
+		<result property="FIRST_ADD_DT"		column="FIRST_ADD_DT"/>
+		<result property="APPO_STAT_CD"		column="APPO_STAT_CD"/>
+		<result property="EXMN_PROG_CD"		column="EXMN_PROG_CD"/>
+		<result property="EXMN_PROG_NM"		column="EXMN_PROG_NM"/>
+		<result property="EMAIL_ID"			column="EMAIL_ID"/>
+		<result property="POST_NO"			column="POST_NO"/>
+		<result property="ADDR_TX"			column="ADDR_TX"/>
+		<result property="ADDR_DTIL_TX"		column="ADDR_DTIL_TX"/>
+		<result property="USER_ID"			column="USER_ID"/>
+		<result property="ADD_ID"			column="ADD_ID"/>
+		<result property="ADD_DT"			column="ADD_DT"/>
+		<result property="UPDT_ID"			column="UPDT_ID"/>
+		<result property="UPDT_DT"			column="UPDT_DT"/>
+		<result property="DEL_YN"			column="DEL_YN"/>
+		<result property="INQR_SEND_TX"		column="INQR_SEND_TX"/>
+	</resultMap>
+	
+	<select id="selectTE04DTCalendarMonth" parameterType="fbcms.user.cts.rsv.service.ScheduleVO" resultMap="Schedule">
+		SELECT TA.DPTCD
+			 , TA.DRID
+			 , TA.RSVDT
+			 , TAM.AMFG
+			 , TPM.PMFG
+			 , TA.R1AVL
+			 , TA.R2AVL
+		  FROM TE04 TA
+		  LEFT
+		 OUTER
+		  JOIN (SELECT DPTCD, DRID, RSVDT, CASE WHEN COUNT(RSVDT) > 0 THEN 'A' ELSE NULL END AS AMFG  FROM TE04A
+		 WHERE RSVHR + RSVMN <![CDATA[ < ]]> '1300' AND RSVHR + RSVMN NOT IN ('1200') AND (RSVAVL - ISNULL(RSVCNT, 0)) <![CDATA[ >= ]]> 1 AND LEFT(RSVDT,6) = #{RSV_DT} AND DPTCD = #{DPT_CD} AND DRID = #{DR_ID}
+		 GROUP
+		    BY DPTCD, DRID, RSVDT) TAM ON TA.DPTCD = TAM.DPTCD AND TA.DRID = TAM.DRID AND TA.RSVDT = TAM.RSVDT
+		  LEFT
+		 OUTER
+		  JOIN (SELECT DPTCD, DRID, RSVDT, CASE WHEN COUNT(RSVDT) > 0 THEN 'A' ELSE NULL END AS PMFG  FROM TE04A
+		 WHERE RSVHR + RSVMN <![CDATA[ >= ]]> '1400' AND RSVHR + RSVMN <![CDATA[ < ]]> '1700' AND (RSVAVL - ISNULL(RSVCNT, 0)) <![CDATA[ >= ]]> 1 AND LEFT(RSVDT,6) = #{RSV_DT} AND DPTCD = #{DPT_CD} AND DRID = #{DR_ID}
+		 GROUP
+		    BY DPTCD, DRID, RSVDT ) TPM ON TA.DPTCD = TPM.DPTCD AND TA.DRID = TPM.DRID AND TA.RSVDT = TPM.RSVDT
+		 WHERE LEFT(TA.RSVDT,6) = #{RSV_DT}
+		   AND TA.DPTCD = #{DPT_CD}
+		   AND TA.DRID = #{DR_ID}
+		 ORDER
+		    BY RSVDT ASC 
+	</select>
+	<select id="selectTE04DTCalendarMonth_proc" parameterType="fbcms.user.cts.rsv.service.ScheduleVO" resultMap="Schedule">
+		EXEC usp_WebsiteRsv_TE04Calendar #{DPT_CD}, #{DR_ID}, #{RSV_DT}
+	</select>
+	
+	<select id="selectTE04DTCalendarMonth_20201221" parameterType="fbcms.user.cts.rsv.service.ScheduleVO" resultMap="Schedule">
+		SELECT DPTCD
+			 , DRID
+			 , RSVDT
+			 , AMFG
+			 , PMFG
+			 , R1AVL
+			 , R2AVL
+		  FROM TE04
+		 WHERE DPTCD = #{DPT_CD}
+		   AND DRID = #{DR_ID}
+		   AND LEFT(RSVDT,6) = #{RSV_DT}
+	</select>
+
+	<select id="selectTE04DTCalendar" parameterType="fbcms.user.cts.rsv.service.ScheduleVO" resultMap="Schedule">
+	SELECT TA.DPTCD
+			 , TA.DRID
+			 , TA.RSVDT
+			 , TAM.AMFG
+			 , TPM.PMFG
+			 , TA.R1AVL
+			 , TA.R2AVL
+		  FROM TE04 TA
+		  LEFT
+		 OUTER
+		  JOIN (SELECT DPTCD, DRID, RSVDT, CASE WHEN COUNT(RSVDT) > 0 THEN 'A' ELSE NULL END AS AMFG  FROM TE04A
+		 WHERE RSVHR + RSVMN <![CDATA[ < ]]> '1300' AND RSVHR + RSVMN NOT IN ('1200') AND (RSVAVL - ISNULL(RSVCNT, 0)) <![CDATA[ >= ]]> 1 AND LEFT(RSVDT,6) = #{RSV_DT} AND DPTCD = #{DPT_CD} AND DRID = #{DR_ID}
+		 GROUP
+		    BY DPTCD, DRID, RSVDT) TAM ON TA.DPTCD = TAM.DPTCD AND TA.DRID = TAM.DRID AND TA.RSVDT = TAM.RSVDT
+		  LEFT
+		 OUTER
+		  JOIN (SELECT DPTCD, DRID, RSVDT, CASE WHEN COUNT(RSVDT) > 0 THEN 'A' ELSE NULL END AS PMFG  FROM TE04A
+		 WHERE RSVHR + RSVMN <![CDATA[ >= ]]> '1400' AND RSVHR + RSVMN <![CDATA[ < ]]> '1700' AND (RSVAVL - ISNULL(RSVCNT, 0)) <![CDATA[ >= ]]> 1 AND LEFT(RSVDT,6) = #{RSV_DT} AND DPTCD = #{DPT_CD} AND DRID = #{DR_ID}
+		 GROUP
+		    BY DPTCD, DRID, RSVDT ) TPM ON TA.DPTCD = TPM.DPTCD AND TA.DRID = TPM.DRID AND TA.RSVDT = TPM.RSVDT
+		 WHERE LEFT(TA.RSVDT,6) = #{RSV_DT} 
+		   AND TA.DPTCD = #{DPT_CD}
+		   AND TA.DRID = #{DR_ID}
+		   AND CONVERT(INT, CONVERT(CHAR(8), GETDATE() , 112))+1 <![CDATA[ < ]]> CONVERT(INT, TA.RSVDT)
+		 ORDER
+		    BY RSVDT ASC 
+	</select>
+	
+	<select id="selectTE04DTSchedule" parameterType="fbcms.user.cts.rsv.service.ScheduleVO" resultMap="Schedule">
+		SELECT TA.DPTCD
+			 , TA.DRID
+			 , TA.RSVDT
+			 , TA.RSVHR
+			 , TA.RSVMN
+			 , DATENAME(DW,TA.RSVDT) YOIL
+			 , TA.RSVAVL
+			 , TA.RSVCNT
+			 , TA.ACTCNT
+			 , TA.RSVAVL - ISNULL(TA.RSVCNT, 0) AS RSV_VAL
+		  FROM TE04 AS T
+		 INNER JOIN TE04A AS TA
+		    ON T.DPTCD = TA.DPTCD
+		   AND T.DRID  = TA.DRID
+		   AND T.RSVDT= TA.RSVDT
+		 WHERE TA.DPTCD = #{DPT_CD}
+		   AND TA.DRID = #{DR_ID}
+		   AND TA.RSVDT = #{RSV_DT}
+		   AND (TA.RSVHR + TA.RSVMN) NOT IN ('1200')
+		   AND ((T.AMFG = 'A'  AND (TA.RSVHR + TA.RSVMN)  <![CDATA[ < ]]> '1300')
+			    OR (T.PMFG = 'A' AND (TA.RSVHR + TA.RSVMN) <![CDATA[ >= ]]> '1400' AND (TA.RSVHR + TA.RSVMN) <![CDATA[ < ]]> '1700'))
+		   AND (TA.RSVAVL - ISNULL(TA.RSVCNT, 0)) <![CDATA[ >= ]]> 1
+	</select>
+	
+	<resultMap id="patient" type="fbcms.user.cts.rsv.service.UserClinicVO">
+		<result property="PID"		column="PID"/>
+		<result property="gender"	column="PSEX"/>
+		<result property="errYn"	column="errYn"/>
+		<result property="errMsg"	column="errMsg"/>
+		<result property="acnof"	column="acnof"/>
+	</resultMap>
+	
+	<select id="selectPID" parameterType="fbcms.user.cts.rsv.service.UserClinicVO" resultMap="patient">
+		SELECT PID
+			 , PSEX
+		  FROM TA01
+		 WHERE PNM = #{usrNm}
+			   AND RESID1 = #{usrBd}
+			   AND OTELNO = CONCAT(#{fCtn}, '-', #{mCtn}, '-', #{lCtn})
+	</select>
+	
+	<select id="insertClinicPatient" statementType="CALLABLE" parameterType="fbcms.user.cts.rsv.service.UserClinicVO" resultMap="patient">
+		DECLARE @errYn varchar(1)
+		DECLARE @errMsg varchar(500)
+		DECLARE @acnof varchar(1)
+		   EXEC usp_WebsiteRsv_TS21Ins #{PID}, #{DPT_CD}, #{RSV_DT}, #{RSV_TM}, #{DR_ID}, @errYn OUTPUT, @errMsg OUTPUT , @acnof OUTPUT
+		SELECT @errYn AS errYn
+			 , @errMsg AS errMsg
+			 , @acnof AS acnof
+	</select>
+
+	<select id="insertClinicPatientNPID" statementType="CALLABLE" parameterType="fbcms.user.cts.rsv.service.UserClinicVO" resultMap="patient">
+		DECLARE @ctnPhone varchar(100) = CONCAT(#{fCtn}, '-', #{mCtn}, '-', #{lCtn})
+		DECLARE @ctnTel varchar(100) = CONCAT(#{fTel}, '-', #{mTel}, '-', #{lTel})
+		DECLARE @errMsg varchar(500)
+		   EXEC sp_web_yeyak_insert #{PID}, #{usrNm}, #{usrBd}, #{DR_ID}, #{RSV_DT}, #{RSV_TM}, #{DPT_CD}, @ctnTel, @ctnPhone, '', @errMsg OUTPUT
+		 SELECT @errMsg AS errMsg
+	</select>
+	
+	<select id="selectPIDFullCTN" parameterType="fbcms.user.cts.rsv.service.AppointmentVO" resultMap="patient">
+		SELECT PID
+			 , PSEX
+		  FROM TA01
+		 WHERE PNM = #{USER_NM}
+		   AND BTHDT = #{BIRTH_DT}
+		   AND OTELNO = #{MOBILE_PHONE_NO}
+	</select>
+	
+	<select id="updateClinicPatient" statementType="CALLABLE" parameterType="fbcms.user.cts.rsv.service.AppointmentVO" resultMap="patient">
+		DECLARE @errYn varchar(1)
+		DECLARE @errMsg varchar(500)
+		DECLARE @acnof varchar(1)
+		   EXEC usp_WebsiteRsv_TS21Ins #{PID}, #{MEDI_SBJ_CD}, #{APPO_DT}, #{APPO_TIME}, #{DR_ID}, @errYn OUTPUT, @errMsg OUTPUT , @acnof OUTPUT
+		SELECT @errYn AS errYn
+			 , @errMsg AS errMsg
+			 , @acnof AS acnof
+	</select>
+	
+	<select id="updateClinicPatientNPID" statementType="CALLABLE" parameterType="fbcms.user.cts.rsv.service.AppointmentVO" resultMap="patient">
+		DECLARE @errMsg varchar(500)
+		   EXEC sp_web_yeyak_insert #{PID}, #{APPO_PRSN_NM}, #{BIRTH_DT}, #{DR_ID}, #{APPO_DT}, #{APPO_TIME}, #{MEDI_SBJ_CD}, #{PHONE_NO}, #{MOBILE_PHONE_NO}, '', @errMsg OUTPUT
+		 SELECT @errMsg AS errMsg
+	</select>
+	
+	<select id="cancelClinicPatient" statementType="CALLABLE" parameterType="fbcms.user.cts.rsv.service.AppointmentVO" resultMap="patient">
+		DECLARE @errYn varchar(1)
+		DECLARE @errMsg varchar(500)
+		DECLARE @acnof varchar(1)
+		EXEC usp_WebsiteRsv_TS21Can #{PID}, #{emrKey}
+			 , @errYn OUTPUT
+			 , @errMsg OUTPUT
+			 , @acnof OUTPUT
+		SELECT @errYn AS errYn
+			 , @errMsg AS errMsg
+			 , @acnof AS acnof
+	</select>
+	
+	<select id="cancelClinicPatientNPID" statementType="CALLABLE" parameterType="fbcms.user.cts.rsv.service.AppointmentVO" resultMap="patient">
+		DECLARE @errMsg varchar(500)
+		EXEC sp_web_yeyak_delete #{PID}, #{BIRTH_DT}, #{APPO_DT}, #{MEDI_SBJ_CD}, #{APPO_NO}, @errMsg OUTPUT
+		SELECT @errMsg AS errMsg
+	</select>
+	
+	<select id="selectClinicPatientNPID" parameterType="fbcms.user.cts.rsv.service.AppointmentVO" resultMap="Appointment">
+		SELECT ISNULL(PID, 'NNNNNNNNN') AS PID
+			 , RESID AS BIRTH_DT
+			 , EXDT AS APPO_DT
+			 , DPTCD AS MEDI_SBJ_CD
+			 , EXEHOLDTIME AS APPO_NO
+		  FROM TS211
+		 WHERE PNM = #{APPO_PRSN_NM}
+		   AND RIGHT(BTHDT, 6) = RIGHT(#{BIRTH_DT}, 6)
+		   AND DPTCD = #{MEDI_SBJ_CD}
+		   AND DRID = #{DR_ID}
+		   AND EXDT = #{APPO_DT}
+		   AND HMS = #{APPO_TIME}
+		   AND EMPID = 'WEB'
+		   AND ISNULL(DELFG, 'N') NOT IN ('Y')
+	</select>
+	
+	
+</mapper>

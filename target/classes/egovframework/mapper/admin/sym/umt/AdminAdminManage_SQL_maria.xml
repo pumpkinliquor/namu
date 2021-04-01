@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AdminManage">
+	
+	<select id="selectAdminList" resultType="egovMap">
+		SELECT
+			uniqId, userTy, userId , userNm, emailAdres, ofcpsNm, groupId, sttus, sbscrbDe, orgnztNm
+		FROM (
+			SELECT
+				ESNTL_ID AS uniqId
+				, 'USR03' AS userTy
+				, EMPLYR_ID AS userId
+				, USER_NM AS userNm
+				, EMAIL_ADRES AS emailAdres
+				, OFCPS_NM AS ofcpsNm
+				, GROUP_ID AS groupId
+				, EMPLYR_STTUS_CODE AS sttus
+				, IFNULL(DATE_FORMAT(SBSCRB_DE, '%Y.%m.%d'), '') AS sbscrbDe
+				, (SELECT ORGNZT_NM FROM COMTNORGNZTINFO WHERE ORGNZT_ID = E.ORGNZT_ID) AS orgnztNm 
+			FROM COMTNEMPLYRINFO E
+		) A 
+		WHERE 1=1
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchKeyword)">
+			<if test="searchCondition == 0">
+				AND userId LIKE #{searchKeyword}
+			</if>
+			<if test="searchCondition == 1">
+				AND userNm LIKE '%' #{searchKeyword} '%'
+			</if>
+		</if>
+		ORDER BY sbscrbDe DESC
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+	
+	<select id="selectAdminListTotCnt" resultType="int">
+		SELECT COUNT(1) totcnt
+		FROM (
+			SELECT
+				ESNTL_ID AS uniqId
+				, 'USR03' AS userTy
+				, EMPLYR_ID AS userId
+				, USER_NM AS userNm
+				, EMAIL_ADRES AS emailAdres
+				, OFCPS_NM AS ofcpsNm
+				, GROUP_ID AS groupId
+				, EMPLYR_STTUS_CODE AS sttus
+				, IFNULL(DATE_FORMAT(SBSCRB_DE, '%Y.%m.%d'), '') AS sbscrbDe
+			FROM COMTNEMPLYRINFO
+		) A
+		WHERE 1=1
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(searchKeyword)">
+			<if test="searchCondition == 0">AND
+				userId LIKE #{searchKeyword}
+			</if>
+			<if test="searchCondition == 1">
+				AND userNm LIKE '%' #{searchKeyword} '%'
+			</if>
+		</if>
+	</select>
+	
+	<select id="selectAdminDetail" resultType="adminAdminManageVO">
+		SELECT
+			ESNTL_ID AS uniqId
+			, 'USR03' AS userTy
+			, EMPLYR_ID AS emplyrId
+			, USER_NM AS emplyrNm
+			, EMPL_NO AS emplNo
+			, EMAIL_ADRES AS emailAdres
+			, OFCPS_NM AS ofcpsNm
+			, GROUP_ID AS groupId
+			, ORGNZT_ID AS orgnztId
+			, EMPLYR_STTUS_CODE AS emplyrSttusCode
+			, IFNULL(DATE_FORMAT(SBSCRB_DE, '%Y.%m.%d'), '') AS sbscrbDe
+			, IFNULL(DATE_FORMAT(LAST_UPDT_PNTTM, '%Y.%m.%d'), '') AS lastUpdusrId
+			, IFNULL(DATE_FORMAT(LAST_LOGIN_DT, '%Y.%m.%d %H:%i:%S'), '') AS lastLoginDt
+			, LOCK_AT AS lockAt
+			, (SELECT ORGNZT_NM FROM COMTNORGNZTINFO WHERE ORGNZT_ID = E.ORGNZT_ID) AS orgnztNm 
+		FROM COMTNEMPLYRINFO E
+		WHERE ESNTL_ID = #{uniqId}
+	</select>
+	
+	<select id="selectUniqId" resultType="string">
+		SELECT CONCAT('USRCNFRM_', LPAD(CAST(SUBSTRING(A.ESNTL_ID, 10) AS INT) + 1, 11, 0)) AS ESNTL_ID
+		  FROM (
+		  		SELECT ESNTL_ID
+		  		  FROM COMTNGNRLMBER
+		  		 UNION ALL
+		  		SELECT ESNTL_ID
+		  		  FROM COMTNEMPLYRINFO
+		  		 WHERE ESNTL_ID NOT IN ('USRCNFRM_99999999999')
+		  	   ) A
+		ORDER BY CAST(SUBSTRING(A.ESNTL_ID, 10) AS INT) DESC
+		LIMIT 1
+	</select>
+	
+	<insert id="insertAdmin">
+		INSERT INTO COMTNEMPLYRINFO
+		(
+			ESNTL_ID
+			, EMPLYR_ID
+			, USER_NM
+			, PASSWORD
+			, EMAIL_ADRES
+			, OFCPS_NM
+			, ORGNZT_ID
+			, EMPLYR_STTUS_CODE
+			, SBSCRB_DE
+			, FRST_REGISTER_ID
+		)
+		VALUES (
+			#{uniqId}
+			, #{emplyrId}
+			, #{emplyrNm}
+			, #{password}
+			, #{emailAdres}
+			, #{ofcpsNm}
+			, #{orgnztId}
+			, #{emplyrSttusCode}
+			, SYSDATE()
+			, #{frstRegisterId}
+		)
+	</insert>
+	
+	<insert id="insertAuthorAdmin">
+		INSERT INTO COMTNEMPLYRSCRTYESTBS
+		(
+			SCRTY_DTRMN_TRGET_ID
+			, MBER_TY_CODE
+			, AUTHOR_CODE
+		)
+		VALUES (
+			#{uniqId}
+			, 'USR03'
+			, 'ROLE_ADMIN'
+		)
+	</insert>
+	
+	<update id="updateAdmin">
+		UPDATE COMTNEMPLYRINFO 
+		SET USER_NM = #{emplyrNm}
+			, PASSWORD = #{password}
+			, EMAIL_ADRES = #{emailAdres}
+			, OFCPS_NM = #{ofcpsNm}
+			, ORGNZT_ID = #{orgnztId}
+			, EMPLYR_STTUS_CODE = #{emplyrSttusCode}
+			, LAST_UPDUSR_ID = #{lastUpdusrId}
+			, LAST_UPDT_PNTTM = SYSDATE()
+		WHERE ESNTL_ID = #{uniqId}
+	</update>
+	
+	<delete id="deleteAdmin">
+		DELETE FROM COMTNEMPLYRINFO
+		WHERE ESNTL_ID = #{delId}
+	</delete>
+	
+	<insert id="deleteAuthorAdmin">
+		DELETE FROM COMTNEMPLYRSCRTYESTBS
+		WHERE SCRTY_DTRMN_TRGET_ID = #{delId}
+	</insert>
+	
+	<update id="updateLockIncorrect">
+		UPDATE COMTNEMPLYRINFO 
+		SET LOCK_AT = NULL
+			, LOCK_CNT = NULL
+			, LOCK_LAST_PNTTM = NULL 
+		WHERE ESNTL_ID = #{uniqId}
+	</update>
+</mapper>

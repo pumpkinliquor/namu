@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Sign">
+
+	<!-- 회원가입 -->
+	
+	<insert id="sign" parameterType="HashMap">
+	
+	<selectKey order="BEFORE" keyProperty="ESNTL_ID" resultType="string">
+		SELECT CONCAT('USRCNFRM_', LPAD(CAST(SUBSTRING(A.ESNTL_ID, 10) AS INT) + 1, 11, 0)) AS ESNTL_ID
+		  FROM (
+		  		SELECT ESNTL_ID
+		  		  FROM COMTNGNRLMBER
+		  		 UNION ALL
+		  		SELECT ESNTL_ID
+		  		  FROM COMTNEMPLYRINFO
+		  		 WHERE ESNTL_ID NOT IN ('USRCNFRM_99999999999')
+		  	   ) A
+		ORDER BY CAST(SUBSTRING(A.ESNTL_ID, 10) AS INT) DESC
+		LIMIT 1
+
+
+		<!-- EX.USRCNFRM_0000000003 -->
+	</selectKey>
+	
+		INSERT INTO COMTNGNRLMBER
+		(MBER_STTUS, MBER_NM, MBER_ID, PASSWORD, MBTLNUM, AREA_NO, MIDDLE_TELNO, END_TELNO, SEXDSTN_CODE
+		, BIRTH_DT, MBER_EMAIL_ADRES, ZIP, ADRES , DETAIL_ADRES, EMAIL_RECV_YN, ESNTL_ID, SBSCRB_DE
+		, STAT_CD, GUBN_CD, FRIST_JOIN_DT, PW_INIT_YN)
+		
+		VALUES(
+		'P', #{name},  #{user_Id}, #{pass}, #{phone}, #{phfirst}, #{phmid}, #{phlast}, #{gender}
+		, #{birth}, #{email}, #{zip}, #{addr}, #{addr_det}, #{mailre}, #{ESNTL_ID}, SYSDATE()
+		, '01', '01', SYSDATE(), 'N'
+		)
+	
+	</insert>
+	
+	<insert id="sign2" parameterType="HashMap">
+		INSERT INTO COMTNEMPLYRSCRTYESTBS (SCRTY_DTRMN_TRGET_ID, MBER_TY_CODE, AUTHOR_CODE)
+		VALUES( (SELECT ESNTL_ID FROM COMTNGNRLMBER WHERE MBER_ID = #{user_Id}) ,'USR01','ROLE_USER')
+	</insert>
+	
+	<select id="repetitionCheck" parameterType="HashMap" resultType="int">
+		SELECT COUNT(*)
+		  FROM COMTNGNRLMBER
+		 WHERE MBER_NM = #{USER_NM}
+		   AND BIRTH_DT = #{BIRTH_DT}
+		   AND SEXDSTN_CODE = #{GENDER_CD}
+		<if test="USER_ID != null and USER_ID != ''">
+		    OR MBER_ID = #{USER_ID}
+		</if>
+	</select>
+	
+	
+</mapper>

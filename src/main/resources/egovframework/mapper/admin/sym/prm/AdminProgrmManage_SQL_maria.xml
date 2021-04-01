@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AdminProgrmManage">
+	
+	<select id="selectProgrmList" parameterType="comDefaultVO" resultType="adminProgrmManageVO">
+		SELECT 
+			  PROGRM_FILE_NM   AS "progrmFileNm"
+			, PROGRM_STRE_PATH AS "progrmStrePath"
+			, PROGRM_KOREAN_NM  AS "progrmKoreanNm" 
+			, PROGRM_DC        AS "progrmDc" 
+			, URL              AS "url"
+		FROM COMTNPROGRMLIST
+		WHERE binary(PROGRM_KOREAN_NM) like  CONCAT('%', #{searchKeyword}, '%')
+		LIMIT  #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+	
+	<!-- 총건수 조회 -->
+	<select id="selectProgrmListTotCnt" parameterType="comDefaultVO" resultType="int">
+		SELECT COUNT(*) AS totcnt
+		FROM COMTNPROGRMLIST
+		WHERE binary(PROGRM_KOREAN_NM) like CONCAT('%', #{searchKeyword}, '%')
+	</select>
+	
+	<select id="selectProgrmDetail" parameterType="adminProgrmManageVO" resultType="adminProgrmManageVO">
+		SELECT
+			PROGRM_FILE_NM AS progrmFileNm 
+			, PROGRM_STRE_PATH AS progrmStrePath 
+			, PROGRM_KOREAN_NM AS progrmKoreanNm 
+			, PROGRM_DC AS progrmDc 
+			, URL AS url
+		FROM COMTNPROGRMLIST
+		WHERE PROGRM_FILE_NM = #{progrmFileNm}
+	</select>
+	
+	<select id="selectProgrmDetailUrlList" parameterType="adminProgrmManageVO" resultType="adminProgrmManageVO">
+		SELECT 
+			  PROGRM_FILE_NM   AS progrmFileNm 
+			, URL              AS url
+		FROM COMTNPROGRMDETAILURL
+		WHERE PROGRM_FILE_NM = #{progrmFileNm}
+	</select>
+	
+	<insert id="insertProgrm">
+		INSERT INTO COMTNPROGRMLIST
+		(
+			PROGRM_FILE_NM
+			, PROGRM_STRE_PATH
+			, PROGRM_KOREAN_NM
+			, PROGRM_DC
+			, URL
+		)
+		VALUES (
+			#{progrmFileNm}
+			, #{progrmStrePath}
+			, #{progrmKoreanNm}
+			, #{progrmDc}
+			, #{url}
+		)
+	</insert>
+
+	<update id="updateProgrm">
+		UPDATE COMTNPROGRMLIST
+		SET PROGRM_STRE_PATH=#{progrmStrePath}
+			, PROGRM_KOREAN_NM = #{progrmKoreanNm}
+			, PROGRM_DC = #{progrmDc}
+			, URL = #{url}
+		WHERE PROGRM_FILE_NM = #{progrmFileNm}
+	</update>
+	
+	<delete id="deleteProgrm">
+		DELETE FROM COMTNPROGRMLIST
+		WHERE PROGRM_FILE_NM = #{progrmFileNm}
+	</delete>
+	
+	<delete id="deleteProgrmDetailUrl">
+		DELETE FROM COMTNPROGRMDETAILURL
+		WHERE PROGRM_FILE_NM = #{progrmFileNm}
+	</delete>
+	
+	<insert id="insertProgrmDetailUrl">
+		INSERT INTO COMTNPROGRMDETAILURL
+		(
+			PROGRM_FILE_NM
+			, URL
+		)
+		VALUES (
+			#{progrmFileNm}
+			, #{url}
+		)
+	</insert>
+	
+	<!-- 파일명존재여부 조회 -->
+	<select id="selectProgrmNMTotCnt" parameterType="comDefaultVO" resultType="int">
+		SELECT COUNT(*) AS totcnt
+		FROM COMTNPROGRMLIST
+		WHERE PROGRM_FILE_NM = #{searchKeyword}
+	</select>
+</mapper>

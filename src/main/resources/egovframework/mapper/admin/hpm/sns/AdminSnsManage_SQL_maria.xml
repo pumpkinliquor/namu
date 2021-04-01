@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AdminSnsManage">
+
+	<!-- SNS 관리를(을) 조회 한다. -->
+	<select id="selectUnityLinkList" parameterType="adminSnsManage" resultType="adminSnsManage">
+		SELECT
+			U.UNITY_LINK_ID AS unityLinkId,
+			U.UNITY_LINK_SE_CODE AS unityLinkSeCode,
+			U.UNITY_LINK_NM AS unityLinkNm,
+			U.UNITY_LINK_URL AS unityLinkUrl,
+			U.UNITY_LINK_DC AS unityLinkDc,
+			DATE_FORMAT(U.FRST_REGIST_PNTTM,'%Y-%m-%d') AS frstRegisterPnttm,
+			DATE_FORMAT(U.LAST_UPDT_PNTTM,'%Y-%m-%d') AS lastUpdusrPnttm,
+			(SELECT USER_NM FROM COMTNEMPLYRINFO WHERE ESNTL_ID = IFNULL(U.LAST_UPDUSR_ID, U.FRST_REGISTER_ID)) AS lastUpdusrNm
+		FROM COMTNUNITYLINK U
+		WHERE U.UNITY_LINK_SE_CODE = #{unityLinkSeCode}
+		ORDER BY U.UNITY_LINK_ID ASC
+	</select>
+
+	<!-- SNS 관리를(을) 등록한다.  -->
+	<insert id="insertUnityLink">
+		INSERT INTO COMTNUNITYLINK (
+			UNITY_LINK_ID,
+			UNITY_LINK_SE_CODE,
+			UNITY_LINK_NM,
+			UNITY_LINK_URL,
+			UNITY_LINK_DC,
+			FRST_REGIST_PNTTM,
+			FRST_REGISTER_ID,
+			LAST_UPDT_PNTTM,
+			LAST_UPDUSR_ID
+		) VALUES (
+			#{unityLinkId}
+			, #{unityLinkSeCode}
+			, #{unityLinkNm}
+			, #{unityLinkUrl}
+			, #{unityLinkDc}
+			, SYSDATE()
+			, #{frstRegisterId}
+			, SYSDATE()
+			, #{lastUpdusrId}
+		)
+	</insert>
+	
+	<!-- SNS 관리를(을) 수정한다.  -->
+	<update id="updateUnityLink">
+		UPDATE COMTNUNITYLINK
+		SET
+			UNITY_LINK_SE_CODE = #{unityLinkSeCode}
+			, UNITY_LINK_NM = #{unityLinkNm}
+			, UNITY_LINK_URL = #{unityLinkUrl}
+			, UNITY_LINK_DC = #{unityLinkDc}
+			, LAST_UPDT_PNTTM = SYSDATE()
+			, LAST_UPDUSR_ID = #{lastUpdusrId}
+		WHERE UNITY_LINK_ID = #{unityLinkId}
+	</update>
+</mapper>

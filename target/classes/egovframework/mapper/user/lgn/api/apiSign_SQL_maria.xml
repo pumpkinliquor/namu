@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="apiSign">
+
+	<!-- 회원가입 -->
+	
+	<insert id="apisign" parameterType="HashMap">
+	
+	INSERT INTO HP_USER_INTERLOCK
+	(USER_ID, ITL_ACCT_CD, ITL_YN, TOKEN_SN)
+		
+	VALUES(#{user_Id}, #{api}, 'Y', #{apiID})
+		
+	</insert>
+	
+	<select id="apicheck" parameterType="String" resultType="int">
+	
+		SELECT COUNT(*)
+	 	  FROM HP_USER_INTERLOCK
+		 WHERE TOKEN_SN=#{apiID}	
+	
+	</select>
+	
+	<resultMap type="fbcms.user.lgn.MembersVO" id="find">
+		
+		<result property="MBER_ID" column="MBER_ID" />
+		<result property="PASSWORD" column="PASSWORD" />
+	
+	</resultMap>
+	
+	<select id="findforAPI" parameterType="String" resultMap="find">
+	
+		SELECT C.MBER_ID AS MBER_ID
+			 , C.PASSWORD AS PASSWORD
+		  FROM COMTNGNRLMBER C
+		  JOIN HP_USER_INTERLOCK A
+		    ON C.MBER_ID = A.USER_ID
+		 WHERE A.TOKEN_SN = #{apiID}
+	
+	</select>
+	
+	
+</mapper>

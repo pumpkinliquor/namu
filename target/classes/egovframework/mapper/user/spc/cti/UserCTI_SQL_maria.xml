@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="UserCTIDAO">
+	
+	<resultMap id="Center" type="fbcms.admin.hpm.cln.service.Impl.CenterVO">
+        <result property="MNG_GUBN_CD" 			column="MNG_GUBN_CD"/>
+        <result property="MNG_CD" 				column="MNG_CD"/>
+        <result property="MNG_NM" 				column="MNG_NM"/>
+        <result property="MNG_SEQ" 				column="MNG_SEQ"/>
+        <result property="SEQ" 					column="SEQ"/>
+        <result property="DTIL_SEQ" 			column="DTIL_SEQ"/>
+        <result property="CLINIC_NM" 			column="CLINIC_NM"/>
+        <result property="TEMPL_CD" 			column="TEMPL_CD"/>
+        <result property="REG_DT" 				column="REG_DT"/>
+        <result property="POST_YN" 				column="POST_YN"/>
+        <result property="ORDER_NO" 			column="ORDER_NO"/>
+        <result property="RLT_MEDI_USE_YN" 		column="RLT_MEDI_USE_YN"/>
+        <result property="MAJOR_DISS_CDS" 		column="MAJOR_DISS_CDS"/>
+        <result property="DR_IDS" 				column="DR_IDS"/>
+        <result property="SEARCH_TAGS" 			column="SEARCH_TAGS"/>
+        <result property="USER_ID" 				column="USER_ID"/>
+        <result property="CODE_NM" 				column="CODE_NM"/>
+        <result property="CODE_ID" 				column="CODE_ID"/>
+        <result property="CODE" 				column="CODE"/>
+        <result property="DR_NM" 				column="DR_NM"/>
+        <result property="POSITION_CT" 			column="POSITION_CT"/>
+        <result property="PC_IMG_ATCH_NO" 		column="PC_IMG_ATCH_NO"/>
+        <result property="FILE_EXTSN" 			column="FILE_EXTSN"/>
+        <result property="DR_ID" 				column="DR_ID"/>
+        
+    </resultMap>
+ 
+    
+	<resultMap id="CenterTempl" type="fbcms.admin.hpm.cln.service.Impl.CenterTemplVO">
+        <result property="MNG_GUBN_CD" 			column="MNG_GUBN_CD"/>
+        <result property="MNG_CD" 				column="MNG_CD"/>
+        <result property="MNG_SEQ" 				column="MNG_SEQ"/>
+        <result property="SEQ" 					column="SEQ"/>
+        <result property="AREA_TITLE_CT" 		column="AREA_TITLE_CT"/>
+        <result property="SHOW_CNT_CD" 			column="SHOW_CNT_CD"/>
+        <result property="VS_MARK_USE_YN" 		column="VS_MARK_USE_YN"/>
+        <result property="USE_YN" 				column="USE_YN"/>
+    </resultMap>
+    
+    <resultMap id="CenterTemplDetail" type="fbcms.admin.hpm.cln.service.Impl.CenterTemplDetailVO">
+        <result property="MNG_GUBN_CD" 			column="MNG_GUBN_CD"/>
+        <result property="MNG_CD" 				column="MNG_CD"/>
+        <result property="MNG_SEQ" 				column="MNG_SEQ"/>
+        <result property="SEQ" 					column="SEQ"/>
+        <result property="DTIL_SEQ" 			column="DTIL_SEQ"/>
+        <result property="TITLE_CT" 			column="TITLE_CT"/>
+        <result property="TEXT_TX" 				column="TEXT_TX"/>
+        <result property="IMG_ATCH_NO" 			column="IMG_ATCH_NO"/>
+        <result property="VIDEO_ATCH_NO" 		column="VIDEO_ATCH_NO"/>
+        <result property="FILE_EXTSN" 			column="FILE_EXTSN"/>
+        <result property="FIGR_NO" 				column="FIGR_NO"/>
+		<result property="EXPL_TX" 				column="EXPL_TX"/>
+    </resultMap>
+	
+	<select id="selectCTISBMList" parameterType="adminBoardVO" resultType="egovMap">
+		SELECT orderNo
+			, C.MNG_CD AS mngCd
+			, (SELECT (CASE C.MNG_CD WHEN 'GS' THEN '소화기외과' WHEN 'BE' THEN '유방·갑상선외과' WHEN 'AO' THEN '안티에이징·비만센터' ELSE CD.DTIL_CODE_NM END) FROM HP_CODE_DTIL CD WHERE CD.COMM_CD = 'MNG_CD' AND CD.DTIL_CD = C.MNG_CD AND CD.USE_YN = 'Y') AS mngNm
+			, (SELECT IFNULL(MAJOR_DISS_CDS, '') FROM HP_HOSPITAL_MNG 
+				WHERE MNG_GUBN_CD = '01' AND MNG_CD = C.MNG_CD) AS majorDissCds
+		FROM HP_RELATION_CENTER C
+		,(
+			SELECT 1 AS orderNo, 'GI' AS MNG_CD
+			UNION ALL SELECT 2 AS orderNo, 'GS' AS MNG_CD
+			UNION ALL SELECT 3 AS orderNo, 'NE' AS MNG_CD
+			UNION ALL SELECT 4 AS orderNo, 'FM' AS MNG_CD
+			UNION ALL SELECT 5 AS orderNo, 'BE' AS MNG_CD
+			UNION ALL SELECT 6 AS orderNo, 'GY' AS MNG_CD
+			UNION ALL SELECT 7 AS orderNo, 'XR' AS MNG_CD
+		) T
+		WHERE C.MNG_CD = T.MNG_CD
+			AND CENTER_CD = #{custom1}
+	</select>
+	
+	<select id="selectCTIDissListGroup" parameterType="adminBoardVO" resultType="String">
+		SELECT IFNULL(GROUP_CONCAT(MAJOR_DISS_CDS SEPARATOR ','), '') AS majorDissCds
+		FROM HP_RELATION_CENTER C, HP_HOSPITAL_MNG H
+		WHERE C.MNG_CD = H.MNG_CD
+			AND C.CENTER_CD = #{custom1}
+			AND H.MNG_GUBN_CD = '01'
+			AND H.MAJOR_DISS_CDS IS NOT NULL 
+			AND H.MAJOR_DISS_CDS != ''
+	</select>
+	
+	<select id="selectCTIClinicList" parameterType="adminBoardVO" resultType="egovMap">
+		SELECT MNG_CD
+			, MNG_SEQ
+			, CLINIC_NM
+			, ORDER_NO
+		FROM HP_HOSPITAL_MNG
+		WHERE 1 = 1
+			AND MNG_GUBN_CD = '03'
+			AND IFNULL(DEL_YN,'N') NOT IN ('Y')
+			AND MNG_CD = #{custom1}
+		ORDER BY ORDER_NO
+	</select>
+	
+	<!-- 클리닉 조회 -->
+	<select id="selectCLN" parameterType="fbcms.admin.hpm.cln.service.Impl.CenterVO" resultMap="Center">
+		SELECT MNG_CD
+			 , MNG_SEQ
+			 , CLINIC_NM
+			 , POST_YN
+			 , TEMPL_CD
+			 , RLT_MEDI_USE_YN
+			 , MAJOR_DISS_CDS
+			 , DR_IDS
+			 , SEARCH_TAGS
+		  FROM HP_HOSPITAL_MNG
+		 WHERE 1 = 1
+		   AND MNG_GUBN_CD = '03'
+		   AND MNG_CD = #{MNG_CD}
+		   AND MNG_SEQ = #{MNG_SEQ}
+	</select>
+	
+	<!-- 클리닉 상세 조회 -->
+	<select id="selectCLNTmpList" parameterType="fbcms.admin.hpm.cln.service.Impl.CenterVO" resultMap="CenterTempl">
+		SELECT MNG_CD
+			 , MNG_SEQ
+			 , SEQ
+			 , AREA_TITLE_CT
+			 , SHOW_CNT_CD
+			 , VS_MARK_USE_YN
+			 , USE_YN
+		  FROM HP_MNG_TEMPL
+		 WHERE 1 = 1
+		   AND MNG_GUBN_CD = '03'
+		   AND MNG_CD = #{MNG_CD}
+		   AND MNG_SEQ = #{MNG_SEQ}
+	</select>
+	
+	<!-- 클리닉 상세 상세 조회 -->
+	<select id="selectCLNTmpDtilList" parameterType="fbcms.admin.hpm.cln.service.Impl.CenterVO" resultMap="CenterTemplDetail">
+		    SELECT A.MNG_CD
+			 , A.MNG_SEQ
+			 , A.SEQ
+			 , A.DTIL_SEQ
+			 , A.TITLE_CT
+			 , A.TEXT_TX
+			 , (SELECT STRE_FILE_NM FROM COMTNFILEDETAIL WHERE ATCH_FILE_ID = A.IMG_ATCH_NO) AS IMG_ATCH_NO
+			 , (SELECT STRE_FILE_NM FROM COMTNFILEDETAIL WHERE ATCH_FILE_ID = A.VIDEO_ATCH_NO) AS VIDEO_ATCH_NO
+			 , A.FIGR_NO 
+			 , A.EXPL_TX
+			 , B.FILE_EXTSN 
+		  FROM HP_MNG_TEMPL_DTIL A
+		  LEFT JOIN COMTNFILEDETAIL B
+		    ON A.IMG_ATCH_NO = B.ATCH_FILE_ID 
+		 WHERE 1 = 1
+		   AND MNG_GUBN_CD = #{MNG_GUBN_CD}
+		   AND MNG_CD = #{MNG_CD}
+		   AND MNG_SEQ = #{MNG_SEQ}
+		   AND SEQ = #{SEQ}
+	</select>
+	
+	<select id="selectCLIDetail" parameterType="adminBoardVO" resultMap="CenterTemplDetail">
+		SELECT B.AREA_TITLE_CT
+      		 , C.TEXT_TX
+    		 , B.USER_YN
+    		 , C.IMG_ATCH_NO
+    		 , D.FILE_EXTSN 
+    		 , C.TITLE_CT
+    		 , B.VS_MARK_USE_YN 
+    		 , C.FIGR_NO
+	      FROM HP_HOSPITAL_MNG A
+		 INNER JOIN HP_MNG_TEMPL B
+	    	ON A.MNG_GUBN_CD = B.MNG_GUBN_CD
+	       AND A.MNG_CD = B.MNG_CD 
+		   AND A.MNG_SEQ = B.MNG_SEQ 
+		 INNER JOIN HP_MNG_TEMPL_DTIL C
+		    ON B.MNG_GUBN_CD = C.MNG_GUBN_CD
+		   AND B.MNG_CD = C.MNG_CD 
+		   AND B.MNG_SEQ = C.MNG_SEQ
+		   AND B.SEQ = C.SEQ
+		  LEFT JOIN COMTNFILEDETAIL D
+		    ON D.ATCH_FILE_ID = C.IMG_ATCH_NO 
+		 WHERE A.MNG_GUBN_CD = '03'
+		   AND A.MNG_CD = #{custom1}
+		   AND A.MNG_SEQ = '1'
+		   AND A.TEMPL_CD = 'A';
+	</select>
+	
+	<select id="selectCTIClinicDetail">
+		SELECT * 
+		FROM HP_MNG_TEMPL HMT, HP_MNG_TEMPL_DTIL HMTD
+		WHERE HMT.MNG_GUBN_CD = HMTD.MNG_GUBN_CD
+			AND HMT.MNG_CD = HMTD.MNG_CD
+			AND HMT.MNG_SEQ = HMTD.MNG_SEQ
+			AND HMT.SEQ  = HMTD.SEQ
+			AND HMT.MNG_CD = 'SPC001'
+	</select>
+	
+	<select id="selectCodeNm" parameterType="fbcms.admin.hpm.cln.service.Impl.CenterVO" resultType="String">
+		SELECT CONCAT('<![CDATA[ <a href="/user/hti/dsi/selectDSIDetail.do?nttId=',NTT_ID,'"> ]]>', NTT_SJ, '<![CDATA[ </a> ]]>') AS CODE_NM
+		  FROM COMTNBBS
+		 WHERE NTT_ID = #{code}
+		   AND USE_AT = 'Y'
+		   AND POSTING_YN = 'Y'
+	</select>
+	
+	<select id="selectCode" parameterType="fbcms.admin.hpm.cln.service.Impl.CenterVO" resultType="String">
+		SELECT CODE FROM COMTCCMMNDETAILCODE
+		 WHERE CODE_ID = '000003'
+		   AND CODE_NM = TRIM(#{CODE_NM});	
+	</select>
+	
+	<resultMap id="UserReservation" type="fbcms.user.cts.rsv.service.ReservationVO">
+        <result property="MEDI_SBJ_CD" 				column="REQUST_ID"/>
+        <result property="MEDI_SBJ_NM" 				column="SVC_NM"/>
+        <result property="MEDI_SBJ_CD" 				column="MEDI_SBJ_CD"/>
+        <result property="MEDI_SBJ_NM" 				column="MEDI_SBJ_NM"/>
+        <result property="APPO_GUBN_CD" 			column="PROCESS_SE_CODE"/>
+        <result property="APPO_DT" 					column="OCCRRNC_DE"/>
+        <result property="MOBILE_PHONE_NO"			column="RQESTER_IP"/>
+        <result property="PHONE_NO"					column="TRGET_MENU_NM"/>
+        <result property="DR_ID"					column="DR_ID"/>
+        <result property="DR_NM"					column="DR_NM"/>
+        <result property="PC_IMG_ATCH_NO"			column="PC_IMG_ATCH_NO"/>
+        <result property="MOBILE_IMG_ATCH_NO"		column="MOBILE_IMG_ATCH_NO"/>
+        <result property="PC_IMG_ATCH_EXT_SN"		column="PC_IMG_ATCH_EXT_SN"/>
+        <result property="PC_IMG_ATCH_EXT_SN"		column="FILE_EXTSN"/>
+        <result property="MOBILE_IMG_ATCH_EXT_SN"	column="MOBILE_IMG_ATCH_EXT_SN"/>
+        <result property="FIELD_CT"					column="FIELD_CT"/>
+        <result property="POSITION_CT"				column="POSITION_CT"/>
+        <result property="ADD_OPEN_SET_CD"			column="ADD_OPEN_SET_CD"/>
+	</resultMap>
+	
+	<select id="selectDrInf" parameterType="String" resultMap="UserReservation">
+		SELECT A.DR_NM,
+			   A.DR_ID,
+			   A.FIELD_CT,
+			   A.POSITION_CT,
+			   (SELECT STRE_FILE_NM FROM COMTNFILEDETAIL WHERE ATCH_FILE_ID = A.PC_IMG_ATCH_NO) AS PC_IMG_ATCH_NO,
+			   A.MEDI_SBJ_CD,
+			   A.ADD_OPEN_SET_CD,
+			   B.FILE_EXTSN
+		  FROM HP_DR A 
+		  JOIN COMTNFILEDETAIL B
+			ON B.ATCH_FILE_ID = A.PC_IMG_ATCH_NO
+		 WHERE A.DR_ID = #{drCode}
+	</select>
+</mapper>

@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="userMBIDAO">
+	<resultMap type="fbcms.user.lgn.MembersVO" id="MembersInfo">
+		<result property="ADRES" 			column="ADRES"/>
+		<result property="AREA_NO" 			column="AREA_NO"/>
+		<result property="BIRTH_DT" 		column="BIRTH_DT"/>
+		<result property="DETAIL_ADRES" 	column="DETAIL_ADRES"/>
+		<result property="EMAIL_RECV_YN" 	column="EMAIL_RECV_YN"/>
+		<result property="END_TELNO" 		column="END_TELNO"/>
+		<result property="ESNTL_ID" 		column="ESNTL_ID"/>
+		<result property="FRIST_JOIN_DT" 	column="FRIST_JOIN_DT"/>
+		<result property="GROUP_ID" 		column="GROUP_ID"/>
+		<result property="GUBN_CD" 			column="GUBN_CD"/>
+		<result property="IHIDNUM" 			column="IHIDNUM"/>
+		<result property="LAST_LOGIN_DT" 	column="LAST_LOGIN_DT"/>
+		<result property="LOCK_AT" 			column="LOCK_AT"/>
+		<result property="LOCK_CNT" 		column="LOCK_CNT"/>
+		<result property="LOCK_LAST_PNTTM" 	column="LOCK_LAST_PNTTM"/>
+		<result property="MBER_EMAIL_ADRES" column="MBER_EMAIL_ADRES"/>
+		<result property="MBER_FXNUM" 		column="MBER_FXNUM"/>
+		<result property="MBER_ID" 			column="MBER_ID"/>
+		<result property="MBER_NM" 			column="MBER_NM"/>
+		<result property="MBER_STTUS" 		column="MBER_STTUS"/>
+		<result property="MBTLNUM" 			column="MBTLNUM"/>
+		<result property="MIDDLE_TELNO" 	column="MIDDLE_TELNO"/>
+		<result property="PASSWORD" 		column="PASSWORD"/>
+		<result property="PASSWORD_CNSR" 	column="PASSWORD_CNSR"/>
+		<result property="PASSWORD_HINT" 	column="PASSWORD_HINT"/>
+		<result property="PW_INIT_YN" 		column="PW_INIT_YN"/>
+		<result property="SBSCRB_DE" 		column="SBSCRB_DE"/>
+		<result property="SEXDSTN_CODE" 	column="SEXDSTN_CODE"/>
+		<result property="STAT_CD" 			column="STAT_CD"/>
+		<result property="ZIP" 				column="ZIP"/>
+		
+		
+		<result property="USER_ID"			column="USER_ID"/>
+		<result property="ITL_ACCT_CD"		column="ITL_ACCT_CD"/>
+		<result property="ITL_YN"			column="ITL_YN"/>
+		<result property="TOKEN_SN"			column="TOKEN_SN"/>
+		
+	<!-- 	<result proprty="USER_RES"			column="DROP_RESN_CD"/>
+		<result property="DROP_DATE"		column="DROP_DT"/> -->
+	</resultMap>
+
+	
+	<!-- 비밀번호 확인  -->
+	<select id="passwordChk" resultType="int">
+		SELECT COUNT(*) AS TOTCNT
+		  FROM COMTNGNRLMBER
+		 WHERE PASSWORD = #{PASSWORD}
+	</select>
+	
+	<!-- 멤버정보 조회 -->
+	<select id="selectMember" parameterType="fbcms.user.lgn.MembersVO" resultMap="MembersInfo">
+		SELECT MBER_NM
+			 , MBER_ID
+			 , PASSWORD
+			 , MBTLNUM
+			 , AREA_NO
+			 , MIDDLE_TELNO
+			 , END_TELNO
+			 , SEXDSTN_CODE
+			 , BIRTH_DT
+			 , MBER_EMAIL_ADRES
+			 , ZIP
+			 , ADRES
+			 , DETAIL_ADRES
+			 , EMAIL_RECV_YN	
+		  FROM COMTNGNRLMBER
+		 WHERE MBER_ID = #{MBER_ID}
+	</select>
+	
+	<!-- SNS 연동 여부(구글) -->
+	<select id="snsGoogle" parameterType="fbcms.user.lgn.MembersVO" resultMap="MembersInfo">
+		SELECT USER_ID
+	 		 , ITL_ACCT_CD
+	 		 , ITL_YN
+	 		 , TOKEN_SN
+  		  FROM HP_USER_INTERLOCK
+ 		 WHERE USER_ID = #{USER_ID}
+   		   AND ITL_ACCT_CD = 'GOOGLE';
+	</select>
+	
+		<!-- SNS 연동 여부(네이버) -->
+	<select id="snsNaver" parameterType="fbcms.user.lgn.MembersVO" resultMap="MembersInfo">
+		SELECT USER_ID
+	 		 , ITL_ACCT_CD
+	 		 , ITL_YN
+	 		 , TOKEN_SN
+  		  FROM HP_USER_INTERLOCK
+ 		 WHERE USER_ID = #{USER_ID}
+   		   AND ITL_ACCT_CD = 'NAVER';
+	</select>
+	
+		<!-- SNS 연동 여부(카카오) -->
+	<select id="snsKakao" parameterType="fbcms.user.lgn.MembersVO" resultMap="MembersInfo">
+		SELECT USER_ID
+	 		 , ITL_ACCT_CD
+	 		 , ITL_YN
+	 		 , TOKEN_SN
+  		  FROM HP_USER_INTERLOCK
+ 		 WHERE USER_ID = #{USER_ID}
+   		   AND ITL_ACCT_CD = 'KAKAO';
+	</select>
+	
+	<!-- 멤버 정보 Update -->
+	<update id="updateMBI" parameterType="fbcms.user.lgn.MembersVO">
+UPDATE COMTNGNRLMBER
+		   SET PASSWORD = #{PASSWORD}
+		     , MBTLNUM = #{MBTLNUM}
+		     , AREA_NO = #{AREA_NO}
+		     , MIDDLE_TELNO = #{MIDDLE_TELNO}
+		     , END_TELNO = #{END_TELNO}
+		     , MBER_EMAIL_ADRES = #{MBER_EMAIL_ADRES}
+		     , ZIP = #{ZIP}
+		     , ADRES = #{ADRES}
+		     , DETAIL_ADRES = #{DETAIL_ADRES}
+		     , EMAIL_RECV_YN = CASE WHEN UPPER(#{EMAIL_RECV_YN}) = 'ON' 
+		     							 		OR UPPER(#{EMAIL_RECV_YN}) = 'Y' THEN 'Y'
+		     							 		ELSE 'N'
+		     							 END
+		 WHERE MBER_ID = #{MBER_ID}
+</update>
+	
+	<update id="updateGoogle" parameterType="fbcms.user.lgn.MembersVO">
+INSERT
+		  INTO HP_USER_INTERLOCK
+		     ( USER_ID
+		     , ITL_ACCT_CD
+		     , ITL_YN
+		     , TOKEN_SN
+		     , ADD_DT
+		     )
+		VALUES
+		     ( #{MBER_ID}
+		     , 'GOOGLE'
+		     , #{google}
+		     , #{googleToken}	
+		     , NOW()
+		     )
+		    ON DUPLICATE KEY 
+		UPDATE
+		        ITL_YN = #{google}
+		      , TOKEN_SN = #{googleToken}
+			  , UPDT_DT = NOW();
+
+</update>
+	
+	<update id="updateNaver" parameterType="fbcms.user.lgn.MembersVO">
+INSERT
+		  INTO HP_USER_INTERLOCK
+		     ( USER_ID
+		     , ITL_ACCT_CD
+		     , ITL_YN
+		     , TOKEN_SN
+		     , ADD_DT
+		     )
+		VALUES
+		     ( #{MBER_ID}
+		     , 'NAVER'
+		     , #{naver}
+		     , #{naverToken}	
+		     , NOW()
+		     )
+		    ON DUPLICATE KEY 
+		UPDATE
+		        ITL_YN = #{naver}
+		      , TOKEN_SN = #{naverToken}
+			  , UPDT_DT = NOW();
+
+
+</update>
+	
+	<update id="updateKakao" parameterType="fbcms.user.lgn.MembersVO">
+INSERT
+		  INTO HP_USER_INTERLOCK
+		     ( USER_ID
+		     , ITL_ACCT_CD
+		     , ITL_YN
+		     , TOKEN_SN
+		     , ADD_DT
+		     )
+		VALUES
+		     ( #{MBER_ID}
+		     , 'KAKAO'
+		     , #{kakao}
+		     , #{kakaoToken}	
+		     , NOW()
+		     )
+		    ON DUPLICATE KEY 
+		UPDATE
+		        ITL_YN = #{kakao}
+		      , TOKEN_SN = #{kakaoToken}
+			  , UPDT_DT = NOW();
+
+</update>
+	
+	<insert id="dropMember" parameterType="fbcms.user.drop.DropMemberVO">
+		INSERT
+		  INTO HP_DROP_USER(
+		  	   USER_ID
+		  	 , DROP_RESN_CD
+		  	 , DROP_DT
+		  	 )
+		VALUES
+		     (
+		       #{USER_ID}
+		     , #{DROP_RESN_CD}
+		     , CURDATE() + 0
+		     )
+	</insert>
+	
+	<delete id="deleteMember" parameterType="fbcms.user.lgn.MembersVO">
+		DELETE A, B 
+		  FROM COMTNGNRLMBER A
+		  LEFT JOIN COMTNEMPLYRSCRTYESTBS B
+		    ON B.SCRTY_DTRMN_TRGET_ID = A.ESNTL_ID
+		 WHERE A.MBER_ID = #{MBER_ID}
+	</delete>
+	
+	<resultMap id="Appointment" type="fbcms.user.cts.rsv.service.AppointmentVO">
+		<result property="APPO_NO"			column="APPO_NO"/>
+		<result property="APPO_GUBN_CD"		column="APPO_GUBN_CD"/>
+		<result property="MEDI_SBJ_CD"		column="MEDI_SBJ_CD"/>
+		<result property="MEDI_SBJ_NM"		column="MEDI_SBJ_NM"/>
+		<result property="DR_ID"			column="DR_ID"/>
+		<result property="DR_NM"			column="DR_NM"/>
+		<result property="APPO_PRSN_NM"		column="APPO_PRSN_NM"/>
+		<result property="APPO_RLT_CD"		column="APPO_RLT_CD"/>
+		<result property="GENDER_CD"		column="GENDER_CD"/>
+		<result property="APPO_DT"			column="APPO_DT"/>
+		<result property="APPO_TIME"		column="APPO_TIME"/>
+		<result property="BIRTH_DT"			column="BIRTH_DT"/>
+		<result property="MOBILE_PHONE_NO"	column="MOBILE_PHONE_NO"/>
+		<result property="PHONE_NO"			column="PHONE_NO"/>
+		<result property="FIRST_ADD_DT"		column="FIRST_ADD_DT"/>
+		<result property="APPO_STAT_CD"		column="APPO_STAT_CD"/>
+		<result property="EXMN_PROG_CD"		column="EXMN_PROG_CD"/>
+		<result property="EXMN_PROG_NM"		column="EXMN_PROG_NM"/>
+		<result property="EMAIL_ID"			column="EMAIL_ID"/>
+		<result property="POST_NO"			column="POST_NO"/>
+		<result property="ADDR_TX"			column="ADDR_TX"/>
+		<result property="ADDR_DTIL_TX"		column="ADDR_DTIL_TX"/>
+		<result property="USER_ID"			column="USER_ID"/>
+		<result property="ADD_ID"			column="ADD_ID"/>
+		<result property="ADD_DT"			column="ADD_DT"/>
+		<result property="UPDT_ID"			column="UPDT_ID"/>
+		<result property="UPDT_DT"			column="UPDT_DT"/>
+		<result property="DEL_YN"			column="DEL_YN"/>
+		<result property="INQR_SEND_TX"		column="INQR_SEND_TX"/>
+	</resultMap>
+	
+	<!-- 검진 예약현황 -->
+	<select id="selectChkUpList" parameterType="fbcms.user.cts.rsv.service.AppointmentVO" resultMap="Appointment">
+		SELECT APPO_NO
+		     , EXMN_PROG_CD
+		     , FNC_GET_CODE_NAME ('EXMN_PROG_CD', EXMN_PROG_CD) AS EXMN_PROG_NM
+		     , APPO_DT
+		     , APPO_TIME
+		     , DATE_FORMAT(FIRST_ADD_DT , '%Y-%m-%d') AS FIRST_ADD_DT
+		  FROM HP_APPOINTMENT
+		 WHERE USER_ID = #{USER_ID}
+		   AND APPO_GUBN_CD = #{APPO_GUBN_CD}
+		   AND IFNULL(DEL_YN,'N') = 'N'
+		 ORDER BY APPO_NO DESC
+		 LIMIT 5
+	</select>
+	
+	<!-- 진료예약 현황 -->
+	<select id="selectResList" parameterType="fbcms.user.cts.rsv.service.AppointmentVO" resultMap="Appointment">
+		SELECT APPO_NO
+		     , MEDI_SBJ_CD
+		     , DR_ID
+		     , FNC_GET_DR_NAME (DR_ID) AS DR_NM
+		     , APPO_DT
+		     , APPO_TIME
+		     , DATE_FORMAT(FIRST_ADD_DT , '%Y-%m-%d') AS FIRST_ADD_DT
+		  FROM HP_APPOINTMENT
+		 WHERE USER_ID = #{USER_ID}
+		   AND APPO_GUBN_CD = #{APPO_GUBN_CD}
+		   AND IFNULL(DEL_YN,'N') = 'N'
+		 ORDER BY APPO_NO DESC
+		 LIMIT 5
+	</select>
+	
+	
+	
+	<select id="selectArticleLists" parameterType="adminBoardVO" resultType="adminBoardVO">
+		SELECT A.NTT_ID AS nttId
+	 	     , A.NTT_SJ AS nttSj
+	     	 , (SELECT CASE WHEN COUNT(1) > 0 THEN 'Y' ELSE 'N' END FROM COMTNBBS AS B WHERE A.NTT_ID = B.PARNTSCTT_NO) AS replyAt 
+	     	 , DATE_FORMAT(A.FRST_REGIST_PNTTM, '%Y.%m.%d') AS frstRegisterPnttm
+	 	  FROM COMTNBBS A
+	 	 WHERE A.BBS_ID = 'BBSMSTR_000000000015'
+	 	   AND A.USE_AT = 'Y'
+		   AND A.PARNTSCTT_NO = 0
+	 	   AND A.FRST_REGISTER_ID = (SELECT C.ESNTL_ID FROM COMTNGNRLMBER C WHERE C.MBER_ID = #{frstRegisterId})
+	 	 ORDER BY A.NTT_ID DESC
+	 	 LIMIT 3
+	</select>
+	
+	<resultMap id="DrDr" type="fbcms.admin.hpm.drm.service.impl.DoctorVO">
+		<result property="DR_NM"				column="DR_NM"/>
+		<result property="FIELD_CT"				column="FIELD_CT"/>
+		<result property="POSITION_CT"			column="POSITION_CT"/>
+		<result property="PC_IMG_ATCH_NO"		column="PC_IMG_ATCH_NO"/>
+		<result property="MOBILE_IMG_ATCH_NO"	column="MOBILE_IMG_ATCH_NO"/>
+		<result property="FILE_EXTSN"			column="FILE_EXTSN"/>
+		<result property="DR_ID"				column="DR_ID"/>
+		<result property="MEDI_SBJ_CD"			column="MEDI_SBJ_CD"/>
+		<result property="ADD_OPEN_SET_CD"		column="ADD_OPEN_SET_CD"/>
+	</resultMap>
+	
+	
+	<select id="selectLikedDr" parameterType="fbcms.admin.hpm.drm.service.impl.DoctorVO" resultMap="DrDr">
+		SELECT A.DR_NM,
+		       A.DR_ID,
+			   A.FIELD_CT,
+			   A.POSITION_CT,
+			   (SELECT STRE_FILE_NM FROM COMTNFILEDETAIL WHERE ATCH_FILE_ID = A.PC_IMG_ATCH_NO) AS PC_IMG_ATCH_NO,
+			   A.MEDI_SBJ_CD,
+			   B.FILE_EXTSN,
+			   A.MEDI_SBJ_CD,
+			   A.ADD_OPEN_SET_CD
+		  FROM HP_DR A 
+		  JOIN COMTNFILEDETAIL B
+			ON B.ATCH_FILE_ID = A.PC_IMG_ATCH_NO
+	 LEFT JOIN HP_LIKE_DR C
+	        ON A.DR_ID = C.DR_ID 
+	     WHERE C.USER_ID = #{USER_ID}
+	     AND C.LIKE_YN = 'Y'
+	     AND IFNULL(A.DEL_YN,'N') = 'N'
+	     AND IFNULL(C.DEL_YN,'N') = 'N'
+	</select>
+	
+	<update id="deleteDrLike" parameterType="fbcms.user.hpm.hpm.favoritesDRVO">
+		UPDATE HP_LIKE_DR SET
+		  LIKE_YN = 'N'
+		 WHERE USER_ID = #{USER_ID}
+		   AND DR_ID = #{DR_ID}
+		   AND IFNULL(DEL_YN,'N') = 'N'
+	</update>
+	<select id="selectUserNM" parameterType="fbcms.user.cts.rsv.service.AppointmentVO" resultType="egovMap">
+		SELECT MBER_NM 
+		  FROM COMTNGNRLMBER
+		 WHERE MBER_ID = #{USER_ID}
+	</select>
+</mapper>

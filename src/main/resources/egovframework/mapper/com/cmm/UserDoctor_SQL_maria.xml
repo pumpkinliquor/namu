@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserDoctorDAO">
+    
+	<select id="selectDoctorList" resultType="egovMap">
+		SELECT 
+			DR_ID AS drId
+			, DR_NM AS drNm
+			, FIELD_CT AS fieldCt
+			, POSITION_CT AS positionCt
+			, MEDI_SBJ_CD AS drGroupCode
+			, CASE drGroupCode WHEN 'AO' THEN 'FM' ELSE drGroupCode END AS drGroupUnionCode
+			, (
+				CASE MEDI_SBJ_CD
+					WHEN 'GS' THEN '소화기외과'
+					WHEN 'BE' THEN '유방·갑상선외과'
+					WHEN 'AO' THEN '안티에이징·비만센터'
+					WHEN 'C' THEN '유방·갑상선외과' ELSE FNC_GET_CODE_NAME('MNG_CD', MEDI_SBJ_CD)
+				END
+			) AS drGroupName
+			, ORDER_NO AS orderNo
+			, D.PC_IMG_ATCH_NO AS atchFileId
+			, D.MOBILE_IMG_ATCH_NO AS atchFileIdMobile
+			, (SELECT FILE_SN FROM COMTNFILEDETAIL WHERE ATCH_FILE_ID = D.PC_IMG_ATCH_NO) AS fileSn
+			, (SELECT SIMPLE_INTRO_TX FROM HP_HOSPITAL_MNG WHERE MNG_CD = D.MEDI_SBJ_CD) AS simpleIntro
+			, SPCL_FIELD_TX AS spclFieldTx
+			, BROAD_APPEAR_TX AS broadAppearTx
+			, HISTORY_TX AS historyTx
+			, HISTORY_TX2 AS historyTx2
+			, CASE BLOG_USE_YN
+				WHEN 'Y' THEN BLOG_ADD_TX 
+				ELSE '' 
+				END AS blogAddTx
+			, mngCenterCd
+			, ADD_OPEN_SET_CD AS ADD_OPEN_SET_CD
+			, mngCenterNm
+		FROM (
+			SELECT 
+				DISTINCT D.DR_ID
+				, D.DR_NM
+				, D.FIELD_CT
+				, D.POSITION_CT
+				, D.SPCL_CLINIC_CT
+				, D.MEDI_SBJ_CD
+				, D.ORDER_NO
+				, D.PC_IMG_ATCH_NO
+				, D.MOBILE_IMG_ATCH_NO
+				, D.SPCL_FIELD_TX
+				, D.BROAD_APPEAR_TX
+				, D.HISTORY_TX
+				, D.HISTORY_TX2
+				, D.ADD_OPEN_SET_CD
+				, D.BLOG_ADD_TX
+				, D.BLOG_USE_YN
+				, GROUP_CONCAT(CODE_ID ORDER BY CODE_ID) AS mngCenterCd
+				, GROUP_CONCAT(CODE_ID_NM ORDER BY CODE_ID) AS mngCenterNm
+			FROM 
+			(
+				SELECT D.*
+				 , SUBSTRING_INDEX(SUBSTRING_INDEX(D.MNG_CENTER_CD, ',', N.n), ',', -1) AS mngCenterCode
+				FROM (
+					SELECT * FROM HP_DR WHERE IFNULL(DEL_YN, 'N') NOT IN ('Y')
+				) D 
+				INNER JOIN (
+					SELECT 1 AS n UNION ALL SELECT 2 AS n  UNION ALL SELECT 3 AS n 
+					UNION ALL SELECT 4 AS n UNION ALL SELECT 5 AS n  UNION ALL SELECT 6 AS n 
+					UNION ALL SELECT 7 AS n UNION ALL SELECT 8 AS n  UNION ALL SELECT 9 AS n 
+					UNION ALL SELECT 10 AS n UNION ALL SELECT 11 AS n  UNION ALL SELECT 12 AS n 
+				) N
+				ON CHAR_LENGTH(D.MNG_CENTER_CD) - CHAR_LENGTH(REPLACE(D.MNG_CENTER_CD, ',', '')) >= N.n-1
+			) D LEFT JOIN COMTCCMMNCODE CC
+			ON D.mngCenterCode = CC.CODE_ID
+			GROUP BY D.DR_ID
+				, D.DR_NM
+				, D.FIELD_CT
+				, D.POSITION_CT
+				, D.SPCL_CLINIC_CT
+				, D.MEDI_SBJ_CD
+				, D.ORDER_NO
+				, D.PC_IMG_ATCH_NO
+				, D.MOBILE_IMG_ATCH_NO
+				, D.SPCL_FIELD_TX
+				, D.BROAD_APPEAR_TX
+				, D.HISTORY_TX
+				, D.HISTORY_TX2
+				, D.ADD_OPEN_SET_CD
+				, D.BLOG_ADD_TX
+				, D.BLOG_USE_YN
+		) D
+		RIGHT OUTER JOIN 
+		(
+			SELECT 'GI' AS  drGroupCode, 1 AS orderNo FROM DUAL
+			UNION SELECT 'GS' AS  drGroupCode, 2 AS orderNo FROM DUAL
+			UNION SELECT 'NE' AS  drGroupCode, 3 AS orderNo FROM DUAL
+			UNION SELECT 'FM' AS  drGroupCode, 4 AS orderNo FROM DUAL
+			UNION SELECT 'AO' AS  drGroupCode, 4 AS orderNo FROM DUAL
+			UNION SELECT 'UNION' AS  drGroupCode, 5 AS orderNo FROM DUAL
+			UNION SELECT 'GY' AS  drGroupCode, 6 AS orderNo FROM DUAL
+			UNION SELECT 'XR' AS  drGroupCode, 7 AS orderNo FROM DUAL
+		) G
+		ON G.drGroupCode = (
+			CASE D.MEDI_SBJ_CD
+				WHEN 'BE' THEN 'UNION'
+				WHEN 'C' THEN 'UNION' ELSE D.MEDI_SBJ_CD 
+			END
+		)
+		WHERE 1 = 1
+		ORDER BY G.orderNo, (G.drGroupCode IN ('GI', 'GS', 'NE', 'FM', 'AO', 'UNION', 'GY', 'XR')) ASC, D.ORDER_NO
+	</select>
+</mapper>

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+ 
+<tiles-definitions>
+	<!-- 팝업화면 -->
+	<definition name="com/popup/*/*" template="/WEB-INF/jsp/fbcms/com/layouts/nullLayout.jsp">
+		<put-attribute name="contentBody" value="/WEB-INF/jsp/fbcms/popup/{1}/{2}.jsp" />
+    </definition>
+
+	<!-- ajax화면 -->
+    <definition name="com/cmm/ajax/*" template="/WEB-INF/jsp/fbcms/com/layouts/nullLayout.jsp">
+        <put-attribute name="contentBody" value="/WEB-INF/jsp/fbcms/com/cmm/ajax/{1}.jsp" />
+    </definition>
+    
+    <!-- 사용자화면 -->
+    <definition name="userMainLayout" template="/WEB-INF/jsp/fbcms/user/layouts/userMainLayout.jsp">
+        <put-attribute name="header" value="/WEB-INF/jsp/fbcms/user/layouts/userHeader.jsp" />
+        <put-attribute name="topBanner" value="/WEB-INF/jsp/fbcms/user/layouts/userTopBanner.jsp" />
+        <put-attribute name="gnb" value="/WEB-INF/jsp/fbcms/user/layouts/userGnb.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/jsp/fbcms/user/layouts/userFooter.jsp" />
+    </definition>
+    <definition name="userNullLayout" template="/WEB-INF/jsp/fbcms/user/layouts/userNullLayout.jsp">
+        <put-attribute name="header" value="/WEB-INF/jsp/fbcms/user/layouts/userHeader.jsp" />
+        <put-attribute name="gnb" value="/WEB-INF/jsp/fbcms/user/layouts/userGnb.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/jsp/fbcms/user/layouts/userFooter.jsp" />
+    </definition>
+    <definition name="userLayout" template="/WEB-INF/jsp/fbcms/user/layouts/userLayout.jsp">
+        <put-attribute name="header" value="/WEB-INF/jsp/fbcms/user/layouts/userHeader.jsp" />
+        <put-attribute name="gnb" value="/WEB-INF/jsp/fbcms/user/layouts/userGnb.jsp" />
+        <put-attribute name="contentHeader" value="/WEB-INF/jsp/fbcms/user/layouts/userContentHeader.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/jsp/fbcms/user/layouts/userFooter.jsp" />
+    </definition>
+    <definition name="user/userMain" extends="userMainLayout">
+        <put-attribute name="contentBody" value="/WEB-INF/jsp/fbcms/user/userMain.jsp" />
+    </definition>
+    <definition name="user/cmm/*/*" extends="userNullLayout">
+        <put-attribute name="contentBody" value="/WEB-INF/jsp/fbcms/user/cmm/{1}/{2}.jsp" />
+    </definition>
+    <definition name="user/*/*/*" extends="userLayout">
+        <put-attribute name="contentBody" value="/WEB-INF/jsp/fbcms/user/{1}/{2}/{3}.jsp" />
+    </definition>
+    
+    <!-- 관리자화면 -->
+    <definition name="adminLayout" template="/WEB-INF/jsp/fbcms/admin/layouts/adminLayout.jsp">
+        <put-attribute name="header" value="/WEB-INF/jsp/fbcms/admin/layouts/adminHeader.jsp" />
+        <put-attribute name="gnb" value="/WEB-INF/jsp/fbcms/admin/layouts/adminGnb.jsp" />
+        <put-attribute name="contentHeader" value="/WEB-INF/jsp/fbcms/admin/layouts/adminContentHeader.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/jsp/fbcms/admin/layouts/adminFooter.jsp" />
+    </definition>
+    <definition name="admin/*/*/*" extends="adminLayout">
+        <put-attribute name="contentBody" value="/WEB-INF/jsp/fbcms/admin/{1}/{2}/{3}.jsp" />
+    </definition>
+    
+    <!-- 모바일화면 -->
+    <definition name="mobileMainLayout" template="/WEB-INF/jsp/fbcms/mobile/layouts/userMainLayout.jsp">
+        <put-attribute name="header" value="/WEB-INF/jsp/fbcms/mobile/layouts/userHeader.jsp" />
+        <put-attribute name="popup" value="/WEB-INF/jsp/fbcms/mobile/layouts/userPopup.jsp" />
+        <put-attribute name="gnb" value="/WEB-INF/jsp/fbcms/mobile/layouts/userGnb.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/jsp/fbcms/mobile/layouts/userFooter.jsp" />
+    </definition>
+    <definition name="mobileNullLayout" template="/WEB-INF/jsp/fbcms/mobile/layouts/userNullLayout.jsp">
+        <put-attribute name="header" value="/WEB-INF/jsp/fbcms/mobile/layouts/userHeader.jsp" />
+        <put-attribute name="gnb" value="/WEB-INF/jsp/fbcms/mobile/layouts/userGnb.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/jsp/fbcms/mobile/layouts/userFooter.jsp" />
+    </definition>
+    <definition name="mobileLayout" template="/WEB-INF/jsp/fbcms/mobile/layouts/userLayout.jsp">
+        <put-attribute name="header" value="/WEB-INF/jsp/fbcms/mobile/layouts/userHeader.jsp" />
+        <put-attribute name="gnb" value="/WEB-INF/jsp/fbcms/mobile/layouts/userGnb.jsp" />
+        <put-attribute name="contentHeader" value="/WEB-INF/jsp/fbcms/mobile/layouts/userContentHeader.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/jsp/fbcms/mobile/layouts/userFooter.jsp" />
+    </definition>
+    <definition name="mobile/userMain" extends="mobileMainLayout">
+        <put-attribute name="contentBody" value="/WEB-INF/jsp/fbcms/mobile/userMain.jsp" />
+    </definition>
+    <definition name="mobile/cmm/*/*" extends="mobileNullLayout">
+        <put-attribute name="contentBody" value="/WEB-INF/jsp/fbcms/mobile/cmm/{1}/{2}.jsp" />
+    </definition>
+    <definition name="mobile/*/*/*" extends="mobileLayout">
+        <put-attribute name="contentBody" value="/WEB-INF/jsp/fbcms/mobile/{1}/{2}/{3}.jsp" />
+    </definition>
+    
+    <!-- 중국어화면 -->
+    <definition name="chnMainLayout" template="/WEB-INF/jsp/fbcms/chn/layouts/chnMainLayout.jsp">
+        <put-attribute name="header" value="/WEB-INF/jsp/fbcms/chn/layouts/chnHeader.jsp" />
+        <put-attribute name="gnb" value="/WEB-INF/jsp/fbcms/chn/layouts/chnGnb.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/jsp/fbcms/chn/layouts/chnFooter.jsp" />
+    </definition>
+    <definition name="chnLayout" template="/WEB-INF/jsp/fbcms/chn/layouts/chnLayout.jsp">
+        <put-attribute name="header" value="/WEB-INF/jsp/fbcms/chn/layouts/chnHeader.jsp" />
+        <put-attribute name="gnb" value="/WEB-INF/jsp/fbcms/chn/layouts/chnGnb.jsp" />
+        <put-attribute name="contentHeader" value="/WEB-INF/jsp/fbcms/chn/layouts/chnContentHeader.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/jsp/fbcms/chn/layouts/chnFooter.jsp" />
+    </definition>
+    <definition name="chn/*/*" extends="chnLayout">
+        <put-attribute name="contentBody" value="/WEB-INF/jsp/fbcms/chn/{1}/{2}.jsp" />
+    </definition>
+    <definition name="chn/index" extends="chnMainLayout">
+        <put-attribute name="contentBody" value="/WEB-INF/jsp/fbcms/chn/index.jsp" />
+    </definition>
+    <definition name="mobileChnMainLayout" template="/WEB-INF/jsp/fbcms/mobileChn/layouts/chnMainLayout.jsp">
+        <put-attribute name="header" value="/WEB-INF/jsp/fbcms/mobileChn/layouts/chnHeader.jsp" />
+        <put-attribute name="gnb" value="/WEB-INF/jsp/fbcms/mobileChn/layouts/chnGnb.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/jsp/fbcms/mobileChn/layouts/chnFooter.jsp" />
+    </definition>
+    <definition name="mobileChnLayout" template="/WEB-INF/jsp/fbcms/mobileChn/layouts/chnLayout.jsp">
+        <put-attribute name="header" value="/WEB-INF/jsp/fbcms/mobileChn/layouts/chnHeader.jsp" />
+        <put-attribute name="gnb" value="/WEB-INF/jsp/fbcms/mobileChn/layouts/chnGnb.jsp" />
+        <put-attribute name="contentHeader" value="/WEB-INF/jsp/fbcms/mobileChn/layouts/chnContentHeader.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/jsp/fbcms/mobileChn/layouts/chnFooter.jsp" />
+    </definition>
+    <definition name="mobileChn/*/*" extends="mobileChnLayout">
+        <put-attribute name="contentBody" value="/WEB-INF/jsp/fbcms/mobileChn/{1}/{2}.jsp" />
+    </definition>
+    <definition name="mobileChn/index" extends="mobileChnMainLayout">
+        <put-attribute name="contentBody" value="/WEB-INF/jsp/fbcms/mobileChn/index.jsp" />
+    </definition>
+    
+    <!-- 영어화면 -->
+    <definition name="engMainLayout" template="/WEB-INF/jsp/fbcms/eng/layouts/engMainLayout.jsp">
+        <put-attribute name="header" value="/WEB-INF/jsp/fbcms/eng/layouts/engHeader.jsp" />
+        <put-attribute name="gnb" value="/WEB-INF/jsp/fbcms/eng/layouts/engGnb.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/jsp/fbcms/eng/layouts/engFooter.jsp" />
+    </definition>
+    <definition name="engLayout" template="/WEB-INF/jsp/fbcms/eng/layouts/engLayout.jsp">
+        <put-attribute name="header" value="/WEB-INF/jsp/fbcms/eng/layouts/engHeader.jsp" />
+        <put-attribute name="gnb" value="/WEB-INF/jsp/fbcms/eng/layouts/engGnb.jsp" />
+        <put-attribute name="contentHeader" value="/WEB-INF/jsp/fbcms/eng/layouts/engContentHeader.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/jsp/fbcms/eng/layouts/engFooter.jsp" />
+    </definition>
+    <definition name="eng/*/*" extends="engLayout">
+        <put-attribute name="contentBody" value="/WEB-INF/jsp/fbcms/eng/{1}/{2}.jsp" />
+    </definition>
+    <definition name="eng/index" extends="engMainLayout">
+        <put-attribute name="contentBody" value="/WEB-INF/jsp/fbcms/eng/index.jsp" />
+    </definition>
+    <definition name="mobileEngMainLayout" template="/WEB-INF/jsp/fbcms/mobileEng/layouts/engMainLayout.jsp">
+        <put-attribute name="header" value="/WEB-INF/jsp/fbcms/mobileEng/layouts/engHeader.jsp" />
+        <put-attribute name="gnb" value="/WEB-INF/jsp/fbcms/mobileEng/layouts/engGnb.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/jsp/fbcms/mobileEng/layouts/engFooter.jsp" />
+    </definition>
+    <definition name="mobileEngLayout" template="/WEB-INF/jsp/fbcms/mobileEng/layouts/engLayout.jsp">
+        <put-attribute name="header" value="/WEB-INF/jsp/fbcms/mobileEng/layouts/engHeader.jsp" />
+        <put-attribute name="gnb" value="/WEB-INF/jsp/fbcms/mobileEng/layouts/engGnb.jsp" />
+        <put-attribute name="contentHeader" value="/WEB-INF/jsp/fbcms/mobileEng/layouts/engContentHeader.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/jsp/fbcms/mobileEng/layouts/engFooter.jsp" />
+    </definition>
+    <definition name="mobileEng/*/*" extends="mobileEngLayout">
+        <put-attribute name="contentBody" value="/WEB-INF/jsp/fbcms/mobileEng/{1}/{2}.jsp" />
+    </definition>
+    <definition name="mobileEng/index" extends="mobileEngMainLayout">
+        <put-attribute name="contentBody" value="/WEB-INF/jsp/fbcms/mobileEng/index.jsp" />
+    </definition>
+    
+    <!-- 일본어화면 -->
+    <definition name="jpnMainLayout" template="/WEB-INF/jsp/fbcms/jpn/layouts/jpnMainLayout.jsp">
+        <put-attribute name="header" value="/WEB-INF/jsp/fbcms/jpn/layouts/jpnHeader.jsp" />
+        <put-attribute name="gnb" value="/WEB-INF/jsp/fbcms/jpn/layouts/jpnGnb.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/jsp/fbcms/jpn/layouts/jpnFooter.jsp" />
+    </definition>
+    <definition name="jpnLayout" template="/WEB-INF/jsp/fbcms/jpn/layouts/jpnLayout.jsp">
+        <put-attribute name="header" value="/WEB-INF/jsp/fbcms/jpn/layouts/jpnHeader.jsp" />
+        <put-attribute name="gnb" value="/WEB-INF/jsp/fbcms/jpn/layouts/jpnGnb.jsp" />
+        <put-attribute name="contentHeader" value="/WEB-INF/jsp/fbcms/jpn/layouts/jpnContentHeader.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/jsp/fbcms/jpn/layouts/jpnFooter.jsp" />
+    </definition>
+    <definition name="jpn/*/*" extends="jpnLayout">
+        <put-attribute name="contentBody" value="/WEB-INF/jsp/fbcms/jpn/{1}/{2}.jsp" />
+    </definition>
+    <definition name="jpn/index" extends="jpnMainLayout">
+        <put-attribute name="contentBody" value="/WEB-INF/jsp/fbcms/jpn/index.jsp" />
+    </definition>
+    <definition name="mobileJpnMainLayout" template="/WEB-INF/jsp/fbcms/mobileJpn/layouts/jpnMainLayout.jsp">
+        <put-attribute name="header" value="/WEB-INF/jsp/fbcms/mobileJpn/layouts/jpnHeader.jsp" />
+        <put-attribute name="gnb" value="/WEB-INF/jsp/fbcms/mobileJpn/layouts/jpnGnb.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/jsp/fbcms/mobileJpn/layouts/jpnFooter.jsp" />
+    </definition>
+    <definition name="mobileJpnLayout" template="/WEB-INF/jsp/fbcms/mobileJpn/layouts/jpnLayout.jsp">
+        <put-attribute name="header" value="/WEB-INF/jsp/fbcms/mobileJpn/layouts/jpnHeader.jsp" />
+        <put-attribute name="gnb" value="/WEB-INF/jsp/fbcms/mobileJpn/layouts/jpnGnb.jsp" />
+        <put-attribute name="contentHeader" value="/WEB-INF/jsp/fbcms/mobileJpn/layouts/jpnContentHeader.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/jsp/fbcms/mobileJpn/layouts/jpnFooter.jsp" />
+    </definition>
+    <definition name="mobileJpn/*/*" extends="mobileJpnLayout">
+        <put-attribute name="contentBody" value="/WEB-INF/jsp/fbcms/mobileJpn/{1}/{2}.jsp" />
+    </definition>
+    <definition name="mobileJpn/index" extends="mobileJpnMainLayout">
+        <put-attribute name="contentBody" value="/WEB-INF/jsp/fbcms/mobileJpn/index.jsp" />
+    </definition>
+
+</tiles-definitions>

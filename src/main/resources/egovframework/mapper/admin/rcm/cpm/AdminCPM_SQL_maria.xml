@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="AdminCPMDAO">
+
+	<resultMap id="Checkup" type="fbcms.admin.rcm.cpm.service.impl.CheckupVO">
+        <result property="DTIL_CD" 			column="DTIL_CD"/>
+        <result property="DTIL_CODE_NM" 	column="DTIL_CODE_NM"/>
+        <result property="RMK_CT" 			column="RMK_CT"/>
+        <result property="USE_YN" 			column="USE_YN"/>
+        <result property="ORDER_NO" 		column="ORDER_NO"/>
+        <result property="DEL_YN" 			column="DEL_YN"/>
+	</resultMap>
+	
+	<!-- 검진프로그램 리스트 조회 -->
+ 	<select id="selectCPMList" parameterType="fbcms.admin.rcm.cpm.service.impl.CheckupVO" resultMap="Checkup">
+ 		SELECT DTIL_CD 		
+ 		     , DTIL_CODE_NM
+ 		     , USE_YN	
+ 		     , ORDER_NO 	
+ 		  FROM HP_CODE_DTIL
+ 		 WHERE 1=1
+ 		   AND COMM_CD = 'EXMN_PROG_CD'
+ 		   AND IFNULL(DEL_YN,'N') NOT IN ('Y')
+	  ORDER BY ORDER_NO
+ 	</select>
+ 	
+	<!-- 정렬 순서 수정 -->
+	<update id="updateOrderChange" parameterType="fbcms.admin.rcm.cpm.service.impl.CheckupVO">
+		UPDATE HP_CODE_DTIL
+		   SET ORDER_NO = #{ORDER_NO}
+		     , UPDT_DT = NOW()  
+		 WHERE 1 = 1
+ 		   AND COMM_CD = 'EXMN_PROG_CD'
+		   AND DTIL_CD = #{DTIL_CD}
+	</update>
+	
+	<!-- 검진프로그램 상세 조회 -->
+	<select id="selectCPM" parameterType="fbcms.admin.rcm.cpm.service.impl.CheckupVO" resultMap="Checkup">
+		SELECT DTIL_CD
+ 		     , DTIL_CODE_NM
+ 		     , USE_YN
+ 		     , ORDER_NO
+ 		  FROM HP_CODE_DTIL
+ 		 WHERE 1=1
+		   AND COMM_CD = 'EXMN_PROG_CD'
+		   AND DTIL_CD = #{DTIL_CD}
+	</select>
+	
+	<!-- 검진프로그램 등록 -->
+ 	<insert id="insertCPM" parameterType="fbcms.admin.rcm.cpm.service.impl.CheckupVO">
+ 		<selectKey order="BEFORE" keyProperty="ORDER_NO" resultType="int">
+			SELECT IFNULL(MAX(ORDER_NO),0)+1 AS ORDER_NO
+	 		  FROM HP_CODE_DTIL
+	 		 WHERE USE_YN = #{USE_YN}
+	 		   AND COMM_CD = 'EXMN_PROG_CD'
+ 		</selectKey>
+ 		
+ 		INSERT 
+ 		  INTO HP_CODE_DTIL
+ 		     (
+ 		       COMM_CD
+ 		     , DTIL_CD
+ 		     , DTIL_CODE_NM
+ 		     , USE_YN
+ 		     , ORDER_NO
+ 		     , ADD_ID
+ 		     , ADD_DT
+ 		  	 )
+ 		VALUES
+ 		     (
+ 		       'EXMN_PROG_CD'
+ 		     , #{DTIL_CD}
+ 		     , #{DTIL_CODE_NM}
+ 		     , #{USE_YN}
+ 		     , #{ORDER_NO}
+ 		     , null
+ 		     , NOW()
+ 		  	 )
+ 	</insert>
+ 	
+	<!-- 검진프로그램 수정 -->
+	<update id="updateCPM" parameterType="hashmap">
+		UPDATE HP_CODE_DTIL
+		   SET DTIL_CD 		= #{checkupVO.DTIL_CD}
+ 		     , DTIL_CODE_NM = #{checkupVO.DTIL_CODE_NM}
+ 		     , USE_YN		= #{checkupVO.USE_YN}
+		 WHERE 1=1
+		   AND COMM_CD = 'EXMN_PROG_CD'
+		   AND DTIL_CD = #{DTIL_CD_CRT}
+	</update>
+	
+	<!-- 검진프로그램 삭제 -->
+	<delete id="deleteCPM" parameterType="fbcms.admin.rcm.cpm.service.impl.CheckupVO">
+		DELETE 
+		  FROM HP_CODE_DTIL
+		 WHERE 1=1
+		   AND COMM_CD = 'EXMN_PROG_CD'
+		   AND DTIL_CD = #{DTIL_CD}
+	</delete>
+	
+	<!-- 검진예약일정 관리 조회 -->
+ 	<select id="selectTableCPMList" parameterType="hashmap" resultType="hashmap">
+		SELECT IFNULL(B.SCHE_DAY, SUBSTR(A.APPO_SCHE_DT,7)) AS SCHE_DAY
+			 , IFNULL(B.POSB_YN, 'Y') AS POSB_YN
+			 , IFNULL(B.SUNDAY_YN, IF(DAYOFWEEK(CONCAT(#{YEAR},#{MONTH},SUBSTR(A.APPO_SCHE_DT,7)))='1','Y','N')) AS SUNDAY_YN
+			 , IFNULL(B.LAST_DAY, SUBSTR(LAST_DAY(CONCAT(#{YEAR},#{MONTH},'01')),9)) AS LAST_DAY
+		  FROM HP_EXMN_APPO_SCHE A
+		  LEFT OUTER JOIN 
+		  (
+			SELECT SUBSTR(APPO_SCHE_DT,7) AS SCHE_DAY
+				 , POSB_YN
+				 , IF(DAYOFWEEK(APPO_SCHE_DT)='1','Y','N') AS SUNDAY_YN
+				 , SUBSTR(LAST_DAY(CONCAT(#{YEAR},#{MONTH},'01')),9) AS LAST_DAY
+			  FROM HP_EXMN_APPO_SCHE
+			 WHERE APPO_SCHE_DT LIKE CONCAT(#{YEAR},#{MONTH},'%')
+		  ) B
+		    ON SUBSTR(A.APPO_SCHE_DT,7) = B.SCHE_DAY
+		 WHERE A.APPO_SCHE_DT LIKE CONCAT('000000','%')
+		 ORDER BY A.APPO_SCHE_DT
+ 	</select>
+	
+	<!-- 검진예약일정 관리 삭제 -->
+	<delete id="deleteTableCPM" parameterType="hashmap">
+		DELETE 
+		  FROM HP_EXMN_APPO_SCHE
+		 WHERE 1=1
+		   AND APPO_SCHE_DT LIKE CONCAT(#{year},#{month},'%')
+	</delete>
+	
+	<!-- 검진예약일정 관리 저장 -->
+	<insert id="insertTableCPM" parameterType="hashmap">
+		INSERT 
+		  INTO HP_EXMN_APPO_SCHE
+		  	   (APPO_SCHE_DT, POSB_YN, ADD_DT)
+		VALUES
+			   (CONCAT(#{year},#{month},'01'), #{display01}, NOW())
+			 , (CONCAT(#{year},#{month},'02'), #{display02}, NOW())
+			 , (CONCAT(#{year},#{month},'03'), #{display03}, NOW())
+			 , (CONCAT(#{year},#{month},'04'), #{display04}, NOW())
+			 , (CONCAT(#{year},#{month},'05'), #{display05}, NOW())
+			 , (CONCAT(#{year},#{month},'06'), #{display06}, NOW())
+			 , (CONCAT(#{year},#{month},'07'), #{display07}, NOW())
+			 , (CONCAT(#{year},#{month},'08'), #{display08}, NOW())
+			 , (CONCAT(#{year},#{month},'09'), #{display09}, NOW())
+			 , (CONCAT(#{year},#{month},'10'), #{display10}, NOW())
+			 , (CONCAT(#{year},#{month},'11'), #{display11}, NOW())
+			 , (CONCAT(#{year},#{month},'12'), #{display12}, NOW())
+			 , (CONCAT(#{year},#{month},'13'), #{display13}, NOW())
+			 , (CONCAT(#{year},#{month},'14'), #{display14}, NOW())
+			 , (CONCAT(#{year},#{month},'15'), #{display15}, NOW())
+			 , (CONCAT(#{year},#{month},'16'), #{display16}, NOW())
+			 , (CONCAT(#{year},#{month},'17'), #{display17}, NOW())
+			 , (CONCAT(#{year},#{month},'18'), #{display18}, NOW())
+			 , (CONCAT(#{year},#{month},'19'), #{display19}, NOW())
+			 , (CONCAT(#{year},#{month},'20'), #{display20}, NOW())
+			 , (CONCAT(#{year},#{month},'21'), #{display21}, NOW())
+			 , (CONCAT(#{year},#{month},'22'), #{display22}, NOW())
+			 , (CONCAT(#{year},#{month},'23'), #{display23}, NOW())
+			 , (CONCAT(#{year},#{month},'24'), #{display24}, NOW())
+			 , (CONCAT(#{year},#{month},'25'), #{display25}, NOW())
+			 , (CONCAT(#{year},#{month},'26'), #{display26}, NOW())
+			 , (CONCAT(#{year},#{month},'27'), #{display27}, NOW())
+			 , (CONCAT(#{year},#{month},'28'), #{display28}, NOW())
+			 , (CONCAT(#{year},#{month},'29'), #{display29}, NOW())
+			 , (CONCAT(#{year},#{month},'30'), #{display30}, NOW())
+			 , (CONCAT(#{year},#{month},'31'), #{display31}, NOW())
+	</insert>
+	
+</mapper>

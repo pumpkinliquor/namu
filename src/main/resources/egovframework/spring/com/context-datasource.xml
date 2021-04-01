@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+	xmlns="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd 
+	 						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd">
+
+	<bean id="egov.propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:/egovframework/egovProps/globals.properties</value>
+                <!-- value>file:/product/jeus/egovProps/globals.properties</value-->
+            </list>
+        </property>
+    </bean>
+	
+	<!-- DataSource -->
+	<alias name="dataSource" alias="egov.dataSource" />
+	<alias name="dataSourceOCS" alias="egov.dataSourceOCS" />
+	
+	<!-- dbcp2로 변경 하면서 dbcp는 주석 -->
+	<!-- <beans profile="maria">
+		<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+			<property name="driverClassName" value="${Globals.maria.DriverClassName}"/>
+			<property name="url" value="${Globals.maria.Url}" />
+			<property name="username" value="${Globals.maria.UserName}"/>
+			<property name="password" value="${Globals.maria.Password}"/>
+			<property name="validationQuery" value="select 1" />
+			<property name="testWhileIdle" value="true" />
+			<property name="timeBetweenEvictionRunsMillis" value="3600000" />
+		</bean> --> 
+	
+		<!-- MSSQLDB OCS --> 
+		<!-- <bean id="dataSourceOCS" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+			<property name="driverClassName" value="${Globals.ms.DriverClassName}"/>
+			<property name="url" value="${Globals.ms.Url}" />
+			<property name="username" value="${Globals.ms.UserName}"/>
+			<property name="password" value="${Globals.ms.Password}"/>
+			<property name="validationQuery" value="select 1" />
+			<property name="testWhileIdle" value="true" />
+			<property name="timeBetweenEvictionRunsMillis" value="3600000" />
+		</bean>
+	</beans> -->
+	
+	<!-- MariaDB -->
+	<beans profile="maria">
+		<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+			<property name="driverClassName" value="${Globals.maria.DriverClassName}"/>
+			<property name="url" value="${Globals.maria.Url}" />
+			<property name="username" value="${Globals.maria.UserName}"/>
+			<property name="password" value="${Globals.maria.Password}"/>
+			
+			<!-- 4개의 설정은 동일하게 설정하는 것이 예외 케이스를 줄일 수 있음 -->
+			<property name="initialSize" value="30"/>
+			<property name="maxTotal" value="100"/>
+			<property name="maxIdle" value="30"/>
+			<property name="minIdle" value="30"/>
+			<property name="defaultReadOnly" value="true"/>
+			<!-- pool이 고갈되었을 경우 최대 대기 타임 ms -->
+			<property name="maxWaitMillis" value="10000"/>
+			<property name="validationQuery" value="select 1" />
+			<!-- Evictor 설정 -->
+			<property name="testOnBorrow" value="false"/>
+			<property name="testOnReturn" value="false"/>
+			<!-- testWhileIdle 설정. 150초마다 4개의 connection 꺼내 validation query를 날려 확인 -->
+			<property name="testWhileIdle" value="true"/>
+			<property name="timeBetweenEvictionRunsMillis" value="150000"/>
+			<property name="numTestsPerEvictionRun" value="4"/>
+			<property name="minEvictableIdleTimeMillis" value="-1"/>
+			<!-- preparedStatement 풀링 여부 -->
+			<property name="poolPreparedStatements" value="true"/>
+			<property name="maxOpenPreparedStatements" value="50"/>
+		</bean>
+	
+		<!-- MSSQLDB OCS --> 
+		<bean id="dataSourceOCS" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+			<property name="driverClassName" value="${Globals.ms.DriverClassName}"/>
+			<property name="url" value="${Globals.ms.Url}" />
+			<property name="username" value="${Globals.ms.UserName}"/>
+			<property name="password" value="${Globals.ms.Password}"/>
+			
+			<!-- 4개의 설정은 동일하게 설정하는 것이 예외 케이스를 줄일 수 있음 -->
+			<property name="initialSize" value="30"/>
+			<property name="maxTotal" value="100"/>
+			<property name="maxIdle" value="30"/>
+			<property name="minIdle" value="30"/>
+			<property name="defaultReadOnly" value="true"/>
+			<!-- pool이 고갈되었을 경우 최대 대기 타임 ms -->
+			<property name="maxWaitMillis" value="10000"/>
+			<property name="validationQuery" value="select 1" />
+			<!-- Evictor 설정 -->
+			<property name="testOnBorrow" value="false"/>
+			<property name="testOnReturn" value="false"/>
+			<!-- testWhileIdle 설정. 150초마다 4개의 connection 꺼내 validation query를 날려 확인 -->
+			<property name="testWhileIdle" value="true"/>
+			<property name="timeBetweenEvictionRunsMillis" value="150000"/>
+			<property name="numTestsPerEvictionRun" value="4"/>
+			<property name="minEvictableIdleTimeMillis" value="-1"/>
+			<!-- preparedStatement 풀링 여부 -->
+			<property name="poolPreparedStatements" value="true"/>
+			<property name="maxOpenPreparedStatements" value="50"/>
+		</bean>
+	</beans>
+	
+	
+	
+	
+	
+
+    <!-- DB Pool이 생성이 되더라고 특정 시간 호출되지 않으면 DBMS 설정에 따라 연결을 끊어질 때
+		이 경우 DBCP를 사용하셨다면.. 다음과 같은 설정을 추가하시면 연결을 유지시켜 줍니다. -->
+	<!--
+	<property name="validationQuery" value="select 1 from dual" />
+	<property name="testWhileIdle" value="true" />
+	<property name="timeBetweenEvictionRunsMillis" value="60000" /> -->  <!-- 1분 -->
+
+	<!-- DBCP가 아닌 WAS의 DataSource를 사용하시는 경우도 WAS별로 동일한 설정을 하실 수 있습니다.
+		(WAS별 구체적인 설정은 WAS document 확인) -->
+</beans>

@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AdminPopup">
+	
+	<!-- 팝업창관리:: 메인 게시물정보 -->
+	<select id="selectMainPopupList" parameterType="adminPopup" resultType="adminPopupVO">
+	<![CDATA[
+		SELECT
+			A.POPUP_ID AS popupId
+			, A.POPUP_SJ_NM AS popupTitleNm
+			, A.FILE_URL AS fileUrl
+			, A.POPUP_VRTICL_LC AS popupHlc
+			, A.POPUP_WIDTH_LC AS popupWlc
+			, A.POPUP_VRTICL_SIZE AS popupHSize
+			, A.POPUP_WIDTH_SIZE AS popupWSize
+			, A.NTCE_BGNDE AS ntceBgnde
+			, A.NTCE_ENDDE AS ntceEndde
+			, A.STOPVEW_SETUP_AT AS stopVewAt
+			, IFNULL(A.NTCE_AT, 'N') AS ntceAt
+			, DATE_FORMAT(A.FRST_REGIST_PNTTM,'%Y.%m.%d') AS frstRegisterPnttm
+			, A.FRST_REGISTER_ID AS frstRegisterId
+			, A.LAST_UPDT_PNTTM AS lastUpdusrPnttm
+			, A.LAST_UPDUSR_ID AS lastUpdusrId
+			, A.ATCH_FILE_ID AS atchFileId
+			, A.POPUP_TARGET_YN AS popupTargetYn
+			, (
+				SELECT USER_NM FROM COMTNEMPLYRINFO WHERE ESNTL_ID = A.FRST_REGISTER_ID
+			) AS FRST_REGISTER_NM
+		FROM COMTNPOPUPMANAGE A
+		WHERE 1 = 1
+			AND IFNULL(A.NTCE_AT, 'N') = 'Y'
+			AND DATE_FORMAT(SYSDATE(),'%Y%m%d') >= REPLACE(NTCE_BGNDE, '.', '')
+			AND DATE_FORMAT(SYSDATE(),'%Y%m%d') <= REPLACE(NTCE_ENDDE, '.', '')
+	 ]]>
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(recordCountPerPage)">
+		LIMIT #{recordCountPerPage}
+		</if>
+	</select>
+	
+	<!-- 팝업창관리: 화이트 리스트 정보 -->
+	<select id="selectPopupWhiteList" resultType="adminPopup">
+		SELECT FILE_URL
+		FROM COMTNPOPUPMANAGE
+	</select>
+	
+	<!-- 팝업창관리::목록조회 게시물정보 -->
+	<select id="selectPopupList" parameterType="adminPopup" resultType="adminPopup">
+		SELECT
+			A.POPUP_ID AS popupId
+			, A.POPUP_SJ_NM AS popupTitleNm
+			, A.FILE_URL AS fileUrl
+			, A.POPUP_VRTICL_LC AS popupHlc
+			, A.POPUP_WIDTH_LC AS popupWlc
+			, A.POPUP_VRTICL_SIZE AS popupHSize
+			, A.POPUP_WIDTH_SIZE AS popupWSize
+			, A.NTCE_BGNDE AS ntceBgnde
+			, A.NTCE_ENDDE AS ntceEndde
+			, A.STOPVEW_SETUP_AT AS stopVewAt
+			, IFNULL(A.NTCE_AT, 'N') AS ntceAt
+			, A.FRST_REGISTER_ID AS frstRegisterId
+			, A.LAST_UPDT_PNTTM AS lastUpdusrPnttm
+			, A.LAST_UPDUSR_ID AS lastUpdusrId
+			, A.ATCH_FILE_ID AS atchFileId
+			, A.POPUP_TARGET_YN AS popupTargetYn
+			, DATE_FORMAT(A.FRST_REGIST_PNTTM,'%Y.%m.%d') AS frstRegisterPnttm
+			, (
+				SELECT USER_NM FROM COMTNEMPLYRINFO WHERE ESNTL_ID = A.FRST_REGISTER_ID
+			) AS FRST_REGISTER_NM
+		FROM COMTNPOPUPMANAGE A
+		WHERE 1 = 1 
+	 	<if test="searchKeyword != null and searchKeyword != ''">
+			<if test="searchCondition == 'POPUP_SJ_NM'">
+				AND POPUP_SJ_NM LIKE CONCAT ('%', #{searchKeyword},'%')
+			</if>
+		</if>
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(ntceAt)">
+			AND IFNULL(A.NTCE_AT, 'N') = #{ntceAt}
+		</if>
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(ntceBgnde)">
+			AND A.FRST_REGIST_PNTTM <![CDATA[ >= ]]> #{ntceBgnde}
+		</if>
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(ntceEndde)">
+			AND A.FRST_REGIST_PNTTM <![CDATA[ <= ]]> #{ntceEndde}
+		</if>
+		ORDER BY A.FRST_REGIST_PNTTM DESC
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+	
+	<!-- 팝업창관리::목록조회_게시물 총갯수  -->
+	<select id="selectPopupListCnt" resultType="int">
+		SELECT COUNT(*) AS totcnt
+		FROM COMTNPOPUPMANAGE
+		WHERE 1 = 1
+	 	<if test="searchKeyword != null and searchKeyword != ''">
+			<if test="searchCondition == 'POPUP_SJ_NM'">
+				AND POPUP_SJ_NM LIKE CONCAT ('%', #{searchKeyword},'%')
+			</if>
+		</if>
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(ntceAt)">
+			AND IFNULL(NTCE_AT, 'N') = #{ntceAt}
+		</if>
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(ntceBgnde)">
+			AND FRST_REGIST_PNTTM <![CDATA[ >= ]]> #{ntceBgnde}
+		</if>
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isNotEmpty(ntceEndde)">
+			AND FRST_REGIST_PNTTM <![CDATA[ <= ]]> #{ntceEndde}
+		</if>
+	</select>
+	
+	<!-- 팝업창관리::삭제  -->
+	<delete id="deletePopup">
+		DELETE FROM COMTNPOPUPMANAGE
+		WHERE POPUP_ID=#{popupId}
+	</delete>
+	
+	<!-- 팝업창관리::수정  -->
+	<update id="updatePopup" parameterType="adminPopup">
+		UPDATE COMTNPOPUPMANAGE
+		SET
+			POPUP_SJ_NM = #{popupTitleNm}
+			, FILE_URL = #{fileUrl}
+			, POPUP_VRTICL_LC = #{popupHlc}
+			, POPUP_WIDTH_LC = #{popupWlc}
+			, POPUP_VRTICL_SIZE = #{popupHSize}
+			, POPUP_WIDTH_SIZE = #{popupWSize}
+			, NTCE_BGNDE = #{ntceBgnde}
+			, NTCE_ENDDE = #{ntceEndde}
+			, STOPVEW_SETUP_AT = #{stopVewAt}
+			, NTCE_AT = #{ntceAt}
+			, LAST_UPDT_PNTTM = SYSDATE()
+			, LAST_UPDUSR_ID = #{lastUpdusrId}
+			, ATCH_FILE_ID = #{atchFileId}
+			, POPUP_TARGET_YN = #{popupTargetYn}
+		WHERE POPUP_ID = #{popupId}
+	</update>
+	
+	<!-- 팝업창관리::상세보기 -->
+	<select id="selectPopupDetail" parameterType="adminPopup" resultType="adminPopupVO">
+		SELECT
+			A.POPUP_ID AS popupId
+			, A.POPUP_SJ_NM AS popupTitleNm
+			, A.FILE_URL AS fileUrl
+			, A.POPUP_VRTICL_LC AS popupHlc
+			, A.POPUP_WIDTH_LC AS popupWlc
+			, A.POPUP_VRTICL_SIZE AS popupHSize
+			, A.POPUP_WIDTH_SIZE AS popupWSize
+			, A.NTCE_BGNDE AS ntceBgnde
+			, A.NTCE_ENDDE AS ntceEndde
+			, A.STOPVEW_SETUP_AT AS stopVewAt
+			, A.NTCE_AT AS ntceAt
+			, A.FRST_REGIST_PNTTM AS frstRegisterPnttm
+			, A.FRST_REGISTER_ID AS frstRegisterId
+			, A.LAST_UPDT_PNTTM AS lastUpdusrPnttm
+			, A.LAST_UPDUSR_ID AS lastUpdusrId
+			, A.ATCH_FILE_ID AS atchFileId
+			, A.POPUP_TARGET_YN AS popupTargetYn
+		FROM COMTNPOPUPMANAGE A
+		WHERE 1 = 1
+			AND A.POPUP_ID = #{popupId}
+	</select>
+	
+	<!-- 팝업창관리::입력  -->
+	<insert id="insertPopup" parameterType="adminPopup">
+		INSERT INTO COMTNPOPUPMANAGE 
+		(
+			POPUP_ID
+			, POPUP_SJ_NM
+			, FILE_URL
+			, POPUP_VRTICL_LC
+			, POPUP_WIDTH_LC
+			, POPUP_VRTICL_SIZE
+			, POPUP_WIDTH_SIZE
+			, NTCE_BGNDE
+			, NTCE_ENDDE
+			, STOPVEW_SETUP_AT
+			, NTCE_AT
+			, FRST_REGIST_PNTTM
+			, FRST_REGISTER_ID
+			, LAST_UPDT_PNTTM
+			, LAST_UPDUSR_ID
+			, ATCH_FILE_ID
+			, POPUP_TARGET_YN
+		)
+		VALUES
+		(
+			#{popupId}
+			, #{popupTitleNm}
+			, #{fileUrl}
+			, #{popupHlc}
+			, #{popupWlc}
+			, #{popupHSize}
+			, #{popupWSize}
+			, #{ntceBgnde}
+			, #{ntceEndde}
+			, #{stopVewAt}
+			, #{ntceAt}
+			, SYSDATE()
+			, #{frstRegisterId}
+			, SYSDATE()
+			, #{lastUpdusrId}
+			, #{atchFileId}
+			, #{popupTargetYn}
+		)
+	</insert>
+</mapper>

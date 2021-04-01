@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="AdminDRMDAO">
+
+	<resultMap id="Doctor" type="fbcms.admin.hpm.drm.service.impl.DoctorVO">
+        <result property="DR_ID" column="DR_ID"/>
+        <result property="MEDI_SBJ_CD" column="MEDI_SBJ_CD"/>
+        <result property="MEDI_SBJ_NM" column="MEDI_SBJ_NM"/>
+        <result property="DR_NM" column="DR_NM"/>
+        <result property="SPCL_CLINIC_CT" column="SPCL_CLINIC_CT"/>
+        <result property="FIELD_CT" column="FIELD_CT"/>
+        <result property="POSITION_CT" column="POSITION_CT"/>
+        <result property="PC_IMG_ATCH_NO" column="PC_IMG_ATCH_NO"/>
+        <result property="MOBILE_IMG_ATCH_NO" column="MOBILE_IMG_ATCH_NO"/>
+        <result property="MNG_CENTER_CD" column="MNG_CENTER_CD"/>
+        <result property="SPCL_FIELD_TX" column="SPCL_FIELD_TX"/>
+        <result property="HISTORY_TX" column="HISTORY_TX"/>
+        <result property="HISTORY_TX2" column="HISTORY_TX2"/>
+        <result property="BLOG_ADD_TX" column="BLOG_ADD_TX"/>
+        <result property="ADD_OPEN_SET_CD" column="ADD_OPEN_SET_CD"/>
+        <result property="SEARCH_TAG_CT" column="SEARCH_TAG_CT"/>
+        <result property="REG_DT" column="REG_DT"/>
+        <result property="DEL_YN" column="DEL_YN"/>
+        <result property="BROAD_APPEAR_TX" column="BROAD_APPEAR_TX"/>
+        <result property="BLOG_USE_YN" column="BLOG_USE_YN"/>
+        <result property="CLINIC_APPO_WORD_CT" column="CLINIC_APPO_WORD_CT"/>
+        <result property="ORDER_NO" column="ORDER_NO"/>
+        <result property="BGN_DATE" column="BGN_DATE"/>
+        <result property="END_DATE" column="END_DATE"/>
+    </resultMap>
+    
+	<select id="selectDRMList" parameterType="fbcms.admin.hpm.drm.service.impl.DoctorVO" resultMap="Doctor">
+		SELECT DR_ID
+		     , DR_NM
+		     , MEDI_SBJ_CD
+		     , DATE_FORMAT(REG_DT,'%Y.%m.%d') AS REG_DT
+		     , ORDER_NO
+		  FROM HP_DR
+		 WHERE 1=1
+ 		   AND IFNULL(DEL_YN,'N') NOT IN ('Y')
+		<if test="DR_NM != null and DR_NM != '' ">
+		   AND DR_NM LIKE CONCAT('%',UPPER(#{DR_NM}),'%') 
+		</if>
+		<if test="MEDI_SBJ_CD != null and MEDI_SBJ_CD != '' ">
+		   AND MEDI_SBJ_CD = #{MEDI_SBJ_CD}
+		</if>
+		<if test="ADD_OPEN_SET_CD != null and ADD_OPEN_SET_CD != '' ">
+		   AND ADD_OPEN_SET_CD LIKE CONCAT('%' , #{ADD_OPEN_SET_CD} , '%')
+		</if>
+		ORDER BY ORDER_NO
+		<if test="recordCountPerPage != 0 and recordCountPerPage != null and recordCountPerPage != '' ">
+		LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+		</if>
+	</select>
+	
+	<select id="selectDRMListPopup" parameterType="fbcms.admin.hpm.drm.service.impl.DoctorVO" resultMap="Doctor">
+		SELECT DR_ID
+		     , DR_NM
+		     , MEDI_SBJ_CD
+		     , DATE_FORMAT(REG_DT,'%Y.%m.%d') AS REG_DT
+		     , ORDER_NO
+		  FROM HP_DR
+		 WHERE 1=1
+ 		   AND IFNULL(DEL_YN,'N') NOT IN ('Y')
+		<if test="DR_NM != null and DR_NM != '' ">
+		   AND DR_NM LIKE CONCAT('%',UPPER(#{DR_NM}),'%') 
+		</if>
+		<if test="MEDI_SBJ_CD != null and MEDI_SBJ_CD != '' ">
+		   AND MEDI_SBJ_CD = #{MEDI_SBJ_CD}
+		</if>
+		<if test="ADD_OPEN_SET_CD != null and ADD_OPEN_SET_CD != '' ">
+		   AND ADD_OPEN_SET_CD LIKE CONCAT('%' , #{ADD_OPEN_SET_CD} , '%')
+		</if>
+		ORDER BY ORDER_NO
+	</select>
+	
+	<select id="selectDRMTotCnt" parameterType="fbcms.admin.hpm.drm.service.impl.DoctorVO" resultType="int">
+		SELECT COUNT(*) AS totcnt
+		  FROM HP_DR
+		 WHERE 1 = 1
+ 		   AND IFNULL(DEL_YN,'N') NOT IN ('Y')
+		 <if test="DR_NM != null and DR_NM != '' ">
+		   AND DR_NM = #{DR_NM}
+		</if>
+		<if test="MEDI_SBJ_CD != null and MEDI_SBJ_CD != '' ">
+		   AND MEDI_SBJ_CD = #{MEDI_SBJ_CD}
+		</if>
+		<if test="ADD_OPEN_SET_CD != null and ADD_OPEN_SET_CD != '' ">
+		   AND ADD_OPEN_SET_CD LIKE CONCAT('%' , #{ADD_OPEN_SET_CD} , '%')
+		</if>
+		 ORDER BY ORDER_NO
+	</select>
+	
+	<select id="selectDRM" resultMap="Doctor" parameterType="fbcms.admin.hpm.drm.service.impl.DoctorVO">
+		SELECT DR_ID
+			 , DR_NM
+			 , MEDI_SBJ_CD
+			 , FIELD_CT
+			 , POSITION_CT
+			 , PC_IMG_ATCH_NO
+			 , MOBILE_IMG_ATCH_NO
+			 , MNG_CENTER_CD
+			 , SPCL_FIELD_TX
+			 , HISTORY_TX
+			 , HISTORY_TX2
+			 , BLOG_ADD_TX
+			 , ADD_OPEN_SET_CD
+			 , SEARCH_TAG_CT
+			 , BROAD_APPEAR_TX
+			 , DATE_FORMAT(REG_DT,'%Y.%m.%d/%T') AS REG_DT
+			 , IFNULL(DEL_YN, 'N') AS DEL_YN
+			 , CLINIC_APPO_WORD_CT
+			 , BLOG_USE_YN
+			 , CLINIC_APPO_WORD_CT
+		  FROM HP_DR
+		 WHERE 1=1
+		   AND DR_ID = #{DR_ID}
+		   AND IFNULL(DEL_YN, 'N') = 'N'
+	</select>
+	
+	<update id="updateDRM" parameterType="fbcms.admin.hpm.drm.service.impl.DoctorVO">
+		UPDATE HP_DR
+		   SET DR_ID = #{DR_ID}
+		     , MNG_CENTER_CD = #{MNG_CENTER_CD}
+		     , FIELD_CT = #{FIELD_CT}
+		     , POSITION_CT = #{POSITION_CT}
+		   <if test=" PC_IMG_ATCH_NO != null and PC_IMG_ATCH_NO !='' ">
+		    , PC_IMG_ATCH_NO = #{PC_IMG_ATCH_NO}
+		   </if>
+		   <if test=" MOBILE_IMG_ATCH_NO != null and MOBILE_IMG_ATCH_NO !='' ">
+		    , MOBILE_IMG_ATCH_NO = #{MOBILE_IMG_ATCH_NO}
+		   </if>
+		     , SPCL_FIELD_TX = #{SPCL_FIELD_TX}
+		     , BROAD_APPEAR_TX = #{BROAD_APPEAR_TX}
+		     , HISTORY_TX = #{HISTORY_TX}
+		     , HISTORY_TX2 = #{HISTORY_TX2}
+		     , BLOG_ADD_TX = #{BLOG_ADD_TX}
+		     , BLOG_USE_YN = #{BLOG_USE_YN}
+		     , ADD_OPEN_SET_CD = #{ADD_OPEN_SET_CD}
+		     , SEARCH_TAG_CT = #{SEARCH_TAG_CT}
+		     , CLINIC_APPO_WORD_CT = #{CLINIC_APPO_WORD_CT}
+		     , UPDT_DT = NOW()
+		 WHERE DR_ID = #{DR_ID}
+	</update>
+	
+	<insert id="insertDRM" parameterType="fbcms.admin.hpm.drm.service.impl.DoctorVO">
+		INSERT 
+		  INTO HP_DR 
+		     ( 
+		       DR_ID
+		     , MEDI_SBJ_CD
+		     , DR_NM
+		     , SPCL_CLINIC_CT
+		     , FIELD_CT
+		     , PC_IMG_ATCH_NO
+		     , MOBILE_IMG_ATCH_NO
+		     , MNG_CENTER_CD
+		     , SPCL_FIELD_TX
+		     , HISTORY_TX
+		     , HISTORY_TX2
+		     , BLOG_ADD_TX
+		     , SEARCH_TAG_CT
+		     , BROAD_APPEAR_TX
+		     , BLOG_USE_YN
+		     , ADD_OPEN_SET_CD
+		     , CLINIC_APPO_WORD_CT
+		     , REG_DT
+		     , POSITION_CT
+		     , ADD_DT
+		     , ORDER_NO
+		     ) 
+		VALUES 
+		     ( 
+		       #{DR_ID}
+		     , #{MEDI_SBJ_CD}
+		     , #{DR_NM}
+		     , #{SPCL_CLINIC_CT}
+		     , #{FIELD_CT}
+		     , #{PC_IMG_ATCH_NO}
+		     , #{MOBILE_IMG_ATCH_NO}
+		     , #{MNG_CENTER_CD}
+		     , #{SPCL_FIELD_TX}
+		     , #{HISTORY_TX}
+		     , #{HISTORY_TX2}
+		     , #{BLOG_ADD_TX}
+		     , #{SEARCH_TAG_CT}
+		     , #{BROAD_APPEAR_TX}
+		     , #{BLOG_USE_YN}
+		     , #{ADD_OPEN_SET_CD}
+		     , #{CLINIC_APPO_WORD_CT}
+		     , NOW()
+		     , #{POSITION_CT}
+		     , NOW()
+		     , (SELECT IFNULL(MAX(A.ORDER_NO)+1,1) FROM HP_DR A WHERE A.MEDI_SBJ_CD =#{MEDI_SBJ_CD} )
+		     ) 
+		    ON DUPLICATE KEY 
+		UPDATE 
+		       DR_ID = #{DR_ID}
+		     , MEDI_SBJ_CD = #{MEDI_SBJ_CD}
+		     , DR_NM = #{DR_NM}
+		     , SPCL_CLINIC_CT = #{SPCL_CLINIC_CT}
+		     , FIELD_CT = #{FIELD_CT}
+		     , PC_IMG_ATCH_NO = #{PC_IMG_ATCH_NO}
+		     , MOBILE_IMG_ATCH_NO = #{MOBILE_IMG_ATCH_NO}
+		     , MNG_CENTER_CD = #{MNG_CENTER_CD}
+		     , SPCL_FIELD_TX = #{SPCL_FIELD_TX}
+		     , HISTORY_TX = #{HISTORY_TX}
+		     , HISTORY_TX2 = #{HISTORY_TX2}
+		     , BLOG_ADD_TX = #{BLOG_ADD_TX}
+		     , SEARCH_TAG_CT = #{SEARCH_TAG_CT}
+		     , BROAD_APPEAR_TX = #{BROAD_APPEAR_TX}
+		     , BLOG_USE_YN = #{BLOG_USE_YN}
+		     , REG_DT = NOW()
+		     , DEL_YN = null
+		     , ADD_OPEN_SET_CD = #{ADD_OPEN_SET_CD}
+		     , CLINIC_APPO_WORD_CT = #{CLINIC_APPO_WORD_CT}
+		     , POSITION_CT = #{POSITION_CT}
+		     , UPDT_DT = NOW()
+		     , ORDER_NO = (SELECT IFNULL(MAX(A.ORDER_NO)+1,1) FROM HP_DR A WHERE A.MEDI_SBJ_CD =#{MEDI_SBJ_CD} )
+	</insert>
+	
+	<update id="deleteDRM" parameterType="fbcms.admin.hpm.drm.service.impl.DoctorVO">
+		UPDATE HP_DR
+		   SET DEL_YN = 'Y'
+		     , UPDT_DT = NOW()
+		 WHERE DR_ID  = #{DR_ID}
+	</update>
+	
+	<update id="updateOrderDRM" parameterType="fbcms.admin.hpm.drm.service.impl.DoctorVO">
+		UPDATE HP_DR
+		   SET ORDER_NO = #{ORDER_NO}
+		     , UPDT_DT = NOW()  
+		 WHERE DR_ID = #{DR_ID}
+	</update>
+	
+	<resultMap id="DoctorTimeTable" type="fbcms.admin.hpm.drm.service.impl.DoctorTimeTableVO">
+        <result property="MEDI_SBJ_CD"  	column="MEDI_SBJ_CD"/>
+        <result property="MEDI_SBJ_NM"  	column="MEDI_SBJ_NM"/>
+        <result property="DR_ID" 			column="DR_ID"/>
+        <result property="DAY_WEEK_CD"  	column="DAY_WEEK_CD"/>
+        <result property="TIME_GUBN_CD" 	column="TIME_GUBN_CD"/>
+        <result property="POSB_YN" 			column="POSB_YN"/>
+        <result property="DAY_WEEK_BIGO_TX" column="DAY_WEEK_BIGO_TX"/>
+        <result property="LAST_MOD_DT" 		column="LAST_MOD_DT"/>
+        <result property="AM_CT" 			column="AM_CT"/>
+        <result property="PM_CT" 			column="PM_CT"/>
+        <result property="APPO_DT" 			column="APPO_DT"/>
+        <result property="APPO_TIME"		column="APPO_TIME"/>
+        <result property="DR_NM"			column="DR_NM"/>
+		<result property="POSITION_CT"		column="POSITION_CT"/>
+    </resultMap>
+    
+	<select id="selectTMMMainList" parameterType="fbcms.admin.hpm.drm.service.impl.DoctorTimeTableVO" resultMap="DoctorTimeTable">
+		SELECT MEDI_SBJ_CD
+		     , DATE_FORMAT(LAST_MOD_DT,'%Y.%m.%d') AS LAST_MOD_DT
+		  FROM HP_CLINIC_TIME_TB
+		 WHERE 1=1
+		   AND IFNULL(DEL_YN,'N') NOT IN ('Y')
+	</select>
+	
+	<select id="selectTMMView" parameterType="fbcms.admin.hpm.drm.service.impl.DoctorTimeTableVO" resultMap="DoctorTimeTable">
+		SELECT IFNULL(MEDI_SBJ_CD, '') AS MEDI_SBJ_CD
+		     , IFNULL(DATE_FORMAT(LAST_MOD_DT,'%Y.%m.%d %H:%i:%S'), '') AS LAST_MOD_DT
+		     , IFNULL(B.RMK_CT, '') AS AM_CT
+		     , IFNULL(B.RMK2_CT, '') AS PM_CT
+		  FROM HP_CLINIC_TIME_TB A
+		  LEFT OUTER JOIN HP_CODE_DTIL B
+		    ON A.MEDI_SBJ_CD = B.DTIL_CD
+		   AND B.COMM_CD = 'MEDI_SBJ_CD'
+		 WHERE 1=1
+		   AND LAST_MOD_DT IS NOT NULL
+		   AND IFNULL(A.DEL_YN,'N') NOT IN ('Y')
+		   AND MEDI_SBJ_CD = #{MEDI_SBJ_CD}
+		   LIMIT 1
+	</select>
+	
+	<update id="updateAMPM" parameterType="fbcms.admin.hpm.drm.service.impl.DoctorTimeTableVO">
+		UPDATE HP_CODE_DTIL
+		   SET RMK_CT = #{AM_CT}
+		     , RMK2_CT = #{PM_CT}
+		 WHERE COMM_CD = 'MEDI_SBJ_CD'
+		   AND DTIL_CD = #{MEDI_SBJ_CD}
+	</update>
+	
+	<insert id="updateTMM" parameterType="fbcms.admin.hpm.drm.service.impl.DoctorTimeTableVO">
+		INSERT 
+		  INTO HP_CLINIC_TIME_TB
+		     ( 
+		       MEDI_SBJ_CD
+		     , DAY_WEEK_CD
+		     , DR_ID
+		     , TIME_GUBN_CD
+		     , POSB_YN
+		     , DAY_WEEK_BIGO_TX
+		     , LAST_MOD_DT
+		     , ADD_DT
+		     )
+		VALUES
+			 (
+			   #{MEDI_SBJ_CD}
+		     , #{DAY_WEEK_CD}
+		     , #{DR_ID}
+		     , #{TIME_GUBN_CD}
+		     , #{POSB_YN}
+		     , #{DAY_WEEK_BIGO_TX}
+		     , NOW()
+		     , NOW()
+			 )
+			ON DUPLICATE KEY 
+		UPDATE
+			   POSB_YN = #{POSB_YN}
+		<if test='POSB_YN == "Y"'>
+			 , DAY_WEEK_BIGO_TX = #{DAY_WEEK_BIGO_TX}
+		</if>
+			 , LAST_MOD_DT = NOW()
+			 , UPDT_ID = NOW()
+	</insert>
+	
+	<select id="selectTMMList" parameterType="fbcms.admin.hpm.drm.service.impl.DoctorTimeTableVO" resultType="hashmap">
+		SELECT HP_CLINIC_TIME_TB.DR_ID
+			 , MAX(CASE WHEN DAY_WEEK_CD ='MON' AND TIME_GUBN_CD ='AM'  THEN POSB_YN  END) AS AM_MON
+			 , MAX(CASE WHEN DAY_WEEK_CD ='MON' AND TIME_GUBN_CD ='AM'  THEN DAY_WEEK_BIGO_TX END) AS AM_MON_BIGO
+			 , MAX(CASE WHEN DAY_WEEK_CD ='TUE' AND TIME_GUBN_CD ='AM'  THEN POSB_YN  END) AS AM_TUE 
+			 , MAX(CASE WHEN DAY_WEEK_CD ='TUE' AND TIME_GUBN_CD ='AM'  THEN DAY_WEEK_BIGO_TX  END) AS AM_TUE_BIGO
+			 , MAX(CASE WHEN DAY_WEEK_CD ='WED' AND TIME_GUBN_CD ='AM'  THEN POSB_YN  END) AS AM_WED
+			 , MAX(CASE WHEN DAY_WEEK_CD ='WED' AND TIME_GUBN_CD ='AM'  THEN DAY_WEEK_BIGO_TX  END) AS AM_WED_BIGO
+			 , MAX(CASE WHEN DAY_WEEK_CD ='THU' AND TIME_GUBN_CD ='AM'  THEN POSB_YN  END) AS AM_THU
+			 , MAX(CASE WHEN DAY_WEEK_CD ='THU' AND TIME_GUBN_CD ='AM'  THEN DAY_WEEK_BIGO_TX  END) AS AM_THU_BIGO
+			 , MAX(CASE WHEN DAY_WEEK_CD ='FRI' AND TIME_GUBN_CD ='AM'  THEN POSB_YN  END) AS AM_FRI
+		     , MAX(CASE WHEN DAY_WEEK_CD ='FRI' AND TIME_GUBN_CD ='AM'  THEN DAY_WEEK_BIGO_TX  END) AS AM_FRI_BIGO
+			 , MAX(CASE WHEN DAY_WEEK_CD ='SAT' AND TIME_GUBN_CD ='AM'  THEN POSB_YN  END) AS AM_SAT
+		     , MAX(CASE WHEN DAY_WEEK_CD ='SAT' AND TIME_GUBN_CD ='AM'  THEN DAY_WEEK_BIGO_TX  END) AS AM_SAT_BIGO
+			 , MAX(CASE WHEN DAY_WEEK_CD ='MON' AND TIME_GUBN_CD ='PM'  THEN POSB_YN  END) AS PM_MON
+			 , MAX(CASE WHEN DAY_WEEK_CD ='MON' AND TIME_GUBN_CD ='PM'  THEN DAY_WEEK_BIGO_TX  END) AS PM_MON_BIGO
+			 , MAX(CASE WHEN DAY_WEEK_CD ='TUE' AND TIME_GUBN_CD ='PM'  THEN POSB_YN  END) AS PM_TUE
+			 , MAX(CASE WHEN DAY_WEEK_CD ='TUE' AND TIME_GUBN_CD ='PM'  THEN DAY_WEEK_BIGO_TX  END) AS PM_TUE_BIGO
+			 , MAX(CASE WHEN DAY_WEEK_CD ='WED' AND TIME_GUBN_CD ='PM'  THEN POSB_YN  END) AS PM_WED
+			 , MAX(CASE WHEN DAY_WEEK_CD ='WED' AND TIME_GUBN_CD ='PM'  THEN DAY_WEEK_BIGO_TX  END) AS PM_WED_BIGO
+			 , MAX(CASE WHEN DAY_WEEK_CD ='THU' AND TIME_GUBN_CD ='PM'  THEN POSB_YN  END) AS PM_THU
+			 , MAX(CASE WHEN DAY_WEEK_CD ='THU' AND TIME_GUBN_CD ='PM'  THEN DAY_WEEK_BIGO_TX  END) AS PM_THU_BIGO
+			 , MAX(CASE WHEN DAY_WEEK_CD ='FRI' AND TIME_GUBN_CD ='PM'  THEN POSB_YN  END) AS PM_FRI
+		     , MAX(CASE WHEN DAY_WEEK_CD ='FRI' AND TIME_GUBN_CD ='PM'  THEN DAY_WEEK_BIGO_TX  END) AS PM_FRI_BIGO
+			 , MAX(CASE WHEN DAY_WEEK_CD ='SAT' AND TIME_GUBN_CD ='PM'  THEN POSB_YN  END) AS PM_SAT
+			 , MAX(CASE WHEN DAY_WEEK_CD ='SAT' AND TIME_GUBN_CD ='PM'  THEN DAY_WEEK_BIGO_TX  END) AS PM_SAT_BIGO
+		  FROM HP_CLINIC_TIME_TB LEFT JOIN HP_DR
+		    ON HP_CLINIC_TIME_TB.DR_ID = HP_DR.DR_ID
+		 WHERE 1=1
+		   AND HP_CLINIC_TIME_TB.MEDI_SBJ_CD = #{MEDI_SBJ_CD}
+		   AND IFNULL(HP_DR.DEL_YN,'N') = 'N'
+		   AND HP_DR.ADD_OPEN_SET_CD LIKE '%01%'
+		 GROUP BY HP_CLINIC_TIME_TB.DR_ID 
+		 ORDER BY ORDER_NO 
+	</select>
+	
+	<select id="selectDrScheduleComment" parameterType="fbcms.admin.hpm.drm.service.impl.DoctorTimeTableVO" resultType="egovMap">
+		SELECT IFNULL(RMK_CT, '') AS RMK_CT
+			 , IFNULL(RMK2_CT, '') AS RMK2_CT
+		  FROM HP_CODE_DTIL
+		 WHERE COMM_CD = 'MEDI_SBJ_CD'
+		   AND IFNULL(USE_YN, 'N') = 'Y'
+		   AND DTIL_CD = #{MEDI_SBJ_CD}
+	</select>
+	
+	<select id="selectDrScheduleList" parameterType="fbcms.admin.hpm.drm.service.impl.DoctorTimeTableVO" resultType="hashMap">
+		SELECT HP_DR.DR_NM 
+			 , MAX(CASE WHEN DAY_WEEK_CD ='MON' AND TIME_GUBN_CD ='AM' THEN IFNULL(POSB_YN, 'N') END) AS AM_MON
+			 , IFNULL(MAX(CASE WHEN DAY_WEEK_CD ='MON' AND TIME_GUBN_CD ='AM' THEN DAY_WEEK_BIGO_TX END),'') AS AM_MON_BIGO
+			 , MAX(CASE WHEN DAY_WEEK_CD ='TUE' AND TIME_GUBN_CD ='AM' THEN IFNULL(POSB_YN, 'N') END) AS AM_TUE 
+			 , IFNULL(MAX(CASE WHEN DAY_WEEK_CD ='TUE' AND TIME_GUBN_CD ='AM' THEN DAY_WEEK_BIGO_TX  END),'') AS AM_TUE_BIGO
+			 , MAX(CASE WHEN DAY_WEEK_CD ='WED' AND TIME_GUBN_CD ='AM' THEN IFNULL(POSB_YN, 'N') END) AS AM_WED
+			 , IFNULL(MAX(CASE WHEN DAY_WEEK_CD ='WED' AND TIME_GUBN_CD ='AM' THEN DAY_WEEK_BIGO_TX  END),'') AS AM_WED_BIGO
+			 , MAX(CASE WHEN DAY_WEEK_CD ='THU' AND TIME_GUBN_CD ='AM' THEN IFNULL(POSB_YN, 'N') END) AS AM_THU
+			 , IFNULL(MAX(CASE WHEN DAY_WEEK_CD ='THU' AND TIME_GUBN_CD ='AM' THEN DAY_WEEK_BIGO_TX  END),'') AS AM_THU_BIGO
+			 , MAX(CASE WHEN DAY_WEEK_CD ='FRI' AND TIME_GUBN_CD ='AM' THEN IFNULL(POSB_YN, 'N') END) AS AM_FRI
+		     , IFNULL(MAX(CASE WHEN DAY_WEEK_CD ='FRI' AND TIME_GUBN_CD ='AM' THEN DAY_WEEK_BIGO_TX  END),'') AS AM_FRI_BIGO
+			 , MAX(CASE WHEN DAY_WEEK_CD ='SAT' AND TIME_GUBN_CD ='AM' THEN IFNULL(POSB_YN, 'N') END) AS AM_SAT
+		     , IFNULL(MAX(CASE WHEN DAY_WEEK_CD ='SAT' AND TIME_GUBN_CD ='AM' THEN DAY_WEEK_BIGO_TX  END),'') AS AM_SAT_BIGO
+			 , MAX(CASE WHEN DAY_WEEK_CD ='MON' AND TIME_GUBN_CD ='PM' THEN IFNULL(POSB_YN, 'N') END) AS PM_MON
+			 , IFNULL(MAX(CASE WHEN DAY_WEEK_CD ='MON' AND TIME_GUBN_CD ='PM' THEN DAY_WEEK_BIGO_TX  END),'') AS PM_MON_BIGO
+			 , MAX(CASE WHEN DAY_WEEK_CD ='TUE' AND TIME_GUBN_CD ='PM' THEN IFNULL(POSB_YN, 'N') END) AS PM_TUE
+			 , IFNULL(MAX(CASE WHEN DAY_WEEK_CD ='TUE' AND TIME_GUBN_CD ='PM' THEN DAY_WEEK_BIGO_TX  END),'') AS PM_TUE_BIGO
+			 , MAX(CASE WHEN DAY_WEEK_CD ='WED' AND TIME_GUBN_CD ='PM' THEN IFNULL(POSB_YN, 'N') END) AS PM_WED
+			 , IFNULL(MAX(CASE WHEN DAY_WEEK_CD ='WED' AND TIME_GUBN_CD ='PM' THEN DAY_WEEK_BIGO_TX  END),'') AS PM_WED_BIGO
+			 , MAX(CASE WHEN DAY_WEEK_CD ='THU' AND TIME_GUBN_CD ='PM' THEN IFNULL(POSB_YN, 'N') END) AS PM_THU
+			 , IFNULL(MAX(CASE WHEN DAY_WEEK_CD ='THU' AND TIME_GUBN_CD ='PM' THEN DAY_WEEK_BIGO_TX  END),'') AS PM_THU_BIGO
+			 , MAX(CASE WHEN DAY_WEEK_CD ='FRI' AND TIME_GUBN_CD ='PM' THEN IFNULL(POSB_YN, 'N') END) AS PM_FRI
+		     , IFNULL(MAX(CASE WHEN DAY_WEEK_CD ='FRI' AND TIME_GUBN_CD ='PM' THEN DAY_WEEK_BIGO_TX  END),'') AS PM_FRI_BIGO
+			 , MAX(CASE WHEN DAY_WEEK_CD ='SAT' AND TIME_GUBN_CD ='PM' THEN POSB_YN  END) AS PM_SAT
+			 , IFNULL(MAX(CASE WHEN DAY_WEEK_CD ='SAT' AND TIME_GUBN_CD ='PM' THEN DAY_WEEK_BIGO_TX  END),'') AS PM_SAT_BIGO
+		  FROM HP_CLINIC_TIME_TB LEFT JOIN HP_DR
+		    ON HP_CLINIC_TIME_TB.DR_ID = HP_DR.DR_ID
+		 WHERE 1=1
+		   AND HP_CLINIC_TIME_TB.MEDI_SBJ_CD = #{MEDI_SBJ_CD}
+		   AND IFNULL(HP_DR.DEL_YN,'N') = 'N'
+		   AND HP_DR.ADD_OPEN_SET_CD LIKE '%01%'
+		 GROUP BY HP_DR.DR_NM 
+		 ORDER BY ORDER_NO;
+	</select>
+	
+	<select id="selectDrInfo" parameterType="fbcms.admin.hpm.drm.service.impl.DoctorTimeTableVO" resultType="hashMap">
+		SELECT D.DR_ID
+	 		 , D.DR_NM
+	 		 , D.FIELD_CT
+	 		 , (SELECT STRE_FILE_NM FROM COMTNFILEDETAIL WHERE ATCH_FILE_ID = D.PC_IMG_ATCH_NO) AS PC_IMG_ATCH_NO
+	 		 , C.STRE_FILE_NM
+	 		 , C.FILE_EXTSN 
+	 		 , D.POSITION_CT
+	 		 , D.CLINIC_APPO_WORD_CT
+  		  FROM HP_DR D
+  		  LEFT JOIN COMTNFILEDETAIL C
+    		ON D.PC_IMG_ATCH_NO = C.ATCH_FILE_ID
+ 		 WHERE 1=1
+ 		   AND IFNULL(D.DEL_YN, 'N') = 'N'
+ 		   AND D.MEDI_SBJ_CD = #{MEDI_SBJ_CD}
+ 		   AND D.ADD_OPEN_SET_CD LIKE '%01%'
+ 		 ORDER BY ORDER_NO
+	</select>
+	
+	<select id="selectDrScheduleInfo" parameterType="fbcms.admin.hpm.drm.service.impl.DoctorTimeTableVO" resultType="hashMap">
+		SELECT (CASE WHEN SUBSTRING(APPO_TIME, 1,2) >= '12' THEN 'PM' ELSE 'AM' END) AS APPO_TIME
+     		 , DAY(APPO_DT) AS DAY
+ 		  FROM HP_APPOINTMENT
+	 	 WHERE 1=1
+	 	   AND DR_ID = #{DR_ID}
+   		   AND YEAR(APPO_DT) = YEAR(#{APPO_DT})
+   		   AND MONTH(APPO_DT) = MONTH(#{APPO_DT});
+	</select>
+	
+	<select id="selectDrNM" parameterType="fbcms.admin.hpm.drm.service.impl.DoctorTimeTableVO" resultMap="DoctorTimeTable">
+		SELECT DR_ID
+	 		 , DR_NM
+	 		 , POSITION_CT
+  		  FROM HP_DR
+ 		 WHERE 1=1
+ 		   AND DR_ID = #{DR_ID};
+	</select>
+	
+	<delete id="dropDrTag" parameterType="fbcms.admin.hpm.drm.service.impl.DoctorVO">
+		DELETE
+		FROM HP_DR_TAG
+		WHERE DR_ID = #{DR_ID}
+	</delete>
+	
+	<insert id="insertDrTag" parameterType="fbcms.admin.hpm.drm.service.impl.DoctorVO">
+		INSERT
+		  INTO HP_DR_TAG
+		      (DR_ID
+		     , TAG_NM)
+		VALUES 
+		<foreach collection="SEARCH_TAG_ARRAY" item="tag" separator=",">
+		      (#{DR_ID}
+		     , #{tag})
+		</foreach>
+	</insert>
+	
+</mapper>

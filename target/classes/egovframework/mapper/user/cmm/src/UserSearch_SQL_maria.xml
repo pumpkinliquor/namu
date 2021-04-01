@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserSearchDAO">
+	
+
+	<select id="selectSearchSBMList" parameterType="fbcms.user.cmm.src.service.SearchVO" resultType="egovMap">
+		SELECT M.MNG_CD AS MNG_CD
+		     , (SELECT CASE M.MNG_CD WHEN 'GS' THEN '소화기외과' WHEN 'BE' THEN '유방·갑상선외과' WHEN 'AO' THEN '안티에이징·비만센터' ELSE C.DTIL_CODE_NM END FROM HP_CODE_DTIL C WHERE C.COMM_CD = 'MEDI_SBJ_CD' AND C.DTIL_CD = M.MNG_CD ) AS MNG_NM
+		     , (SELECT C.RMK_CT FROM HP_CODE_DTIL C WHERE C.COMM_CD = 'MNG_CD' AND C.DTIL_CD = M.MNG_CD ) AS BG_CLASS
+		  FROM HP_HOSPITAL_MNG_TAG T, HP_HOSPITAL_MNG M
+		 WHERE M.MNG_GUBN_CD = '01'
+		   AND T.MNG_GUBN_CD = M.MNG_GUBN_CD
+		   AND M.MNG_CD IN ('GI', 'GS', 'NE', 'FM', 'BE', 'GY', 'XR', 'AO')
+		   AND T.MNG_CD = M.MNG_CD
+		   AND T.MNG_SEQ = M.MNG_SEQ
+		   AND IFNULL(DEL_YN, 'N') = 'N'
+		   AND LENGTH(T.TAG_NM) > 0
+		   AND LENGTH(#{searchKeyword}) > 0
+		   AND (#{searchKeyword} LIKE CONCAT('%', T.TAG_NM, '%')
+			    OR T.TAG_NM LIKE CONCAT('%', #{searchKeyword}, '%'))
+	  GROUP BY M.MNG_CD
+
+	</select>
+	
+	<select id="selectSearchSPCList" parameterType="fbcms.user.cmm.src.service.SearchVO" resultType="egovMap">
+		SELECT V.MNG_CD AS MNG_CD, V.MNG_NM AS MNG_NM, V.MNG_GUBN_CD AS MNG_GUBN_CD, V.MNG_SEQ AS MNG_SEQ, V.CLINIC_NM AS CLINIC_NM
+		FROM
+		(
+			SELECT 
+				IFNULL(S1.MNG_CD, S2.MNG_CD) AS MNG_CD,
+				S1.MNG_GUBN_CD,
+				S1.MNG_SEQ,
+				IFNULL(S1.MNG_NM, S2.MNG_NM) AS MNG_NM,
+				S1.CLINIC_NM,
+				S1.TAG_NM1 AS TAG_NM_BBS,
+				S2.TAG_NM2 AS TAG_NM_HP
+					
+			FROM
+			(
+				SELECT F1.NTT_ID, F1.CUSTOM1 AS MNG_CD, F1.NTT_SJ AS MNG_NM, F2.TAG_NM AS TAG_NM2
+				FROM COMTNBBS F1
+				JOIN COMTNBBSTAG F2 ON	F1.USE_AT = 'Y' AND F1.POSTING_YN = 'Y' AND F1.CUSTOM3 = 'Y' AND F1.BBS_ID = 'BBSMSTR_000000000017' AND LENGTH(F2.TAG_NM) > 0 AND F1.NTT_ID = F2.NTT_ID
+			) S2
+		LEFT OUTER JOIN
+			(
+				SELECT H2.TAG_NM AS TAG_NM1, H1.MNG_GUBN_CD AS MNG_GUBN_CD, H1.MNG_CD AS MNG_CD, (
+				SELECT D.DTIL_CODE_NM
+				FROM HP_CODE_DTIL D
+				WHERE D.USE_YN = 'Y' AND IFNULL(H1.DEL_YN, 'N') = 'N' AND D.COMM_CD = 'SPC' AND D.DTIL_CD = H1.MNG_CD) AS MNG_NM, H1.MNG_SEQ AS MNG_SEQ, H1.CLINIC_NM AS CLINIC_NM
+				FROM HP_HOSPITAL_MNG H1
+				JOIN HP_HOSPITAL_MNG_TAG H2 ON H1.MNG_GUBN_CD = '03' AND IFNULL(H1.DEL_YN, 'N') = 'N' AND H1.POST_YN = 'Y' AND LENGTH(H2.TAG_NM) > 0 AND H1.MNG_GUBN_CD = H2.MNG_GUBN_CD AND H1.MNG_CD = H2.MNG_CD AND H1.MNG_SEQ = H2.MNG_SEQ
+			) S1
+			ON S2.MNG_CD = S1.MNG_CD
+			ORDER BY MNG_CD ASC
+		) V
+		WHERE LENGTH('위') > 0
+		AND (
+				(LENGTH(V.TAG_NM_BBS) > 0 AND (V.TAG_NM_BBS LIKE CONCAT('%', #{searchKeyword}, '%') OR #{searchKeyword} LIKE CONCAT('%', V.TAG_NM_BBS, '%'))) 
+				 OR (LENGTH(V.TAG_NM_HP) > 0 AND (V.TAG_NM_HP LIKE CONCAT('%', #{searchKeyword}, '%') OR #{searchKeyword} LIKE CONCAT('%', V.TAG_NM_HP, '%')))
+			)
+		GROUP BY V.MNG_CD, V.MNG_NM, V.MNG_GUBN_CD, V.MNG_SEQ, V.CLINIC_NM
+	</select>
+	
+	<select id="selectSearchDrList" parameterType="fbcms.user.cmm.src.service.SearchVO" resultType="egovMap">
+		SELECT D.DR_ID AS DR_ID
+			 , D.DR_NM AS DR_NM
+			 , D.MEDI_SBJ_CD AS MEDI_SBJ_CD
+			 , D.SPCL_CLINIC_CT AS SPCL_CLINIC_CT
+			 , D.FIELD_CT AS FIELD_CT
+			 , (SELECT STRE_FILE_NM FROM COMTNFILEDETAIL WHERE ATCH_FILE_ID = D.PC_IMG_ATCH_NO) AS PC_IMG_ATCH_NO
+			 , (SELECT STRE_FILE_NM FROM COMTNFILEDETAIL WHERE ATCH_FILE_ID = D.MOBILE_IMG_ATCH_NO) AS MOBILE_IMG_ATCH_NO
+			 , D.ADD_OPEN_SET_CD AS ADD_OPEN_SET_CD
+		  FROM HP_DR_TAG T
+			 , HP_DR D
+		 WHERE T.DR_ID = D.DR_ID
+		   AND IFNULL(DEL_YN, 'N') = 'N'
+		   AND LENGTH(T.TAG_NM) > 0
+		   AND LENGTH(#{searchKeyword}) > 0
+		   AND (#{searchKeyword} LIKE CONCAT('%', T.TAG_NM, '%')
+			    OR T.TAG_NM LIKE CONCAT('%', #{searchKeyword}, '%'))
+		 GROUP
+		    BY D.DR_ID
+			 , D.DR_NM
+			 , D.MEDI_SBJ_CD
+			 , D.SPCL_CLINIC_CT
+			 , D.FIELD_CT
+			 , D.PC_IMG_ATCH_NO
+			 , D.MOBILE_IMG_ATCH_NO
+	</select>
+	
+	<select id="selectSearchBSSListTotCnt" parameterType="fbcms.user.cmm.src.service.SearchVO" resultType="int">
+		SELECT COUNT(A.NTT_ID)
+		  FROM (
+				SELECT B.NTT_ID AS NTT_ID
+				     , B.NTT_SJ AS NTT_SJ
+				     , B.NTT_CN AS NTT_CN
+				     , B.BBS_ID AS BBS_ID
+				  FROM COMTNBBS B
+				  JOIN COMTNBBSTAG T
+				    ON B.BBS_ID IN ('BBSMSTR_000000000003', 'BBSMSTR_000000000004', 'BBSMSTR_000000000005', 'BBSMSTR_000000000006', 'BBSMSTR_000000000007', 'BBSMSTR_000000000008')
+				   AND B.NTT_ID = T.NTT_ID
+				   AND B.USE_AT = 'Y'
+				   AND B.POSTING_YN = 'Y'
+				   AND LENGTH(T.TAG_NM) > 0
+				   AND LENGTH(#{searchKeyword}) > 0
+				   AND (#{searchKeyword} LIKE CONCAT('%', T.TAG_NM, '%') OR T.TAG_NM LIKE CONCAT('%', #{searchKeyword}, '%'))
+				 GROUP BY B.NTT_ID, B.NTT_SJ, B.NTT_CN, B.BBS_ID
+			   ) A
+	</select>
+	
+	<select id="selectSearchBSSList" parameterType="fbcms.user.cmm.src.service.SearchVO" resultType="egovMap">
+		SELECT B.NTT_ID AS NTT_ID
+		     , B.NTT_SJ AS NTT_SJ
+		     , B.NTT_CN AS NTT_CN
+		     , B.BBS_ID AS BBS_ID
+		     , (SELECT M.BBS_NM FROM COMTNBBSMASTER M WHERE M.BBS_ID = B.BBS_ID) AS BBS_NM
+		  FROM COMTNBBSTAG T, COMTNBBS B
+		 WHERE B.BBS_ID IN ('BBSMSTR_000000000003', 'BBSMSTR_000000000004', 'BBSMSTR_000000000005', 'BBSMSTR_000000000006', 'BBSMSTR_000000000007', 'BBSMSTR_000000000008')
+		   AND T.NTT_ID = B.NTT_ID
+		   AND B.USE_AT = 'Y'
+		   AND B.POSTING_YN = 'Y'
+		   AND LENGTH(T.TAG_NM) > 0
+		   AND LENGTH(#{searchKeyword}) > 0
+		    <if test="searchKeyword != null and searchKeyword != ''">
+				<if test="searchCondition == 1">
+					AND (#{searchKeyword} LIKE CONCAT('%', T.TAG_NM, '%')
+					 OR T.TAG_NM LIKE CONCAT('%', #{searchKeyword}, '%'))
+				</if>
+			</if>
+	  GROUP BY B.NTT_ID
+	  		 , B.NTT_SJ
+	  		 , B.NTT_CN
+	  		 , B.BBS_ID
+	  ORDER BY B.NTT_ID DESC
+		 LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+	</select>
+	
+	<select id="selectSearchFaqList" parameterType="fbcms.user.cmm.src.service.SearchVO" resultType="egovMap">
+		SELECT I.FAQ_ID AS FAQ_ID
+		     , I.QESTN_SJ AS QESTN_SJ
+		     , I.ANSWER_CN AS ANSWER_CN
+		  FROM COMTNFAQTAG T, COMTNFAQINFO I
+		 WHERE T.FAQ_ID = I.FAQ_ID
+		   AND I.POSTING_YN = 'Y'
+		   AND LENGTH(T.TAG_NM) > 0
+		   AND LENGTH(#{searchKeyword}) > 0
+		   AND (#{searchKeyword} LIKE CONCAT('%', T.TAG_NM, '%')
+		    OR T.TAG_NM LIKE CONCAT('%', #{searchKeyword}, '%'))
+	</select>
+
+</mapper>

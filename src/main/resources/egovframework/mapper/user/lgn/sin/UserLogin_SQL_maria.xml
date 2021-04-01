@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8"?><!--Converted at: Wed May 11 15:50:59 KST 2016-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="UserAuthDAO">
+	<!-- 로그인 처리를 위한 resultMap -->
+	<resultMap id="login" type="egovframework.com.cmm.LoginVO">
+		<result property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="ihidNum" column="ihidNum"/>
+		<result property="email" column="email"/>
+		<result property="password" column="password"/>
+		<result property="SEXDSTN_CODE" column="gender"/>
+		<result property="SEXDSTN_CODE" column="SEXDSTN_CODE"/>
+		<result property="userSe" column="userSe"/>
+		<result property="orgnztId" column="orgnztId"/>
+		<result property="uniqId" column="uniqId"/>
+		<result property="STAT_CD" column="STAT_CD"/>
+		<result property="PW_INIT_YN" column="PW_INIT_YN"/>
+	</resultMap>
+	
+	<!-- 아이디 찾기를 위한 resultMap -->
+	<resultMap id="id" type="egovframework.com.cmm.LoginVO">
+		<result property="id" column="id"/>
+	</resultMap>
+	
+	<!-- 비밀번호 처리를 위한 resultMap -->
+	<resultMap id="password" type="egovframework.com.cmm.LoginVO">
+		<result property="password" column="password"/>
+	</resultMap>
+	
+	<!-- SSO용 ESNTL_ID를 이용한 로그인(2011.8.26) -->
+	<select id="ssoLoginByEsntlId" resultMap="login">
+		<!-- 일반회원 -->
+		<if test="userSe != null and userSe == 'GNR'">
+			
+			SELECT mber_id AS id
+			     , mber_nm AS name
+			     , ihidNum AS ihidNum
+			     , password AS password
+			     , mber_email_adres AS email
+			     , 'GNR' AS userSe
+			     , '-' AS orgnztId
+			     , ESNTL_ID AS uniqId
+			     , STAT_CD
+			  FROM COMTNGNRLMBER
+			 WHERE ESNTL_ID = #{uniqId}
+			   AND mber_sttus = 'P'
+			
+		</if>
+	</select>
+	
+	
+	<!-- 기존회원 로그인 아이디 체크 -->
+	<select id="movedUserData" parameterType="egovframework.com.cmm.LoginVO" resultType="int">
+		SELECT COUNT(MBER_ID) FROM COMTNGNRLMBER
+		 WHERE MBER_ID = #{id}
+		   AND IFNULL(SEXDSTN_CODE, 'NA') NOT IN ('F', 'M')
+	</select>
+	<!-- 일반 로그인 -->
+	<select id="actionLogin" resultMap="login">
+		<!-- 일반회원 -->
+		<if test="userSe != null and userSe == 'GNR'">
+			
+			SELECT mber_id AS id
+			     , mber_nm AS name
+			     , ihidNum AS ihidNum
+			     , password AS password
+			     , mber_email_adres AS email
+			     , 'GNR' AS userSe
+			     , '-' AS orgnztId
+			     , esntl_id AS uniqId
+			     , STAT_CD
+			     , IFNULL(PW_INIT_YN, 'Y') AS PW_INIT_YN
+			  FROM COMTNGNRLMBER
+			 WHERE mber_id = #{id}
+			   AND password = #{password}
+			   AND mber_sttus = 'P'
+		</if>
+		
+	</select>
+	
+	<!-- 인증서 로그인 -->
+	<select id="actionCrtfctLogin" resultMap="login">
+		
+		SELECT emplyr_id AS id
+		     , user_nm AS name
+		     , password AS password
+		     , ihidnum AS ihidNum
+		     , email_adres AS email
+		     , 'USR' AS userSe
+		     , orgnzt_id AS orgnztId
+		     , esntl_id AS uniqId
+		  FROM COMTNEMPLYRINFO
+		 WHERE CRTFC_DN_VALUE = #{dn}
+		
+	</select>
+	
+	<!-- 아이디 찾기 -->
+	<select id="searchId" resultMap="id">
+		<!-- 일반회원 -->
+		<if test="userSe != null and userSe == 'GNR'">
+			
+			SELECT mber_id AS id
+			  FROM COMTNGNRLMBER
+			 WHERE mber_nm = #{name}
+			   AND mber_email_adres = #{email}
+			   AND mber_sttus = 'P'
+			
+		</if>
+	</select>
+	
+	<!-- 비밀번호 찾기 -->
+	<select id="searchPassword" resultMap="password">
+		<!-- 일반회원 -->
+		<if test="userSe != null and userSe == 'GNR'">
+			
+			SELECT password AS password
+			  FROM COMTNGNRLMBER
+			 WHERE mber_id = #{id}
+			   AND mber_nm = #{name}
+			   AND mber_email_adres = #{email}
+			   AND password_hint = #{passwordHint}
+			   AND password_cnsr = #{passwordCnsr}
+			   AND mber_sttus = 'P'
+			
+		</if>
+	</select>
+	
+	<!-- 변경된 비밀번호를 저장 -->
+	<update id="updatePassword">
+		<!-- 일반회원 -->
+		<if test="userSe != null and userSe == 'GNR'">
+
+			UPDATE COMTNGNRLMBER
+			   SET password = #{password}
+			 WHERE mber_id = #{id}
+			
+		</if>
+	</update>
+	
+	<!-- 로그인인증제한 조회 -->
+	<select id="selectLoginIncorrect" resultType="egovMap">
+	<!-- 일반회원 -->
+	<if test="userSe != null and userSe == 'GNR'">
+	<![CDATA[
+	SELECT  MBER_ID AS USER_ID
+         ,  PASSWORD AS USER_PW
+	     ,  MBER_NM AS USER_NM
+	     ,  ESNTL_ID AS UNIQ_ID
+	     ,  IFNULL(LOCK_AT,'N') LOCK_AT
+	     ,  IFNULL(LOCK_CNT,0) AS LOCK_CNT
+      FROM  COMTNGNRLMBER
+	 WHERE  MBER_ID = #{id} 
+	]]>
+	</if>
+	</select>
+
+	<!-- 로그인인증제한 변경 > 일반회원 -->
+	<update id="updateLoginIncorrectGNR">
+		<!-- LOCK 해제 -->
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(updateAt,'E')">
+			<![CDATA[
+			UPDATE  COMTNGNRLMBER
+			   SET  LOCK_AT = NULL
+			     ,  LOCK_CNT  = NULL
+			     ,  LOCK_LAST_PNTTM = NULL     
+			   WHERE MBER_ID = #{id}
+			]]>
+		</if>
+		<!-- LOCK 설정 -->
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(updateAt,'L')">
+			<![CDATA[
+			UPDATE  COMTNGNRLMBER
+			   SET  LOCK_AT = 'Y'
+			     ,  LOCK_CNT  = LOCK_CNT+1
+			     ,  LOCK_LAST_PNTTM = sysdate()
+		      WHERE MBER_ID = #{id}
+			]]>
+		</if>
+		<!-- LOCK 카운트 설정 -->
+		<if test="@egovframework.com.cmm.util.EgovMybaitsUtil@isEquals(updateAt,'C')">
+			<![CDATA[
+			UPDATE  COMTNGNRLMBER
+			   SET  LOCK_CNT  = IFNULL(LOCK_CNT,0)+1
+			     ,  LOCK_LAST_PNTTM = sysdate()     
+			   WHERE MBER_ID = #{id}
+			]]>
+		</if>
+	</update>
+	
+	<select id="selectUserById" parameterType="string" resultType="fbcms.user.lgn.MemberVO">
+		SELECT *
+		  FROM HP_USER
+		 WHERE USER_ID = #{USER_ID}
+	</select>
+
+	<!-- Authority 가져오기 -->
+	<select id="selectLoginAuthority" parameterType="String" resultType="egovMap">
+		SELECT A.SCRTY_DTRMN_TRGET_ID USER_ID, A.AUTHOR_CODE AUTHORITY
+		FROM COMTNEMPLYRSCRTYESTBS A, COMVNUSERMASTER B
+		WHERE A.SCRTY_DTRMN_TRGET_ID = B.ESNTL_ID 
+			AND B.USER_ID = #{USER_ID}
+	</select>
+
+
+	<!-- 회원가입 여부 확인하기 -->
+	<select id="joinCheck" parameterType="string" resultType="int">
+		SELECT COUNT(*)
+		  FROM COMTNGNRLMBER
+		 WHERE MBER_ID = #{USER_ID}
+	</select>
+	
+	<!-- ID 찾기 처리를 위한 resultMap -->
+	<resultMap id="idFind" type="fbcms.user.lgn.idFindVO">
+		<result property="MBER_ID" column="MBER_ID"/>
+		<result property="FRIST_JOIN_DT" column="FRIST_JOIN_DT"/>
+	</resultMap>
+		
+	
+	<!-- 아이디, 생성일자 찾기 -->
+	<select id="findId" parameterType="HashMap" resultMap="idFind">
+					
+		SELECT MBER_ID AS MBER_ID
+			 , SBSCRB_DE AS FRIST_JOIN_DT
+		  FROM COMTNGNRLMBER
+		 WHERE MBER_NM = #{name}
+		   AND MBTLNUM = #{phone}
+		   <if test="USER_ID != null and USER_ID != ''">
+		   AND MBER_ID = #{USER_ID}
+		   </if>
+		   
+		   
+		
+	</select>
+	
+	<!-- 로그인 일시 저장 -->
+	<update id="updateLoginDt" parameterType="egovframework.com.cmm.LoginVO">
+	
+		UPDATE COMTNGNRLMBER 
+		   SET LAST_LOGIN_DT = SYSDATE()
+		     , PW_INIT_YN = 'N'
+		 WHERE MBER_ID = #{id}
+	
+	</update>
+	
+	<!-- 비밀번호 변경 (Lock 해제) -->
+	<update id="pwChange" parameterType="HashMap">
+	
+		UPDATE COMTNGNRLMBER 
+		   SET PASSWORD = #{PW}
+		   	 , LOCK_AT = 'N'
+		   	 , LOCK_CNT = 0
+		   	 , LOCK_LAST_PNTTM = NULL
+		   	 , PW_INIT_YN = 'N'
+			<if test='flag == "Y"'>
+		     , SEXDSTN_CODE = #{SEXDSTN_CODE}
+		     , MBTLNUM = #{ctn}
+			</if>
+		 WHERE MBER_ID = #{USER_ID}
+		<if test='flag == "Y"'>
+		   AND MBER_NM = #{name}
+		   AND BIRTH_DT = #{birthDt}
+		</if>
+	
+	</update>
+	
+	
+	<!-- 휴면 여부 확인하기 -->
+	<select id="dormancy" parameterType="HashMap" resultType="fbcms.user.lgn.MemberVO">
+	
+		SELECT FNC_GET_CODE_NAME('STAT_CD',STAT_CD) AS STAT_CD
+		  FROM COMTNGNRLMBER
+		 WHERE MBER_ID = #{USER_ID}
+	
+	</select>
+	
+	<update id="okdormancy" parameterType="HashMap">
+		
+		UPDATE COMTNGNRLMBER 
+		   SET STAT_CD = '01'
+		     , PW_INIT_YN = 'N'
+		 WHERE MBER_ID = #{USER_ID}
+		   AND MBER_NM = #{name}
+		   AND MBTLNUM = #{phone}
+	
+	</update>
+		
+</mapper>

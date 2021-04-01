@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?><!--Converted at: Wed May 11 15:49:39 KST 2016-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AdminCmmCode">
+
+	<select id="selectCmmCodeList" parameterType="adminCmmCodeVO" resultType="adminCmmCodeVO">
+		SELECT 
+			CODE_ID AS codeId
+			, CODE_ID_NM AS codeIdNm
+			, CODE_ID_DC AS codeIdDc
+		FROM COMTCCMMNCODE
+		WHERE USE_AT = 'Y'
+			AND CL_CODE = #{clCode}
+		ORDER BY CODE_ID
+	</select>
+
+	<select id="selectCmmCodeDetailList" parameterType="adminCmmCodeVO" resultType="adminCmmCodeVO">
+		SELECT 
+			CODE_ID AS codeId
+			, CODE AS code
+			, CODE_NM AS codeNm
+			, CODE_DC AS codeDc
+		FROM COMTCCMMNDETAILCODE
+		WHERE USE_AT = 'Y'
+			AND CODE_ID = #{codeId}
+	</select>
+
+	<select id="selectOgrnztIdDetailList" parameterType="adminCmmCodeVO" resultType="adminCmmCodeVO">
+		SELECT 
+			#{tableNm} AS codeId
+			ORGNZT_ID AS code
+			ORGNZT_NM AS codeNm
+			ORGNZT_DC AS codeDc
+		FROM 
+			COMTNORGNZTINFO
+		WHERE 1 = 1
+		<if test='haveDetailCondition == "Y"'>
+			AND ORGNZT_ID LIKE #{detailConditionValue}
+		</if>
+	</select>
+	
+	<select id="selectGroupIdDetailList" parameterType="adminCmmCodeVO" resultType="adminCmmCodeVO">
+		SELECT 
+			#{tableNm} AS codeId
+			, GROUP_ID AS code
+			, GROUP_NM AS codeNm
+			, GROUP_DC AS codeDc
+		FROM 
+			COMTNAUTHORGROUPINFO
+		WHERE 1 = 1
+		<if test='haveDetailCondition == "Y"'>
+			AND GROUP_ID LIKE #{detailConditionValue}
+		</if>
+	</select>
+</mapper>

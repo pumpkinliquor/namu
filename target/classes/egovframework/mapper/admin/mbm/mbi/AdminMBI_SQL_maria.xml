@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="AdminMBIDAO">
+
+	<resultMap id="MemberInfo" type="fbcms.user.lgn.MembersVO">
+		<result property="ADRES" 			column="ADRES"/>
+		<result property="AREA_NO" 			column="AREA_NO"/>
+		<result property="BIRTH_DT" 		column="BIRTH_DT"/>
+		<result property="DETAIL_ADRES" 	column="DETAIL_ADRES"/>
+		<result property="EMAIL_RECV_YN" 	column="EMAIL_RECV_YN"/>
+		<result property="END_TELNO" 		column="END_TELNO"/>
+		<result property="ESNTL_ID" 		column="ESNTL_ID"/>
+		<result property="FRIST_JOIN_DT" 	column="FRIST_JOIN_DT"/>
+		<result property="GROUP_ID" 		column="GROUP_ID"/>
+		<result property="GUBN_CD" 			column="GUBN_CD"/>
+		<result property="IHIDNUM" 			column="IHIDNUM"/>
+		<result property="LAST_LOGIN_DT" 	column="LAST_LOGIN_DT"/>
+		<result property="LOCK_AT" 			column="LOCK_AT"/>
+		<result property="LOCK_CNT" 		column="LOCK_CNT"/>
+		<result property="LOCK_LAST_PNTTM" 	column="LOCK_LAST_PNTTM"/>
+		<result property="MBER_EMAIL_ADRES" column="MBER_EMAIL_ADRES"/>
+		<result property="MBER_FXNUM" 		column="MBER_FXNUM"/>
+		<result property="MBER_ID" 			column="MBER_ID"/>
+		<result property="MBER_NM" 			column="MBER_NM"/>
+		<result property="MBER_STTUS" 		column="MBER_STTUS"/>
+		<result property="MBTLNUM" 			column="MBTLNUM"/>
+		<result property="MIDDLE_TELNO" 	column="MIDDLE_TELNO"/>
+		<result property="PASSWORD" 		column="PASSWORD"/>
+		<result property="PASSWORD_CNSR" 	column="PASSWORD_CNSR"/>
+		<result property="PASSWORD_HINT" 	column="PASSWORD_HINT"/>
+		<result property="PW_INIT_YN" 		column="PW_INIT_YN"/>
+		<result property="SBSCRB_DE" 		column="SBSCRB_DE"/>
+		<result property="SEXDSTN_CODE" 	column="SEXDSTN_CODE"/>
+		<result property="STAT_CD" 			column="STAT_CD"/>
+		<result property="ZIP" 				column="ZIP"/>
+		<result property="google" 			column="google"/>
+		<result property="kakao" 			column="kakao"/>
+		<result property="naver"			column="naver"/>
+	</resultMap>
+	
+	<!-- 회원정보 리스트 조회 -->
+ 	<select id="selectMemberList" parameterType="fbcms.user.lgn.MembersVO" resultMap="MemberInfo">
+ 		SELECT MBER_ID
+ 			 , MBER_NM
+ 			 , MBER_EMAIL_ADRES
+ 			 , DATE_FORMAT(FRIST_JOIN_DT,'%Y.%m.%d') AS FRIST_JOIN_DT
+ 			 , GUBN_CD
+ 			 , STAT_CD
+ 		  FROM COMTNGNRLMBER
+ 		 WHERE 1 = 1
+ 		 <if test="MBER_ID != null and MBER_ID != ''">
+ 		   AND UPPER(MBER_ID) LIKE UPPER(CONCAT('%' , #{MBER_ID}, '%'))
+ 		 </if>
+ 		 <if test="MBER_NM != null and MBER_NM != ''">
+ 		   AND UPPER(MBER_NM) LIKE UPPER(CONCAT('%' , #{MBER_NM}, '%'))
+ 		 </if>
+ 		 <if test="MBER_EMAIL_ADRES != null and MBER_EMAIL_ADRES != ''">
+ 		   AND UPPER(MBER_EMAIL_ADRES) LIKE UPPER(CONCAT('%' , #{MBER_EMAIL_ADRES}, '%'))
+ 		 </if>
+ 		 <if test="searchBgnDate != null and searchBgnDate != ''">
+ 		 	<if test="serachEndDate != null and serachEndDate != ''">
+ 		   AND DATE(FRIST_JOIN_DT) BETWEEN DATE(#{searchBgnDate}) AND DATE(#{serachEndDate})  
+ 		  	</if>
+ 		  	<if test="serachEndDate == null or serachEndDate == ''">
+ 		   AND DATE(FRIST_JOIN_DT) BETWEEN DATE(#{searchBgnDate}) AND DATE(NOW())
+ 		  	</if>
+ 		  </if>
+ 		  <if test="GUBN_CD != null and GUBN_CD != ''">
+ 		   AND GUBN_CD = #{GUBN_CD}
+ 		  </if>
+ 		  <if test="STAT_CD != null and STAT_CD != ''">
+ 		   AND STAT_CD = #{STAT_CD} </if>
+ 	     ORDER BY COMTNGNRLMBER.FRIST_JOIN_DT DESC
+ 		 LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+ 	</select>
+ 	
+ 	<!-- 회원정보 리스트 Count -->
+ 	<select id="selectMemberTotCnt" parameterType="fbcms.user.lgn.MembersVO" resultType="int">
+		SELECT COUNT(*) AS TOTCNT
+		  FROM COMTNGNRLMBER
+		 WHERE 1 = 1
+		 <if test="MBER_ID != null and MBER_ID != ''">
+		   AND UPPER(MBER_ID) LIKE UPPER(CONCAT('%' , #{MBER_ID}, '%')) 
+		 </if>
+ 		 <if test="MBER_NM != null and MBER_NM != ''">
+ 		   AND UPPER(MBER_NM) LIKE UPPER(CONCAT('%' , #{MBER_NM}, '%'))
+ 		 </if>
+ 		 <if test="MBER_EMAIL_ADRES != null and MBER_EMAIL_ADRES != ''">
+ 		   AND UPPER(MBER_EMAIL_ADRES) LIKE UPPER(CONCAT('%' , #{MBER_EMAIL_ADRES}, '%'))
+ 		 </if>
+ 		 <if test="searchBgnDate != null and searchBgnDate != ''">
+ 		 	<if test="serachEndDate != null and serachEndDate != ''">
+ 		   AND DATE(FRIST_JOIN_DT) BETWEEN DATE(#{searchBgnDate}) AND DATE(#{serachEndDate}) 
+ 		  	</if>
+ 		  	<if test="serachEndDate == null or serachEndDate == ''">
+ 		   AND DATE(FRIST_JOIN_DT) BETWEEN DATE(#{searchBgnDate}) AND DATE(NOW()) 
+ 		  	</if>
+ 		 </if>
+ 		 <if test="GUBN_CD != null and GUBN_CD != ''">
+ 		   AND GUBN_CD = #{GUBN_CD}
+ 		 </if>
+ 		  <if test="STAT_CD != null and STAT_CD != ''">
+ 		   AND STAT_CD = #{STAT_CD}
+ 		 </if>
+	</select>
+	
+	<!-- 회원정보 상세 조회 -->
+	<select id="selectMember" parameterType="fbcms.user.lgn.MembersVO" resultMap="MemberInfo">
+		SELECT MBER_ID
+ 			 , MBER_NM
+ 			 , STAT_CD
+ 			 , GUBN_CD
+ 			 , MBER_EMAIL_ADRES
+ 			 , DATE_FORMAT(FRIST_JOIN_DT,'%Y.%m.%d/%T') AS FRIST_JOIN_DT
+ 			 , SEXDSTN_CODE
+ 			 , DATE_FORMAT(DATE(BIRTH_DT),'%Y.%m.%d') AS BIRTH_DT
+ 			 , MBTLNUM
+ 			 , AREA_NO
+ 			 , MIDDLE_TELNO
+ 			 , END_TELNO
+ 			 , ZIP
+ 			 , ADRES
+ 			 , DETAIL_ADRES
+ 			 , EMAIL_RECV_YN
+ 			 , PW_INIT_YN
+ 			 , CASE LAST_LOGIN_DT WHEN NULL THEN DATE_FORMAT(SBSCRB_DE,'%Y.%m.%d/%T') WHEN CAST('0000-00-00 00:00:00' AS DATETIME) THEN DATE_FORMAT(SBSCRB_DE,'%Y.%m.%d/%T') ELSE DATE_FORMAT(IFNULL(LAST_LOGIN_DT, SBSCRB_DE),'%Y.%m.%d/%T') END AS LAST_LOGIN_DT
+ 			 , (SELECT IFNULL(ITL_YN, 'N') FROM HP_USER_INTERLOCK WHERE USER_ID = #{MBER_ID} AND ITL_ACCT_CD = 'GOOGLE') AS google 
+ 		  	 , (SELECT IFNULL(ITL_YN, 'N') FROM HP_USER_INTERLOCK WHERE USER_ID = #{MBER_ID} AND ITL_ACCT_CD = 'KAKAO') AS kakao  
+ 		  	 , (SELECT IFNULL(ITL_YN, 'N') FROM HP_USER_INTERLOCK WHERE USER_ID = #{MBER_ID} AND ITL_ACCT_CD = 'NAVER') AS naver 
+ 		  FROM COMTNGNRLMBER
+		 WHERE 1=1
+		   AND MBER_ID = #{MBER_ID}
+	</select>
+	
+	<!-- 회원정보 Insert -->
+	<insert id="insertMember" parameterType="fbcms.user.lgn.MembersVO">
+		<selectKey order="BEFORE" keyProperty="ESNTL_ID" resultType="string">
+			SELECT CONCAT('USRCNFRM_', LPAD(CAST(SUBSTRING(MAX(A.ESNTL_ID), 10) AS INT) + 1, 11, 0)) AS ESNTL_ID
+			  FROM (
+			  		SELECT ESNTL_ID
+			  		  FROM COMTNGNRLMBER
+			  		 UNION ALL
+			  		SELECT ESNTL_ID
+			  		  FROM COMTNEMPLYRINFO
+			  		 WHERE ESNTL_ID NOT IN ('USRCNFRM_99999999999')
+			  	   ) A
+			  	   
+	 		<!-- EX.USRCNFRM_0000000003 -->
+		</selectKey>
+	
+		INSERT 
+		  INTO COMTNGNRLMBER(
+		  	   MBER_ID 				
+		  	 , MBER_NM	  	 
+		  	 , PASSWORD
+		  	 , STAT_CD 		  		
+		  	 , GUBN_CD		 
+		  	 , MBER_EMAIL_ADRES
+		  	 , FRIST_JOIN_DT		
+		  	 , SEXDSTN_CODE  	 
+		  	 , BIRTH_DT
+		  	 , MBTLNUM		
+		  	 , AREA_NO
+ 			 , MIDDLE_TELNO
+ 			 , END_TELNO	  	 
+		  	 , ZIP
+		  	 , ADRES		  		
+		  	 , DETAIL_ADRES 	 
+		  	 , EMAIL_RECV_YN
+		  	 , ESNTL_ID
+		  	 , MBER_STTUS
+		  	 )
+	    VALUES
+	         (
+	    	   #{MBER_ID} 			
+	    	 , #{MBER_NM}  	 
+	    	 , #{PASSWORD}
+		  	 , '01'		 			
+		  	 , '01'			 
+		  	 , #{MBER_EMAIL_ADRES}
+		  	 , NOW()				
+		  	 , #{SEXDSTN_CODE}   
+		  	 , DATE_FORMAT(#{BIRTH_DT},'%Y%m%d')
+		  	 , #{MBTLNUM}
+		  	 , #{AREA_NO}
+		  	 , #{MIDDLE_TELNO}
+		  	 , #{END_TELNO}	 
+		  	 , #{ZIP}
+		  	 , #{ADRES}		  	
+		  	 , #{DETAIL_ADRES}
+		  	 , #{EMAIL_RECV_YN}
+		  	 , #{ESNTL_ID}
+		  	 , 'P'
+	    	 )
+	</insert>
+	
+	<insert id="insertMemberAuth" parameterType="fbcms.user.lgn.MembersVO">
+		INSERT INTO COMTNEMPLYRSCRTYESTBS 
+		VALUES( (SELECT ESNTL_ID FROM COMTNGNRLMBER WHERE MBER_ID = #{MBER_ID}) ,'USR01','ROLE_USER')
+	</insert>
+	
+	<!-- 회원정보 Update -->
+	<update id="updateMember" parameterType="hashMap">
+		UPDATE COMTNGNRLMBER
+		   SET MBER_ID = #{MBER_ID}
+		     , MBER_EMAIL_ADRES = #{MBER_EMAIL_ADRES}
+		     , SEXDSTN_CODE = #{SEXDSTN_CODE}
+		     , BIRTH_DT = DATE_FORMAT(#{BIRTH_DT},'%Y%m%d')
+		     , MBTLNUM = #{MBTLNUM}
+		     , AREA_NO = #{AREA_NO}
+		     , MIDDLE_TELNO = #{MIDDLE_TELNO}
+		     , END_TELNO = #{END_TELNO}
+		     , ZIP = #{ZIP}
+		     , ADRES = #{ADRES}
+		     , DETAIL_ADRES = #{DETAIL_ADRES}
+		     , EMAIL_RECV_YN = #{EMAIL_RECV_YN}
+		     <if test="PW_INIT_YN != ''" >
+		     , PASSWORD = #{PASSWORD}
+		     </if>
+		 WHERE MBER_ID = #{MBER_ID}
+	</update>
+	
+	<!-- 회원정보 Update -->
+	<update id="updateResetPw" parameterType="hashMap">
+		UPDATE COMTNGNRLMBER
+		   SET MBER_ID = #{MBER_ID}
+		     <if test="PW_INIT_YN != ''" >
+		     , PASSWORD = #{PASSWORD}
+		     , PW_INIT_YN = 'Y'
+		     </if>
+		 WHERE MBER_ID = #{MBER_ID}
+	</update>
+	
+	<!-- 회원정보 Delete -->
+	<delete id="deleteMember" parameterType="fbcms.user.lgn.MembersVO">
+		DELETE FROM COMTNGNRLMBER
+		 WHERE MBER_ID = #{MBER_ID}
+	</delete>
+	
+	<!-- 아이디 중복체크 -->
+	<select id="idDupChk" resultType="int">
+		SELECT COUNT(*)
+		  FROM COMTNGNRLMBER
+		 WHERE MBER_ID = #{MBER_ID}
+	</select>
+	
+</mapper>

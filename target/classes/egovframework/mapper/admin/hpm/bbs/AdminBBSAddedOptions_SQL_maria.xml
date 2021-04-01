@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?><!--Converted at: Wed May 11 15:49:41 KST 2016-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AdminBBSAddedOptions">
+	
+	<insert id="insertAddedOptionsInf" parameterType="adminBoardMaster">
+		INSERT INTO COMTNBBSMASTEROPTN
+		(
+			BBS_ID
+			, FRST_REGISTER_ID
+			, FRST_REGIST_PNTTM
+			, ANSWER_AT
+			, STSFDG_AT
+			, CUSTOM1_YN
+			, CUSTOM2_YN
+			, CUSTOM3_YN
+			, CUSTOM4_YN
+			, CUSTOM5_YN
+			, CUSTOM_DATE1_YN
+			, CUSTOM_DATE2_YN
+			, CUSTOM_DATE3_YN
+			, CUSTOM_DATE4_YN
+			, CUSTOM_DATE5_YN
+		)
+		VALUES
+		(
+			#{bbsId}
+			, #{frstRegisterId}
+			, SYSDATE() 
+			<if test="option == ''">
+				 'N', 'N', 
+			</if>
+			<if test="option == 'comment'">
+				 'Y', 'N', 
+			</if>
+			<if test="option == 'stsfdg'">
+				 'N', 'Y', 
+			</if>
+			, #{custom1Yn}
+			, #{custom2Yn}
+			, #{custom3Yn}
+			, #{custom4Yn}
+			, #{custom5Yn}
+			, #{customDate1Yn}
+			, #{customDate2Yn}
+			, #{customDate3Yn}
+			, #{customDate4Yn}
+			, #{customDate5Yn}
+		)
+	</insert>
+
+	<select id="selectAddedOptionsInf" parameterType="adminBoardMaster" resultType="adminBoardMasterVO">
+		SELECT 
+			a.BBS_ID AS bbsId
+			, a.ANSWER_AT AS commentAt
+			, a.STSFDG_AT AS stsfdgAt
+			, a.FRST_REGISTER_ID AS frstRegisterId
+			, b.USER_NM AS frstRegisterNm
+			, DATE_FORMAT(a.FRST_REGIST_PNTTM, '%Y.%m.%d') AS frstRegisterPnttm
+			, CUSTOM1_YN AS custom1Yn
+			, CUSTOM2_YN AS custom2Yn
+			, CUSTOM3_YN AS custom3Yn
+			, CUSTOM4_YN AS custom4Yn
+			, CUSTOM5_YN AS custom5Yn
+			, CUSTOM_DATE1_YN AS customDate1Yn
+			, CUSTOM_DATE2_YN AS customDate2Yn
+			, CUSTOM_DATE3_YN AS customDate3Yn
+			, CUSTOM_DATE4_YN AS customDate4Yn
+			, CUSTOM_DATE5_YN AS customDate5Yn
+		FROM
+			COMTNBBSMASTEROPTN a				
+		LEFT OUTER JOIN COMVNUSERMASTER b
+			ON a.FRST_REGISTER_ID = b.ESNTL_ID		
+		WHERE a.BBS_ID = #{bbsId}
+	</select> 
+	
+ 	<update id="updateAddedOptionsInf" parameterType="adminBoardMaster">
+		UPDATE COMTNBBSMASTEROPTN 
+		SET
+			LAST_UPDUSR_ID = #{lastUpdusrId}
+			, LAST_UPDT_PNTTM = SYSDATE()
+			<if test="option == ''">
+				, ANSWER_AT = 'N', STSFDG_AT = 'N' 
+			</if>
+			<if test="option == 'comment'">
+				, ANSWER_AT = 'Y', STSFDG_AT = 'N' 
+			</if>
+			<if test="option == 'stsfdg'">
+				, ANSWER_AT = 'N', STSFDG_AT = 'Y' 
+			</if>
+			, CUSTOM1_YN = #{custom1Yn}
+			, CUSTOM2_YN = #{custom2Yn}
+			, CUSTOM3_YN = #{custom3Yn}
+			, CUSTOM4_YN = #{custom4Yn}
+			, CUSTOM5_YN = #{custom5Yn}
+			, CUSTOM_DATE1_YN = #{customDate1Yn}
+			, CUSTOM_DATE2_YN = #{customDate2Yn}
+			, CUSTOM_DATE3_YN = #{customDate3Yn}
+			, CUSTOM_DATE4_YN = #{customDate4Yn}
+			, CUSTOM_DATE5_YN = #{customDate5Yn}
+		WHERE BBS_ID = #{bbsId}
+ 	</update>
+</mapper>

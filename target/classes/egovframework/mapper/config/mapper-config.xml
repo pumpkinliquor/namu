@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<!--Mybatis 설정 -->
+	<settings>
+		<!-- 전통적인 데이터베이스 컬럼명 형태인 A_COLUMN을 CamelCase형태의 자바 프로퍼티명 형태인 aColumn으로 자동으로 매핑하도록 함 -->
+		<setting name="mapUnderscoreToCamelCase" value="true"></setting>
+		<!--  파라미터에 Null 값이 있을 경우 에러 처리 -->
+		<setting name="jdbcTypeForNull" value="VARCHAR"></setting>
+	</settings>
+	
+	<!-- Type Aliases 설정-->
+	<typeAliases>
+		<typeAlias alias="egovMap" 				type="egovframework.rte.psl.dataaccess.util.EgovMap" />
+		<typeAlias alias="hashMap" 				type="java.util.HashMap" />
+		<typeAlias alias="fileVO"				type="egovframework.com.cmm.service.FileVO" />
+		<typeAlias alias="loginVO"				type="egovframework.com.cmm.LoginVO" />
+		<typeAlias alias="comDefaultCodeVO" 	type="egovframework.com.cmm.ComDefaultCodeVO" />
+		<typeAlias alias="comDefaultVO"			type="egovframework.com.cmm.ComDefaultVO" />
+		<typeAlias alias="adminCmmCodeVO" 		type="fbcms.admin.cmm.ccd.service.AdminCmmCodeVO" />
+		<typeAlias alias="adminBoardMasterVO"	type="fbcms.admin.hpm.bbs.service.AdminBoardMasterVO" />
+		<typeAlias alias="adminBoardMaster"		type="fbcms.admin.hpm.bbs.service.AdminBoardMaster" />
+		<typeAlias alias="adminBlogVO"			type="fbcms.admin.hpm.bbs.service.AdminBlogVO" />
+		<typeAlias alias="adminBlogUser"		type="fbcms.admin.hpm.bbs.service.AdminBlogUser" />
+		<typeAlias alias="adminBoardVO"			type="fbcms.admin.hpm.bbs.service.AdminBoardVO" />
+		<typeAlias alias="adminBoard"			type="fbcms.admin.hpm.bbs.service.AdminBoard" />
+		<typeAlias alias="adminFaqVO"			type="fbcms.admin.hpm.faq.service.AdminFaqVO" />
+		<typeAlias alias="adminBannerVO"		type="fbcms.admin.hpm.umm.service.AdminBannerVO" />
+		<typeAlias alias="adminBanner"			type="fbcms.admin.hpm.umm.service.AdminBanner" />
+		<typeAlias alias="adminPopupVO"			type="fbcms.admin.hpm.umm.service.AdminPopupVO" />
+		<typeAlias alias="adminPopup"			type="fbcms.admin.hpm.umm.service.AdminPopup" />
+		<typeAlias alias="adminMenuManageVO"	type="fbcms.admin.sym.mpm.service.AdminMenuManageVO" />
+		<typeAlias alias="adminMenuManage"		type="fbcms.admin.sym.mpm.service.AdminMenuManage" />
+		<typeAlias alias="adminMenuCreateVO"	type="fbcms.admin.sym.mcm.service.AdminMenuCreateVO" />
+		<typeAlias alias="adminMenuCreate"		type="fbcms.admin.sym.mcm.service.AdminMenuCreate" />
+		<typeAlias alias="adminProgrmManageVO"	type="fbcms.admin.sym.prm.service.AdminProgrmManageVO" />
+		<typeAlias alias="adminProgrmManage"	type="fbcms.admin.sym.prm.service.AdminProgrmManage" />
+		<typeAlias alias="adminAdminManageVO"	type="fbcms.admin.sym.umt.service.AdminAdminManageVO" />
+		<typeAlias alias="adminAdminDefaultVO"	type="fbcms.admin.sym.umt.service.AdminAdminDefaultVO" />
+		<typeAlias alias="adminSnsManage"		type="fbcms.admin.hpm.sns.service.AdminSnsManage" />
+	</typeAliases>
+    
+</configuration>

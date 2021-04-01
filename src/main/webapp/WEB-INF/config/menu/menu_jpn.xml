@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+메뉴는 2자리씩 depth를 가리킨다. 
+ -->
+ <menus>
+ 	<menu id="010000">
+ 		<name>病院について</name>
+ 		<url>/jpn/itd/vievis.do</url>
+ 		<depth>1</depth>
+ 	</menu>
+ 	<menu id="020000">
+ 		<name>診療科</name>
+ 		<url>/jpn/hpm/departments.do</url>
+ 		<depth>1</depth>
+ 	</menu>
+ 	<menu id="030000">
+ 		<name>特化センター</name>
+ 		<url>/jpn/spc/specialized.do</url>
+ 		<depth>1</depth>
+ 	</menu>
+ 	<menu id="040000">
+ 		<name>健康診断</name>
+ 		<url>/jpn/cuc/health.do</url>
+ 		<depth>1</depth>
+ 	</menu>
+ 	<menu id="050000">
+ 		<name>インフォメーション</name>
+ 		<url>/jpn/cts/customer.do</url>
+ 		<depth>1</depth>
+ 	</menu>
+ </menus>

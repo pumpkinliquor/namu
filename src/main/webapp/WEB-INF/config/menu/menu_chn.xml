@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+메뉴는 2자리씩 depth를 가리킨다. 
+ -->
+ <menus>
+ 	<menu id="010000">
+ 		<name>医院概况</name>
+ 		<url>/chn/itd/vievis.do</url>
+ 		<depth>1</depth>
+ 	</menu>
+ 	<menu id="020000">
+ 		<name>诊疗科室</name>
+ 		<url>/chn/hpm/departments.do</url>
+ 		<depth>1</depth>
+ 	</menu>
+ 	<menu id="030000">
+ 		<name>专科中心</name>
+ 		<url>/chn/spc/specialized.do</url>
+ 		<depth>1</depth>
+ 	</menu>
+ 	<menu id="040000">
+ 		<name>健康体检</name>
+ 		<url>/chn/cuc/health.do</url>
+ 		<depth>1</depth>
+ 	</menu>
+ 	<menu id="050000">
+ 		<name>客户服务</name>
+ 		<url>/chn/cts/customer.do</url>
+ 		<depth>1</depth>
+ 	</menu>
+ </menus>

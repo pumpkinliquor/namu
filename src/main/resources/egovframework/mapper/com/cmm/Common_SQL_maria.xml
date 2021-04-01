@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CommonDAO">
+	<resultMap id="CommonCode" type="fbcms.com.cmm.service.CommonCodeVO">
+        <result property="COMMON_CODE" column="COMMON_CODE"/>
+        <result property="CODE" column="CODE"/>
+        <result property="NAME" column="NAME"/>
+	</resultMap>
+	<!-- 공통코드 리스트 조회 -->
+	<select id="selectCommonCode" parameterType="fbcms.com.cmm.service.CommonCodeVO" resultMap="CommonCode">
+		SELECT DTIL_CD AS CODE
+ 			 , DTIL_CODE_NM AS NAME
+ 		  FROM HP_CODE_DTIL
+ 		 WHERE 1 = 1 
+ 		   AND DTIL_CD = #{CODE}
+ 		   AND COMM_CD = #{COMMON_CODE}
+ 		   AND USE_YN = 'Y'
+	</select>
+	<select id="selectCommonCodeList" parameterType="fbcms.com.cmm.service.CommonCodeVO" resultMap="CommonCode">
+ 		SELECT DTIL_CD AS CODE
+ 			 , DTIL_CODE_NM AS NAME
+ 		  FROM HP_CODE_DTIL
+ 		 WHERE 1 = 1 
+ 		   AND COMM_CD = #{COMMON_CODE}
+ 		   AND USE_YN = 'Y'
+ 		 ORDER BY ORDER_NO ASC
+ 	</select>
+ 	<insert id="insertCommon" parameterType="fbcms.com.cmm.service.CommonCodeVO">
+ 		INSERT 
+ 		  INTO HP_CODE
+ 		     ( 
+ 		       COMM_CD
+ 		     , COMM_CODE_NM
+ 		     , ADD_DT
+ 		     )
+ 	    VALUES
+ 	         (
+ 	           #{COMMON_CODE}
+ 	         , #{NAME}
+ 	         , NOW()
+ 	         )
+ 	        ON DUPLICATE KEY 
+ 	    UPDATE COMM_CD = #{COMMON_CODE}
+ 	         , COMM_CODE_NM = #{NAME}
+ 		     , UPDT_DT = NOW()
+ 	</insert>
+ 	<insert id="insertCommonDetail" parameterType="fbcms.com.cmm.service.CommonCodeVO">
+ 		INSERT
+ 		  INTO HP_CODE_DTIL
+ 		     ( 
+ 		       COMM_CD
+ 		     , DTIL_CD
+ 		     , DTIL_CODE_NM
+ 		     , USE_YN
+ 		     , ADD_DT
+ 		     )
+ 		VALUES
+ 		     ( 
+ 		       #{COMMON_CODE}
+ 		     , #{CODE}
+ 		     , #{NAME}
+ 		     , 'Y'
+ 		     , NOW()
+ 		     )
+ 		    ON DUPLICATE KEY
+ 		UPDATE COMM_CD = #{COMMON_CODE}
+ 		     , DTIL_CD = #{CODE}
+ 		     , DTIL_CODE_NM = #{NAME}
+ 		     , UPDT_DT = NOW()
+ 		     , USE_YN = 'Y'
+ 	</insert>
+</mapper>

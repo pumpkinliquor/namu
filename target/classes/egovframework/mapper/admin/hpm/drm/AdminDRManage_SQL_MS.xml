@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AdminOcsDrDAO">
+	<resultMap type="hashmap" id="doctorInfo">
+		<result property="DR_ID" column="DR_ID"/>
+		<result property="DR_NM" column="DR_NM"/>
+		<result property="DPTNM" column="DPTNM"/>
+		<result property="DPTCD" column="DPTCD"/>
+	</resultMap>
+	
+	<resultMap type="hashmap" id="centerInfo">
+		<result property="DPTNM" column="DPTNM"/>
+		<result property="DPTCD" column="DPTCD"/>
+	</resultMap>
+	<select id="selectDRList" parameterType="fbcms.admin.hpm.drm.service.impl.DoctorVO" resultMap="doctorInfo">
+		SELECT DR.DRNM AS DR_NM
+		     , DR.DRID AS DR_ID
+		     , CT.DPTNM AS DPTNM
+		     , CT.DPTCD AS DPTCD
+		  FROM TA07 DR LEFT OUTER JOIN TA09 CT
+		    ON DR.DPTCD = CT.DPTCD
+		 WHERE 1=1
+		  <if test=' MEDI_SBJ_CD != null and MEDI_SBJ_CD!= "" '>
+		   AND CT.DPTCD = #{MEDI_SBJ_CD}
+		  </if>
+		   AND DR.DPTCD NOT IN ('HM','TEST','DRG', 'DR')
+	</select>
+	
+	<select id="selectCTList" resultMap="centerInfo">
+		SELECT DPTNM AS DPTNM
+			 , DPTCD AS DPTCD
+		  FROM TA09 CT
+		 WHERE DPTNM LIKE '%센터'
+	</select>
+</mapper>

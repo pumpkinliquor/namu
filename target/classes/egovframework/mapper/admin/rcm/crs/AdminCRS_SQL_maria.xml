@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="AdminCRSDAO">
+
+	<resultMap id="Reservation" type="fbcms.user.cts.rsv.service.ReservationVO">
+        <result property="APPO_NO" 			column="APPO_NO"/>
+        <result property="USER_ID" 			column="USER_ID"/>
+        <result property="USER_NM" 			column="USER_NM"/>
+        <result property="APPO_GUBN_CD" 	column="APPO_GUBN_CD"/>
+        <result property="MEDI_SBJ_CD" 		column="MEDI_SBJ_CD"/>
+        <result property="MEDI_SBJ_NM" 		column="MEDI_SBJ_NM"/>
+        <result property="DR_ID"			column="DR_ID"/>
+        <result property="DR_NM"			column="DR_NM"/>
+        <result property="APPO_PRSN_NM"		column="APPO_PRSN_NM"/>
+        <result property="SEL_APPO_PRSN_NM"	column="SEL_APPO_PRSN_NM"/>
+        <result property="OTHER_PRSN_NM"	column="OTHER_PRSN_NM"/>
+        <result property="APPO_RLT_CD"		column="APPO_RLT_CD"/>
+        <result property="GENDER_CD"		column="GENDER_CD"/>
+        <result property="GENDER_NM"		column="GENDER_NM"/>
+        <result property="APPO_DT"			column="APPO_DT"/>
+        <result property="APPO_TIME"		column="APPO_TIME"/>
+        <result property="BIRTH_DT"			column="BIRTH_DT"/>
+        <result property="MOBILE_PHONE_NO"	column="MOBILE_PHONE_NO"/>
+        <result property="PHONE_NO"			column="PHONE_NO"/>
+        <result property="FIRST_ADD_DT"		column="FIRST_ADD_DT"/>
+        <result property="APPO_STAT_CD"		column="APPO_STAT_CD"/>
+        <result property="APPO_STAT_NM"		column="APPO_STAT_NM"/>
+        <result property="EXMN_PROG_CD"		column="EXMN_PROG_CD"/>
+        <result property="EXMN_PROG_NM"		column="EXMN_PROG_NM"/>
+        <result property="EMAIL_ID"			column="EMAIL_ID"/>
+        <result property="POST_NO"			column="POST_NO"/>
+        <result property="ADDR_TX"			column="ADDR_TX"/>
+        <result property="ADDR_DTIL_TX"		column="ADDR_DTIL_TX"/>
+        <result property="INQR_SEND_TX"		column="INQR_SEND_TX"/>
+	</resultMap>
+ 	
+	<!-- 검진예약 리스트 조회 -->
+ 	<select id="selectCRSList" parameterType="fbcms.user.cts.rsv.service.ReservationVO" resultMap="Reservation">
+ 		SELECT APPO_NO
+ 			 , FNC_GET_CODE_NAME('EXMN_PROG_CD',EXMN_PROG_CD) AS EXMN_PROG_NM
+ 		  	 , APPO_PRSN_NM
+ 		  	 , DATE_FORMAT(FIRST_ADD_DT,'%Y.%m.%d') AS FIRST_ADD_DT
+ 		  	 , DATE_FORMAT(APPO_DT,'%Y.%m.%d') AS APPO_DT
+ 		  	 , TIME_FORMAT(APPO_TIME,'%i:%S') AS APPO_TIME
+ 		  	 , FNC_GET_CODE_NAME('APPO_STAT_CD',APPO_STAT_CD) AS APPO_STAT_NM
+ 		  FROM HP_APPOINTMENT
+ 		 WHERE 1 = 1
+ 		   AND APPO_GUBN_CD = '02'
+<!--  		   AND IFNULL(DEL_YN,'N') NOT IN ('Y') -->
+ 		 <if test="APPO_PRSN_NM != null and APPO_PRSN_NM != '' ">
+ 		   AND UPPER(APPO_PRSN_NM) LIKE CONCAT('%',UPPER(#{APPO_PRSN_NM}),'%')   
+ 		 </if>
+ 		 <if test="EXMN_PROG_CD != null and EXMN_PROG_CD != '' ">
+ 		   AND EXMN_PROG_CD = #{EXMN_PROG_CD}
+ 		 </if>
+ 		 <if test="APPO_STAT_CD != null and APPO_STAT_CD != '' ">
+ 		   AND APPO_STAT_CD = #{APPO_STAT_CD}
+ 		 </if>
+ 		 
+ 		 <if test="APPO_DT != null and APPO_DT != ''">
+ 		 	<if test="BGN_DATE != null and BGN_DATE != ''">
+ 		 		<if test="END_DATE != null and END_DATE != ''">
+ 		   AND DATE(APPO_DT) BETWEEN #{BGN_DATE} AND #{END_DATE}
+ 		    	</if>
+ 		 	</if>
+ 		 </if>
+ 		 <if test="FIRST_ADD_DT != null and FIRST_ADD_DT != ''">
+ 		 	<if test="BGN_DATE != null and BGN_DATE != ''">
+ 		 		<if test="END_DATE != null and END_DATE != ''">
+ 		   AND DATE(FIRST_ADD_DT) BETWEEN #{BGN_DATE} AND #{END_DATE}
+ 		    	</if>
+ 		 	</if>
+ 		 </if>
+		 ORDER BY APPO_NO DESC
+ 		 LIMIT #{recordCountPerPage} OFFSET #{firstIndex}
+ 	</select>
+ 	
+	<!-- 검진예약 리스트 Count -->
+ 	<select id="selectCRSTotCnt" parameterType="fbcms.user.cts.rsv.service.ReservationVO" resultType="int">
+		SELECT COUNT(*) AS TOT_CNT
+		  FROM HP_APPOINTMENT
+		 WHERE 1 = 1
+		   AND APPO_GUBN_CD = '02'
+<!--  		   AND IFNULL(DEL_YN,'N') NOT IN ('Y') -->
+ 		 <if test="APPO_PRSN_NM != null and APPO_PRSN_NM != '' ">
+ 		   AND UPPER(APPO_PRSN_NM) LIKE CONCAT('%',UPPER(#{APPO_PRSN_NM}),'%')
+ 		 </if>
+ 		 <if test="EXMN_PROG_CD != null and EXMN_PROG_CD != '' ">
+ 		   AND EXMN_PROG_CD = #{EXMN_PROG_CD}
+ 		 </if>
+ 		 <if test="APPO_STAT_CD != null and APPO_STAT_CD != '' ">
+ 		   AND APPO_STAT_CD = #{APPO_STAT_CD}
+ 		 </if>
+ 		 
+ 		 <if test="APPO_DT != null and APPO_DT != ''">
+ 		 	<if test="BGN_DATE != null and BGN_DATE != ''">
+ 		 		<if test="END_DATE != null and END_DATE != ''">
+ 		   AND DATE(APPO_DT) BETWEEN #{BGN_DATE} AND #{END_DATE}
+ 		    	</if>
+ 		 	</if>
+ 		 </if>
+ 		 <if test="FIRST_ADD_DT != null and FIRST_ADD_DT != ''">
+ 		 	<if test="BGN_DATE != null and BGN_DATE != ''">
+ 		 		<if test="END_DATE != null and END_DATE != ''">
+ 		   AND DATE(FIRST_ADD_DT) BETWEEN #{BGN_DATE} AND #{END_DATE}
+ 		    	</if>
+ 		 	</if>
+ 		 </if>
+	</select>
+	
+	<!-- 검진예약 상세 조회 -->
+	<select id="selectCRS" parameterType="fbcms.user.cts.rsv.service.ReservationVO" resultMap="Reservation">
+SELECT APPO_NO
+			 , EXMN_PROG_CD
+ 			 , FNC_GET_CODE_NAME('EXMN_PROG_CD',EXMN_PROG_CD) AS EXMN_PROG_NM
+			 , USER_ID
+ 		  	 , FNC_GET_USER_NAME(USER_ID) AS USER_NM
+		     , APPO_RLT_CD
+		     , APPO_PRSN_NM
+		     , IF(LEFT(USER_ID, 5) = '(비회원)', CONCAT(APPO_PRSN_NM,' (비회원)'),CONCAT(APPO_PRSN_NM,' (회원)')) AS SEL_APPO_PRSN_NM
+			 , IF(APPO_RLT_CD IS NULL,CONCAT(FNC_GET_USER_NAME(USER_ID),' (회원)'),CONCAT(FNC_GET_USER_NAME(USER_ID),' (회원)',' | ',FNC_GET_CODE_NAME('APPO_RLT_CD',APPO_RLT_CD))) AS OTHER_PRSN_NM
+		     , GENDER_CD
+			 , FNC_GET_CODE_NAME('GENDER_CD',GENDER_CD) AS GENDER_NM
+		     , DATE_FORMAT(APPO_DT,'%Y.%m.%d') AS APPO_DT
+ 		  	 , TIME_FORMAT(APPO_TIME,'%i:%S') AS APPO_TIME
+		     , DATE_FORMAT(BIRTH_DT,'%Y.%m.%d') AS BIRTH_DT
+		     , MOBILE_PHONE_NO
+		     , PHONE_NO
+		     , EMAIL_ID
+		     , POST_NO
+		     , ADDR_TX
+		     , ADDR_DTIL_TX
+		     , DATE_FORMAT(FIRST_ADD_DT,'%Y.%m.%d/%T') AS FIRST_ADD_DT
+		     , APPO_STAT_CD
+		     , INQR_SEND_TX
+ 		  FROM HP_APPOINTMENT
+ 		 WHERE 1 = 1
+ 		   AND APPO_NO = #{APPO_NO}
+ 		   AND APPO_GUBN_CD = '02'
+</select>
+	
+	<!-- 검진예약 Insert -->
+ 	<insert id="insertCRS" parameterType="fbcms.user.cts.rsv.service.ReservationVO">
+ 		<selectKey order="BEFORE" keyProperty="APPO_NO" resultType="string">
+		  SELECT CONCAT(DATE_FORMAT('2020.10.12','%Y%m%d'),'02',LPAD((SELECT COUNT(APPO_NO)+1 FROM HP_APPOINTMENT
+ 				 WHERE APPO_NO LIKE CONCAT(DATE_FORMAT(now(),'%Y%m%d'),'02', '%')),3,0)) AS APPO_NO
+ 		</selectKey>
+ 		  INSERT 
+ 		  	INTO HP_APPOINTMENT
+ 		  	   (
+ 		  	   	 APPO_NO
+ 		  	   , USER_ID
+			   , APPO_GUBN_CD
+			   , EXMN_PROG_CD
+			   , APPO_PRSN_NM
+		       , GENDER_CD
+			   , APPO_DT	
+			   , APPO_TIME
+			   , BIRTH_DT
+			   , MOBILE_PHONE_NO
+			   , PHONE_NO
+			   , FIRST_ADD_DT
+			   , APPO_STAT_CD
+			   , EMAIL_ID
+			   , ADDR_TX
+			   , ADDR_DTIL_TX
+			   , POST_NO
+ 		  	   )
+ 		  VALUES
+ 		  	   ( 
+ 		  	   	 #{APPO_NO}
+ 		  	   , #{USER_ID}
+			   , '02'
+			   , #{EXMN_PROG_CD}
+			   , #{APPO_PRSN_NM}
+		       , #{GENDER_CD}
+			   , DATE_FORMAT(#{APPO_DT},'%Y%m%d')
+			   , #{APPO_TIME}
+			   , DATE_FORMAT(#{BIRTH_DT},'%Y%m%d')
+			   , #{MOBILE_PHONE_NO}
+			   , #{PHONE_NO}
+			   , NOW()
+			   , #{APPO_STAT_CD}
+			   , #{EMAIL_ID}
+			   , #{ADDR_TX}
+			   , #{ADDR_DTIL_TX}
+			   , #{POST_NO}
+ 		  	   )
+ 	</insert>
+ 	
+	<!-- 검진예약 Update -->
+	<update id="updateCRS" parameterType="fbcms.user.cts.rsv.service.ReservationVO">
+		UPDATE HP_APPOINTMENT
+		   SET USER_ID = #{USER_ID}
+		     , EXMN_PROG_CD = #{EXMN_PROG_CD}
+		     , APPO_PRSN_NM = #{APPO_PRSN_NM}
+		     , APPO_RLT_CD = #{APPO_RLT_CD}
+		     , GENDER_CD = #{GENDER_CD}
+		     , APPO_DT = DATE_FORMAT(#{APPO_DT},'%Y%m%d')
+		     , APPO_TIME = REPLACE(#{APPO_TIME},':','')
+		     , BIRTH_DT = DATE_FORMAT(#{BIRTH_DT},'%Y%m%d') 
+		     , MOBILE_PHONE_NO = #{MOBILE_PHONE_NO}
+		     , PHONE_NO = #{PHONE_NO}
+		     , EMAIL_ID = #{EMAIL_ID}
+		     , POST_NO = #{POST_NO}
+		     , ADDR_TX = #{ADDR_TX}
+		     , ADDR_DTIL_TX = #{ADDR_DTIL_TX}
+		     , APPO_STAT_CD = #{APPO_STAT_CD}
+		 WHERE APPO_NO = #{APPO_NO}
+	</update>
+ 	
+	<!-- 검진예약 예약상태 Update -->
+	<update id="updateAppoStat" parameterType="fbcms.user.cts.rsv.service.ReservationVO">
+		UPDATE HP_APPOINTMENT
+		   SET APPO_STAT_CD = #{APPO_STAT_CD}
+		   	 , UPDT_ID = #{USER_ID}
+		   	 , UPDT_DT = NOW()
+		 WHERE APPO_NO = #{APPO_NO}
+	</update>
+	
+	<!-- 검진예약 Delete -->
+	<update id="deleteCRS" parameterType="fbcms.user.cts.rsv.service.ReservationVO">
+		UPDATE HP_APPOINTMENT
+		   SET DEL_YN = 'Y'
+		   	 , UPDT_ID = #{USER_ID}
+		   	 , UPDT_DT = NOW()
+		 WHERE APPO_NO = #{APPO_NO}
+	</update>
+	
+</mapper>

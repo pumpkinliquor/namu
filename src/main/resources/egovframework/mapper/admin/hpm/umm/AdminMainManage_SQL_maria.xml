@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AdminMainManage">
+	
+	<select id="selectMainManageList" parameterType="adminBoardVO" resultType="adminBoardVO">
+		SELECT
+			a.NTT_ID AS nttId
+			, a.NTT_SJ AS nttSj
+			, a.NTT_CN AS nttCn
+			, a.FRST_REGISTER_ID AS frstRegisterId
+			, IFNULL(b.USER_NM, a.NTCR_NM) AS frstRegisterNm
+			, DATE_FORMAT(a.FRST_REGIST_PNTTM, '%Y.%m.%d') AS frstRegisterPnttm
+			, a.RDCNT AS inqireCo
+			, a.PARNTSCTT_NO AS parnts
+			, a.ANSWER_AT AS replyAt
+			, a.ANSWER_LC AS replyLc
+			, IFNULL(a.USE_AT, 'N') AS useAt
+			, a.ATCH_FILE_ID AS atchFileId
+			, a.BBS_ID AS bbsId
+			, a.NTCE_BGNDE AS ntceBgnde
+			, a.NTCE_ENDDE AS ntceEndde
+			, a.SJ_BOLD_AT AS sjBoldAt
+			, IFNULL(a.NOTICE_AT, 'N') AS noticeAt
+			, a.SECRET_AT AS secretAt
+			, c.COMMENT_CO AS commentCo
+			, IFNULL(a.POSTING_YN, 'N') AS postingYn 
+			, a.CUSTOM1 AS custom1
+			, a.CUSTOM2 AS custom2
+			, a.CUSTOM3 AS custom3
+			, a.CUSTOM4 AS custom4
+			, a.CUSTOM5 AS custom5
+			, IFNULL(DATE_FORMAT(a.CUSTOM_DATE1, '%Y.%m.%d'), '') AS customDate1
+			, IFNULL(DATE_FORMAT(a.CUSTOM_DATE2, '%Y.%m.%d'), '') AS customDate2
+			, IFNULL(DATE_FORMAT(a.CUSTOM_DATE3, '%Y.%m.%d'), '') AS customDate3
+			, IFNULL(DATE_FORMAT(a.CUSTOM_DATE4, '%Y.%m.%d'), '') AS customDate4
+			, IFNULL(DATE_FORMAT(a.CUSTOM_DATE5, '%Y.%m.%d'), '') AS customDate5
+			, (
+				SELECT COUNT(*) FROM COMTNBBS
+				WHERE PARNTSCTT_NO = a.NTT_ID
+			) AS appCnt 
+		FROM
+			COMTNBBS a
+		LEFT OUTER JOIN 
+			COMVNUSERMASTER b
+		ON a.FRST_REGISTER_ID = b.ESNTL_ID 
+		LEFT OUTER JOIN
+			(SELECT NTT_ID, BBS_ID, COUNT(1) AS COMMENT_CO 
+			   FROM COMTNCOMMENT 
+			 WHERE USE_AT = 'Y' 
+			 GROUP BY NTT_ID, BBS_ID) c
+		ON (a.NTT_ID = c.NTT_ID
+			AND a.BBS_ID = c.BBS_ID
+		)
+		WHERE
+			a.BBS_ID = #{bbsId}
+			AND a.USE_AT = 'Y'
+		ORDER BY a.SORT_ORDR ASC, a.NTT_NO ASC
+		<if test="searchCnd == 3">
+			LIMIT 3 		
+		</if>
+		<if test="searchCnd == 5">
+			LIMIT 5
+		</if>
+	</select>
+</mapper>

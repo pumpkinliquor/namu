@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="AdminSBMDAO">
+
+    <resultMap type="fbcms.admin.hpm.sbm.service.Impl.SubjectVO" id="Subject">
+    	<result property="MNG_GUBN_CD"			column="MNG_GUBN_CD"/>
+ 	    <result property="MNG_CD" 				column="MNG_CD"/>
+    	<result property="MNG_NM" 				column="MNG_NM"/>
+    	<result property="SIMPLE_INTRO_TX" 		column="SIMPLE_INTRO_TX"/>
+    	<result property="INTRO_TX" 			column="INTRO_TX"/>
+    	<result property="MAJOR_DISS_CDS" 		column="MAJOR_DISS_CDS"/>
+    	<result property="DR_IDS" 				column="DR_IDS"/>
+    	<result property="SEARCH_TAGS" 			column="SEARCH_TAGS"/>
+    	<result property="REG_DT" 				column="REG_DT"/>
+    	<result property="UPDT_DT" 				column="UPDT_DT"/>
+    	<result property="MNG_CENTER_CD1" 		column="MNG_CENTER_CD1"/>
+    	<result property="MNG_CENTER_NM1" 		column="MNG_CENTER_NM1"/>
+    	<result property="MNG_CENTER_CD1_BIGO" 	column="MNG_CENTER_CD1_BIGO"/>
+    	<result property="MNG_CENTER_CD2" 		column="MNG_CENTER_CD2"/>
+    	<result property="MNG_CENTER_NM2" 		column="MNG_CENTER_NM2"/>
+    	<result property="MNG_CENTER_CD2_BIGO" 	column="MNG_CENTER_CD2_BIGO"/>
+    	<result property="MNG_CENTER_CD3" 		column="MNG_CENTER_CD3"/>
+    	<result property="MNG_CENTER_NM3" 		column="MNG_CENTER_NM3"/>
+    	<result property="MNG_CENTER_CD3_BIGO" 	column="MNG_CENTER_CD3_BIGO"/>
+    </resultMap>
+    
+	<!-- 진료과 리스트 조회 -->
+	<select id="selectSBMList" parameterType="fbcms.admin.hpm.sbm.service.Impl.SubjectVO" resultMap="Subject">
+		SELECT MNG_GUBN_CD
+			 , MNG_CD
+			 , MAJOR_DISS_CDS
+		     , DATE_FORMAT(UPDT_DT,'%Y.%m.%d') AS UPDT_DT
+		  FROM HP_HOSPITAL_MNG
+		 WHERE 1 = 1
+		   AND MNG_GUBN_CD = '01'
+	</select>
+	
+	<!-- 진료과 상세 조회 -->
+	<select id="selectSBM" parameterType="fbcms.admin.hpm.sbm.service.Impl.SubjectVO" resultMap="Subject">
+ 		SELECT MNG_GUBN_CD 
+			 , MNG_CD
+			 , SIMPLE_INTRO_TX 
+			 , INTRO_TX 
+			 , MAJOR_DISS_CDS
+			 , (SELECT GROUP_CONCAT(DR_NM ORDER BY ORDER_NO SEPARATOR ',') FROM HP_DR WHERE MEDI_SBJ_CD = #{MNG_CD}) AS DR_IDS
+			 , SEARCH_TAGS
+			 , DATE_FORMAT(REG_DT,'%Y.%m.%d/%T') AS REG_DT
+			 , (SELECT CENTER_CD FROM HP_RELATION_CENTER WHERE MNG_GUBN_CD = '01' AND MNG_CD = A.MNG_CD AND MNG_SEQ = 1) AS MNG_CENTER_CD1
+			 , (SELECT FNC_GET_CODE_NAME('SPC',CENTER_CD) FROM HP_RELATION_CENTER WHERE MNG_GUBN_CD = '01' AND MNG_CD = A.MNG_CD AND MNG_SEQ = 1) AS MNG_CENTER_NM1
+			 , (SELECT CENTER_BIGO_TX FROM HP_RELATION_CENTER WHERE MNG_GUBN_CD = '01' AND MNG_CD = A.MNG_CD AND MNG_SEQ = 1) AS MNG_CENTER_CD1_BIGO
+			 , (SELECT CENTER_CD FROM HP_RELATION_CENTER WHERE MNG_GUBN_CD = '01' AND MNG_CD = A.MNG_CD AND MNG_SEQ = 2) AS MNG_CENTER_CD2
+			 , (SELECT FNC_GET_CODE_NAME('SPC',CENTER_CD) FROM HP_RELATION_CENTER WHERE MNG_GUBN_CD = '01' AND MNG_CD = A.MNG_CD AND MNG_SEQ = 2) AS MNG_CENTER_NM2
+			 , (SELECT CENTER_BIGO_TX FROM HP_RELATION_CENTER WHERE MNG_GUBN_CD = '01' AND MNG_CD = A.MNG_CD AND MNG_SEQ = 2) AS MNG_CENTER_CD2_BIGO
+			 , (SELECT CENTER_CD FROM HP_RELATION_CENTER WHERE MNG_GUBN_CD = '01' AND MNG_CD = A.MNG_CD AND MNG_SEQ = 3) AS MNG_CENTER_CD3
+			 , (SELECT FNC_GET_CODE_NAME('SPC',CENTER_CD) FROM HP_RELATION_CENTER WHERE MNG_GUBN_CD = '01' AND MNG_CD = A.MNG_CD AND MNG_SEQ = 3) AS MNG_CENTER_NM3
+			 , (SELECT CENTER_BIGO_TX FROM HP_RELATION_CENTER WHERE MNG_GUBN_CD = '01' AND MNG_CD = A.MNG_CD AND MNG_SEQ = 3) AS MNG_CENTER_CD3_BIGO
+	      FROM HP_HOSPITAL_MNG A
+		 WHERE 1 = 1
+		   AND MNG_GUBN_CD = '01'
+		   AND MNG_CD = #{MNG_CD}
+	</select>
+	
+	<select id="selectSBMDissListAll" resultType="egovMap">
+		SELECT T1.NTT_ID AS nttId
+		     , T1.NTT_SJ AS nttSj
+		  FROM COMTNBBS T1
+		 WHERE T1.BBS_ID IN ('BBSMSTR_000000000003', 'BBSMSTR_000000000004', 'BBSMSTR_000000000005', 'BBSMSTR_000000000006', 'BBSMSTR_000000000007', 'BBSMSTR_000000000008')
+		   AND T1.USE_AT = 'Y'
+		   AND T1.POSTING_YN = 'Y'
+	  ORDER BY T1.BBS_ID ASC
+	</select>
+	<select id="selectSBMDissList" parameterType="fbcms.admin.hpm.sbm.service.Impl.SubjectVO" resultType="egovMap">
+		SELECT T1.NTT_ID AS nttId
+		     , T1.NTT_SJ AS nttSj
+		  FROM COMTNBBS T1
+		 WHERE T1.BBS_ID IN ('BBSMSTR_000000000003', 'BBSMSTR_000000000004', 'BBSMSTR_000000000005', 'BBSMSTR_000000000006', 'BBSMSTR_000000000007', 'BBSMSTR_000000000008')
+		   AND T1.USE_AT = 'Y'
+		   <if test="DISS_CDS_LIST != null">
+		   AND T1.NTT_ID IN (
+				<foreach collection="DISS_CDS_LIST" item="diss" separator=",">
+					#{diss}
+				</foreach>
+				)
+	  ORDER BY FIELD (T1.NTT_ID
+				  ,
+				  	<foreach collection="DISS_CDS_LIST" item="diss2" separator=",">
+						#{diss2}
+					</foreach>
+				) ASC
+		   </if>
+	</select>
+	
+	<select id="selectSBMDissCodeList" parameterType="fbcms.admin.hpm.sbm.service.Impl.SubjectVO" resultType="String">
+		SELECT B.NTT_SJ
+		  FROM COMTNBBS B
+		 WHERE B.BBS_ID IN ('BBSMSTR_000000000003', 'BBSMSTR_000000000004', 'BBSMSTR_000000000005', 'BBSMSTR_000000000006', 'BBSMSTR_000000000007', 'BBSMSTR_000000000008')
+		   AND B.USE_AT = 'Y'
+		   AND B.NTT_ID IN (
+				<foreach collection="DISS_CDS_LIST" item="diss" separator=",">
+					#{diss}
+				</foreach>
+		   )
+		   
+	  ORDER BY FIELD (B.NTT_ID
+		    ,
+		<foreach collection="DISS_CDS_LIST" item="diss2" separator=",">
+			#{diss2}
+		</foreach>
+		  ) ASC
+	</select>
+	
+	<select id="selectSBMDissList_Backup_20201215" parameterType="fbcms.admin.hpm.sbm.service.Impl.SubjectVO" resultType="egovMap">
+	SELECT T1.NTT_ID AS nttId
+	     , T1.NTT_SJ AS nttSj
+	  FROM COMTNBBS T1
+	  LEFT JOIN HP_CODE_DTIL T2
+	    ON T1.CUSTOM2 = T2.DTIL_CD 
+	 WHERE T1.BBS_ID = 'BBSMSTR_000000000003'
+	   AND T1.USE_AT = 'Y'
+	   AND T2.USE_YN = 'Y'
+	   AND T1.CUSTOM2  = #{MNG_CD}
+	   AND T2.COMM_CD ='MEDI_SBJ_CD'
+	</select>
+	
+	<delete id="deleteSBM" parameterType="fbcms.admin.hpm.sbm.service.Impl.SubjectVO">
+		DELETE FROM HP_HOSPITAL_MNG 
+		 WHERE MNG_GUBN_CD = #{MNG_GUBN_CD}
+		   AND MNG_CD = #{MNG_CD}
+	</delete>
+	
+	<delete id="deleteSBMTag" parameterType="fbcms.admin.hpm.sbm.service.Impl.SubjectVO">
+		DELETE
+		   FROM HP_HOSPITAL_MNG_TAG
+		  WHERE MNG_GUBN_CD = #{MNG_GUBN_CD}
+		    AND MNG_CD = #{MNG_CD}
+		    AND MNG_SEQ = 1
+	</delete>
+	
+	<insert id="insertSBMTag" parameterType="fbcms.admin.hpm.sbm.service.Impl.SubjectVO">
+		INSERT
+		  INTO HP_HOSPITAL_MNG_TAG
+		      (MNG_GUBN_CD
+		     , MNG_CD
+		     , MNG_SEQ
+		     , TAG_NM)
+		VALUES 
+		<foreach collection="SEARCH_TAG_ARRAY" item="tag" separator=",">
+		       (#{MNG_GUBN_CD}
+		     , #{MNG_CD}
+		     , 1
+		     , #{tag})
+		</foreach>
+	</insert>
+
+	<!-- 진료과 수정 -->
+	<insert id="updateSBM" parameterType="fbcms.admin.hpm.sbm.service.Impl.SubjectVO">
+		INSERT 
+		  INTO HP_HOSPITAL_MNG 
+		     ( MNG_GUBN_CD
+		     , MNG_CD
+		     , MNG_SEQ
+		     , SIMPLE_INTRO_TX
+		     , INTRO_TX
+		     , SEARCH_TAGS
+		     , REG_DT
+		     , ADD_DT
+		     , UPDT_DT
+		     , MAJOR_DISS_CDS
+		     ) 
+		VALUES 
+		     ( #{MNG_GUBN_CD}
+		     , #{MNG_CD}
+		     , '1'
+		     , #{SIMPLE_INTRO_TX}
+		     , #{INTRO_TX}
+		     , #{SEARCH_TAGS}
+		     , NOW()
+		     , NOW()
+		     , NOW()
+		     , #{MAJOR_DISS_CDS}
+		     )
+	</insert>
+	
+	<!-- 신규 진료과 공통코드 저장 -->
+	<insert id="updateMngCd" parameterType="fbcms.admin.hpm.sbm.service.Impl.SubjectVO">
+		INSERT
+		  INTO HP_CODE_DTIL 
+		     ( COMM_CD
+		     , DTIL_CD
+		     , DTIL_CODE_NM
+		     , ADD_DT
+		     )
+		VALUES
+		     ( 'MEDI_SBJ_CD'
+		     , #{MNG_CD}
+		     , #{MNG_NM}
+		     , NOW()
+		     )
+		    ON DUPLICATE KEY 
+		UPDATE
+		       UPDT_DT = NOW()
+	</insert>
+	
+	<!-- 진료과 관련센터 삭제 -->
+	<delete id="deleteRelationCenter" parameterType="fbcms.admin.hpm.sbm.service.Impl.RelationCenterVO">
+		 DELETE FROM HP_RELATION_CENTER 
+		  WHERE MNG_GUBN_CD = '01'
+		    AND MNG_CD = #{MNG_CD}
+		    AND MNG_SEQ = #{MNG_SEQ}
+	</delete>
+	
+	<!-- 진료과 관련센터 저장 -->
+	<insert id="updateRelationCenter" parameterType="fbcms.admin.hpm.sbm.service.Impl.RelationCenterVO">
+		INSERT
+		  INTO HP_RELATION_CENTER 
+		     ( MNG_GUBN_CD
+		     , MNG_CD
+		     , CENTER_CD
+		     , CENTER_BIGO_TX
+		     , MNG_SEQ
+		     , ADD_DT
+		     )
+		VALUES
+		     ( '01'
+		     , #{MNG_CD}
+		     , #{CENTER_CD}
+		     , #{CENTER_BIGO_TX}
+		     , #{MNG_SEQ}
+		     , NOW()
+		     )
+	</insert>
+	
+	<resultMap type="fbcms.admin.cmm.ccd.service.AdminCmmCodeVO" id="Code">
+		<result property="CODE_ID"			column="CODE_ID"/>
+		<result property="CODE_ID_NM"		column="CODE_ID_NM"/>
+	</resultMap>
+	
+	<select id="selectAllCenter" parameterType="adminCmmCodeVO" resultType="adminCmmCodeVO">
+		SELECT CODE_ID as codeId
+		     , CODE_ID_NM as codeIdNm
+		  FROM COMTCCMMNCODE
+		 WHERE CODE_ID_NM LIKE '%센터';
+	</select>
+	
+	<select id="selectCode" parameterType="fbcms.admin.hpm.cln.service.Impl.CenterVO" resultType="String">
+		 SELECT CODE FROM COMTCCMMNDETAILCODE
+		  WHERE CODE_ID = '000003'
+			AND CODE_NM = #{CODE_NM}
+	</select>
+	
+</mapper>

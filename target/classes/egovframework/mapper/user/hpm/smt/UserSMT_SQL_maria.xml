@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="UserSMT">
+	
+
+
+	<!-- 의사리스트 처리를 위한 resultMap -->
+	<resultMap id="DrListVO" type="fbcms.user.hpm.hpm.DRListVO">
+		<result property="DR_ID" column="DR_ID"/>
+		<result property="MEDI_SBJ_CD" column="MEDI_SBJ_CD"/>
+		<result property="DR_NM" column="DR_NM"/>
+		<result property="SPCL_CLINIC_CT" column="SPCL_CLINIC_CT"/>
+		<result property="FIELD_CT" column="FIELD_CT"/>
+		<result property="POSITION_CT" column="POSITION_CT"/>
+		<result property="PC_IMG_ATCH_NO" column="PC_IMG_ATCH_NO"/>
+		<result property="MOBILE_IMG_ATCH_NO" column="MOBILE_IMG_ATCH_NO"/>
+		<result property="FILE_EXTSN" column="FILE_EXTSN"/>		
+		<result property="MNG_CENTER_CD" column="MNG_CENTER_CD"/>
+		<result property="MNG_CENTER_NM" column="MNG_CENTER_NM"/>
+		<result property="SPCL_FIELD_TX" column="SPCL_FIELD_TX"/>
+		<result property="HISTORY_TX" column="HISTORY_TX"/>
+		<result property="HISTORY_TX2" column="HISTORY_TX2"/>
+		<result property="BLOG_ADD_TX" column="BLOG_ADD_TX"/>
+		<result property="ADD_OPEN_SET_CD" column="ADD_OPEN_SET_CD"/>
+		<result property="SEARCH_TAG_CT" column="SEARCH_TAG_CT"/>
+		<result property="BROAD_APPEAR_TX" column="BROAD_APPEAR_TX"/>
+		<result property="BLOG_USE_YN" column="BLOG_USE_YN"/>
+		<result property="CLINIC_APPO_WORD_CT" column="CLINIC_APPO_WORD_CT"/>
+		<result property="ORDER_NO" column="ORDER_NO"/>
+	</resultMap>
+
+
+	<!-- 전체 의사 리스트 -->
+	<select id="DrList" resultMap="DrListVO" parameterType="HashMap">
+	
+		SELECT DR_ID
+			 , MEDI_SBJ_CD
+			 , DR_NM
+			 , SPCL_CLINIC_CT
+			 , FIELD_CT
+			 , POSITION_CT
+			 , (SELECT STRE_FILE_NM FROM COMTNFILEDETAIL WHERE ATCH_FILE_ID = PC_IMG_ATCH_NO) AS PC_IMG_ATCH_NO
+			 , (SELECT STRE_FILE_NM FROM COMTNFILEDETAIL WHERE ATCH_FILE_ID = MOBILE_IMG_ATCH_NO) AS MOBILE_IMG_ATCH_NO
+			 , C.FILE_EXTSN AS FILE_EXTSN		  		 
+			 , IFNULL(MNG_CENTER_CD, '') AS MNG_CENTER_CD
+			 , IFNULL(MNG_CENTER_NM, '') AS MNG_CENTER_NM
+			 , IFNULL(SPCL_FIELD_TX, '') AS SPCL_FIELD_TX
+			 , IFNULL(HISTORY_TX, '') AS HISTORY_TX
+			 , IFNULL(HISTORY_TX2, '') AS HISTORY_TX2
+			 , BLOG_ADD_TX
+			 , ADD_OPEN_SET_CD
+			 , BROAD_APPEAR_TX
+			 , BLOG_USE_YN
+			 , CLINIC_APPO_WORD_CT
+			 , ORDER_NO
+		FROM (
+			SELECT 
+				DISTINCT D.DR_ID
+				, D.DR_NM
+				, D.FIELD_CT
+				, D.POSITION_CT
+				, D.SPCL_CLINIC_CT
+				, D.ADD_OPEN_SET_CD
+			 	, D.CLINIC_APPO_WORD_CT
+				, D.MEDI_SBJ_CD
+				, D.ORDER_NO
+				, D.PC_IMG_ATCH_NO
+				, D.MOBILE_IMG_ATCH_NO
+				, D.SPCL_FIELD_TX
+				, D.BROAD_APPEAR_TX
+				, D.HISTORY_TX
+				, D.HISTORY_TX2
+				, D.BLOG_ADD_TX
+				, D.BLOG_USE_YN
+				, GROUP_CONCAT(CODE_ID ORDER BY CODE_ID) AS MNG_CENTER_CD
+				, GROUP_CONCAT(CODE_ID_NM ORDER BY CODE_ID) AS MNG_CENTER_NM
+			FROM 
+			(
+				SELECT D.*
+				 , SUBSTRING_INDEX(SUBSTRING_INDEX(D.MNG_CENTER_CD, ',', N.n), ',', -1) AS mngCenterCode
+				FROM HP_DR D 
+				INNER JOIN (
+					SELECT 1 AS n UNION ALL SELECT 2 AS n  UNION ALL SELECT 3 AS n 
+					UNION ALL SELECT 4 AS n UNION ALL SELECT 5 AS n  UNION ALL SELECT 6 AS n 
+					UNION ALL SELECT 7 AS n UNION ALL SELECT 8 AS n  UNION ALL SELECT 9 AS n 
+					UNION ALL SELECT 10 AS n UNION ALL SELECT 11 AS n  UNION ALL SELECT 12 AS n 
+				) N
+				ON CHAR_LENGTH(D.MNG_CENTER_CD) - CHAR_LENGTH(REPLACE(D.MNG_CENTER_CD, ',', '')) >= N.n-1
+				WHERE IFNULL(D.DEL_YN, 'N') NOT IN ('Y')
+			) D LEFT JOIN COMTCCMMNCODE CC
+			ON D.mngCenterCode = CC.CODE_ID
+			GROUP BY D.DR_ID
+				, D.DR_NM
+				, D.FIELD_CT
+				, D.POSITION_CT
+				, D.SPCL_CLINIC_CT
+				, D.ADD_OPEN_SET_CD
+			 	, D.CLINIC_APPO_WORD_CT
+				, D.MEDI_SBJ_CD
+				, D.ORDER_NO
+				, D.PC_IMG_ATCH_NO
+				, D.SPCL_FIELD_TX
+				, D.BROAD_APPEAR_TX
+				, D.HISTORY_TX
+				, D.HISTORY_TX2
+				, D.BLOG_ADD_TX
+				, D.BLOG_USE_YN
+				, D.MNG_CENTER_CD
+		) H
+		JOIN COMTNFILEDETAIL C
+			ON H.PC_IMG_ATCH_NO = C.ATCH_FILE_ID
+		WHERE MEDI_SBJ_CD = #{code}
+		<if test="code2!= null">
+			OR MEDI_SBJ_CD = #{code2}
+		</if>
+		ORDER BY ORDER_NO ASC 
+	
+	</select>
+
+	
+	<resultMap type="fbcms.user.hpm.hpm.specialityVO" id="speciality">
+	
+		<result property="MNG_CD" column="MNG_CD"/>
+		<result property="MNG" column="MNG"/>
+		<result property="SIMPLE_INTRO_TX" column="SIMPLE_INTRO_TX"/>
+		<result property="INTRO_TX" column="INTRO_TX"/>
+		<result property="MAJOR_DISS_CDS" column="MAJOR_DISS_CDS"/>
+		<result property="DR_IDS" column="DR_IDS"/>
+
+	</resultMap>
+
+	
+	<!-- 진료과 리스트 -->
+	<select id="specialityList" resultMap="speciality" parameterType="String">
+	
+		SELECT MNG_CD AS MNG_CD
+			 , (CASE MNG_CD WHEN 'GS' THEN '소화기외과' WHEN 'BE' THEN '유방·갑상선외과' WHEN 'AO' THEN '안티에이징·비만센터' ELSE FNC_GET_CODE_NAME('MNG_CD', MNG_CD) END) AS MNG
+			 , SIMPLE_INTRO_TX AS SIMPLE_INTRO_TX
+			 , INTRO_TX AS INTRO_TX
+			 , MAJOR_DISS_CDS AS MAJOR_DISS_CDS
+			 , DR_IDS AS DR_IDS 
+		  FROM HP_HOSPITAL_MNG
+		 WHERE MNG_GUBN_CD = '01'
+		   AND MNG_CD = #{code}
+	  ORDER BY MNG_CD ASC
+	
+	
+	</select>
+	
+	<!-- 질병코드 리스트 1차 -->
+	<select id="dissListTemp" parameterType="String" resultType="String">
+			SELECT IFNULL(MAJOR_DISS_CDS, '') 
+			  FROM HP_HOSPITAL_MNG
+			 WHERE MNG_GUBN_CD = '01'
+			   AND MNG_CD = #{code}
+			   AND IFNULL(DEL_YN,'N') = 'N'
+			 ORDER BY MNG_CD ASC
+	</select>
+
+	<select id="majorDiseaseList" parameterType="fbcms.admin.hpm.bbs.service.AdminBoard" resultType="egovMap">
+			SELECT T1.NTT_SJ AS nttSj
+				 , T1.NTT_ID AS nttId
+				 , T1.CUSTOM2 AS cust2
+			  FROM COMTNBBS T1
+			  LEFT
+			  JOIN HP_CODE_DTIL T2
+			    ON T1.CUSTOM2 = T2.DTIL_CD 
+			 WHERE T1.BBS_ID = 'BBSMSTR_000000000003'
+			   AND T1.CUSTOM2  = #{MNG_CD}
+			   AND T2.COMM_CD ='MEDI_SBJ_CD'
+	</select>
+	
+	<!-- 질병코드 리스트2 -->
+	<select id="dissList" parameterType="HashMap" resultMap="speciality">
+			SELECT FNC_GET_COMTCODE_NAME('000003', #{item} ) AS MAJOR_DISS_CDS
+			  FROM HP_HOSPITAL_MNG
+			 WHERE MNG_GUBN_CD = '01'
+			   AND MNG_CD = #{code}
+			   AND IFNULL(DEL_YN,'N') = 'N'
+			 ORDER BY MNG_CD ASC
+	</select>
+	
+	
+	<resultMap type="fbcms.user.hpm.hpm.centerVO" id="center">
+	
+		<result property="MNG_CD" column="MNG_CD"/>
+		<result property="CENTER_CD" column="CENTER_CD"/>
+		<result property="CENTER_BIGO_TX" column="CENTER_BIGO_TX"/>
+
+	</resultMap>
+	
+	
+	<!-- 센터리스트 -->
+	
+	<select id="centerList" parameterType="HashMap" resultType="egovMap">
+	
+		SELECT FNC_GET_CODE_NAME('SPC',CENTER_CD) AS CENTER_CD
+			 , CENTER_BIGO_TX AS CENTER_BIGO_TX
+			 , CENTER_CD AS CENTER_CODE
+		  FROM HP_RELATION_CENTER
+		 WHERE MNG_CD = #{code}
+		 <if test="code2!= null">
+		 	OR MNG_CD = #{code2}
+		 </if>
+	
+	</select>
+	
+	
+	<resultMap type="fbcms.user.hpm.hpm.favoritesDRVO" id="favoritesDR">
+	
+		<result property="USER_ID" column="USER_ID" />
+		<result property="DR_ID" column="DR_ID" />
+		<result property="LIKE_YN" column="LIKE_YN" />
+	
+	</resultMap>
+	
+	
+	<!-- 선호의사 리스트 -->
+	
+	<select id="favoritesDRList" resultMap="favoritesDR">
+	
+		
+		SELECT USER_ID
+			 , DR_ID
+			 , LIKE_YN
+		  FROM HP_LIKE_DR
+		 WHERE USER_ID=#{USER_ID}	
+	
+	</select>
+	
+	
+	<!-- 선호의사 검사 -->
+	<select id="likeCheck" parameterType="HashMap" resultType="String">
+	
+		SELECT LIKE_YN
+		  FROM HP_LIKE_DR
+		 WHERE USER_ID=#{USER_ID}
+		   AND DR_ID=#{DR_ID}
+	
+	</select>
+	
+	<!-- 선호의사 테이블 생성 -->
+	<insert id="createLike" parameterType="HashMap">
+	
+		INSERT INTO HP_LIKE_DR
+		(USER_ID, DR_ID, LIKE_YN)
+		VALUES(#{USER_ID},#{DR_ID},'Y')
+	
+	</insert>
+	
+	
+	<!-- 선호의사  Y?N 변경 -->
+	<update id="changeLike" parameterType="HashMap">
+	
+		UPDATE HP_LIKE_DR
+		   SET LIKE_YN = #{check}
+		 WHERE USER_ID=#{USER_ID}
+		   AND DR_ID=#{DR_ID}
+	
+	</update>
+
+	<select id="drDetail" parameterType="String" resultMap="DrListVO">
+	
+		SELECT DR_ID
+			 , MEDI_SBJ_CD
+			 , DR_NM
+			 , SPCL_CLINIC_CT
+			 , FIELD_CT
+			 , POSITION_CT
+			 , (SELECT STRE_FILE_NM FROM COMTNFILEDETAIL WHERE ATCH_FILE_ID = PC_IMG_ATCH_NO) AS PC_IMG_ATCH_NO
+			 , (SELECT STRE_FILE_NM FROM COMTNFILEDETAIL WHERE ATCH_FILE_ID = MOBILE_IMG_ATCH_NO) AS MOBILE_IMG_ATCH_NO
+			 , C.FILE_EXTSN AS FILE_EXTSN		  		 
+			 , IFNULL(MNG_CENTER_CD, '') AS MNG_CENTER_CD
+			 , IFNULL(MNG_CENTER_NM, '') AS MNG_CENTER_NM
+			 , IFNULL(SPCL_FIELD_TX, '') AS SPCL_FIELD_TX
+			 , IFNULL(HISTORY_TX, '') AS HISTORY_TX
+			 , IFNULL(HISTORY_TX2, '') AS HISTORY_TX2
+			 , BLOG_ADD_TX
+			 , ADD_OPEN_SET_CD
+			 , BROAD_APPEAR_TX
+			 , BLOG_USE_YN
+			 , CLINIC_APPO_WORD_CT
+			 , ORDER_NO
+		FROM (
+			SELECT 
+				DISTINCT D.DR_ID
+				, D.DR_NM
+				, D.FIELD_CT
+				, D.POSITION_CT
+				, D.SPCL_CLINIC_CT
+				, D.ADD_OPEN_SET_CD
+			 	, D.CLINIC_APPO_WORD_CT
+				, D.MEDI_SBJ_CD
+				, D.ORDER_NO
+				, D.PC_IMG_ATCH_NO
+				, D.MOBILE_IMG_ATCH_NO
+				, D.SPCL_FIELD_TX
+				, D.BROAD_APPEAR_TX
+				, D.HISTORY_TX
+				, D.HISTORY_TX2
+				, D.BLOG_ADD_TX
+				, D.BLOG_USE_YN
+				, GROUP_CONCAT(CODE_ID ORDER BY CODE_ID) AS MNG_CENTER_CD
+				, GROUP_CONCAT(CODE_ID_NM ORDER BY CODE_ID) AS MNG_CENTER_NM
+			FROM 
+			(
+				SELECT D.*
+				 , SUBSTRING_INDEX(SUBSTRING_INDEX(D.MNG_CENTER_CD, ',', N.n), ',', -1) AS mngCenterCode
+				FROM HP_DR D 
+				INNER JOIN (
+					SELECT 1 AS n UNION ALL SELECT 2 AS n  UNION ALL SELECT 3 AS n 
+					UNION ALL SELECT 4 AS n UNION ALL SELECT 5 AS n  UNION ALL SELECT 6 AS n 
+					UNION ALL SELECT 7 AS n UNION ALL SELECT 8 AS n  UNION ALL SELECT 9 AS n 
+					UNION ALL SELECT 10 AS n UNION ALL SELECT 11 AS n  UNION ALL SELECT 12 AS n 
+				) N
+				ON CHAR_LENGTH(D.MNG_CENTER_CD) - CHAR_LENGTH(REPLACE(D.MNG_CENTER_CD, ',', '')) >= N.n-1
+				WHERE IFNULL(D.DEL_YN, 'N') NOT IN ('Y')
+			) D LEFT JOIN COMTCCMMNCODE CC
+			ON D.mngCenterCode = CC.CODE_ID
+			GROUP BY D.DR_ID
+				, D.DR_NM
+				, D.FIELD_CT
+				, D.POSITION_CT
+				, D.SPCL_CLINIC_CT
+				, D.ADD_OPEN_SET_CD
+			 	, D.CLINIC_APPO_WORD_CT
+				, D.MEDI_SBJ_CD
+				, D.ORDER_NO
+				, D.PC_IMG_ATCH_NO
+				, D.SPCL_FIELD_TX
+				, D.BROAD_APPEAR_TX
+				, D.HISTORY_TX
+				, D.HISTORY_TX2
+				, D.BLOG_ADD_TX
+				, D.BLOG_USE_YN
+				, D.MNG_CENTER_CD
+		) H
+		JOIN COMTNFILEDETAIL C
+			ON H.PC_IMG_ATCH_NO = C.ATCH_FILE_ID
+			WHERE DR_ID = #{DR_ID}
+		ORDER BY ORDER_NO ASC 
+	
+	</select>
+
+
+</mapper>

@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AdminCTMDAO">
+	<resultMap id="Center" type="fbcms.admin.hpm.ctm.service.Impl.CenterVO">
+        <result property="INDEX" 				column="INDEX"/>
+        <result property="MNG_GUBN_CD" 			column="MNG_GUBN_CD"/>
+        <result property="MNG_CD" 				column="MNG_CD"/>
+        <result property="MNG_NM" 				column="MNG_NM"/>
+        <result property="MNG_SEQ" 				column="MNG_SEQ"/>
+        <result property="ORDER_NO" 			column="ORDER_NO"/>
+        <result property="TEMPL_CD" 			column="TEMPL_CD"/>
+        <result property="RLT_MEDI_USE_YN" 		column="RLT_MEDI_USE_YN"/>
+        <result property="IMP_DISS_USE_YN" 		column="IMP_DISS_USE_YN"/>
+        <result property="SEARCH_TAGS" 			column="SEARCH_TAGS"/>
+        <result property="REG_DT" 				column="REG_DT"/>
+    </resultMap>
+    
+	<resultMap id="CenterTempl" type="fbcms.admin.hpm.ctm.service.Impl.CenterTemplVO">
+        <result property="MNG_GUBN_CD" 			column="MNG_GUBN_CD"/>
+        <result property="MNG_CD" 				column="MNG_CD"/>
+        <result property="MNG_SEQ" 				column="MNG_SEQ"/>
+        <result property="SEQ" 					column="SEQ"/>
+        <result property="AREA_TITLE_CT" 		column="AREA_TITLE_CT"/>
+        <result property="SHOW_CNT_CD" 			column="SHOW_CNT_CD"/>
+        <result property="USE_YN" 				column="USE_YN"/>
+        <result property="VS_MARK_USE_YN" 		column="VS_MARK_USE_YN"/>
+    </resultMap>
+    
+    <resultMap id="CenterTemplDetail" type="fbcms.admin.hpm.ctm.service.Impl.CenterTemplDetailVO">
+        <result property="MNG_GUBN_CD" 			column="MNG_GUBN_CD"/>
+        <result property="MNG_CD" 				column="MNG_CD"/>
+        <result property="MNG_SEQ" 				column="MNG_SEQ"/>
+        <result property="SEQ" 					column="SEQ"/>
+        <result property="DTIL_SEQ" 			column="DTIL_SEQ"/>
+        <result property="TITLE_CT" 			column="TITLE_CT"/>
+        <result property="TEXT_TX" 				column="TEXT_TX"/>
+        <result property="IMG_ATCH_NO" 			column="IMG_ATCH_NO"/>
+        <result property="VIDEO_ATCH_NO" 		column="VIDEO_ATCH_NO"/>
+    </resultMap>
+	
+	<select id="selectTmplateType" parameterType="fbcms.admin.hpm.ctm.service.Impl.CenterVO" resultMap="Center">
+		SELECT RMK_CT AS `INDEX`
+		  FROM HP_CODE_DTIL
+		 WHERE 1 = 1
+		   AND COMM_CD = 'MNG_CD'
+		   AND DTIL_CD = #{MNG_CD}
+	</select>
+	<insert id="updateCTM" parameterType="fbcms.admin.hpm.ctm.service.Impl.CenterVO">
+		INSERT 
+		  INTO HP_HOSPITAL_MNG
+		     (
+		       MNG_GUBN_CD
+		     , MNG_CD
+		     , MNG_SEQ
+		     , REG_DT
+		     , ADD_DT
+		     , RLT_MEDI_USE_YN
+		     , IMP_DISS_USE_YN
+		     , SEARCH_TAGS
+		     )
+		VALUES
+		     (
+		       '02'
+			 , #{MNG_CD}
+			 , '1'
+			 , NOW()
+			 , NOW()
+			 , #{RLT_MEDI_USE_YN}
+		     , #{IMP_DISS_USE_YN}
+		     , #{SEARCH_TAGS}
+		     )
+	        ON DUPLICATE KEY 
+		UPDATE 
+		       UPDT_DT = NOW()
+		<if test=" RLT_MEDI_USE_YN != null and RLT_MEDI_USE_YN != '' ">
+		     , RLT_MEDI_USE_YN = #{RLT_MEDI_USE_YN}
+		</if>
+		<if test=" IMP_DISS_USE_YN != null and IMP_DISS_USE_YN != '' ">
+		     , IMP_DISS_USE_YN = #{IMP_DISS_USE_YN}
+		</if>
+		<if test=" SEARCH_TAGS != null and SEARCH_TAGS != '' ">
+		     , SEARCH_TAGS = #{SEARCH_TAGS}
+		</if>
+	</insert>
+	<insert id="updateCTMTmp" parameterType="fbcms.admin.hpm.ctm.service.Impl.CenterTemplVO">
+		INSERT
+		  INTO HP_MNG_TEMPL
+		     (
+		       MNG_GUBN_CD
+		     , MNG_CD
+		     , SEQ
+		     , MNG_SEQ
+		     , AREA_TITLE_CT
+		     , SHOW_CNT_CD
+		     , USE_YN
+		     , VS_MARK_USE_YN
+		     , ADD_DT
+		     )
+		VALUES 
+		     (
+			   '02'
+		     , #{MNG_CD}
+		     , 1
+		     , 1
+		     , #{AREA_TITLE_CT}
+		     , #{SHOW_CNT_CD}
+		     , #{USE_YN}
+		     , #{VS_MARK_USE_YN}
+		     , NOW() 
+		     )
+		   ON DUPLICATE KEY 
+		UPDATE 
+			   AREA_TITLE_CT = #{AREA_TITLE_CT}
+		     , UPDT_DT = NOW()
+		     , SHOW_CNT_CD = #{SHOW_CNT_CD}
+		     , USE_YN = #{USE_YN}
+		     , VS_MARK_USE_YN = #{VS_MARK_USE_YN}
+	</insert>
+	<insert id="updateCTMTmpDetail" parameterType="fbcms.admin.hpm.ctm.service.Impl.CenterTemplVO">
+		INSERT
+		  INTO HP_MNG_TEMPL_DTIL
+		     (
+		       MNG_GUBN_CD
+		     , MNG_CD
+		     , SEQ
+		     , MNG_SEQ
+		     , DTIL_SEQ
+		     , TITLE_CT
+		     , TEXT_TX
+		     , IMG_ATCH_NO
+		     , VIDEO_ATCH_NO
+		     , ADD_DT
+		     )
+		VALUES 
+		     (
+		       '02'
+		     , #{MNG_CD}
+		     , 1
+		     , 1
+		     , ${DTIL_SEQ}
+		     , #{TITLE_CT}
+		     , #{TEXT_TX}
+		     , #{IMG_ATCH_NO}
+		     , #{VIDEO_ATCH_NO}
+		     , NOW()
+		     )
+		    ON DUPLICATE KEY 
+		UPDATE
+	           TITLE_CT = #{TITLE_CT}
+	         , TEXT_TX = #{TEXT_TX}
+	         , IMG_ATCH_NO = #{IMG_ATCH_NO}
+	         , VIDEO_ATCH_NO = #{VIDEO_ATCH_NO}
+	</insert>
+	
+	<select id="selectTmpList" parameterType="fbcms.admin.hpm.ctm.service.Impl.CenterTemplVO" resultMap="CenterTempl">
+		SELECT MNG_GUBN_CD
+		     , MNG_CD
+		     , MNG_SEQ
+		     , SEQ
+		     , AREA_TITLE_CT
+		     , SHOW_CNT_CD
+		     , USE_YN
+		     , VS_MARK_USE_YN
+		  FROM HP_MNG_TEMPL
+	     WHERE 1 = 1
+	       AND MNG_GUBN_CD = #{MNG_GUBN_CD}
+	       AND MNG_CD = #{MNG_CD}
+	       AND MNG_SEQ = #{MNG_SEQ}
+	</select>
+	<select id="selectTmpDetailList" parameterType="fbcms.admin.hpm.ctm.service.Impl.CenterTemplDetailVO" resultMap="CenterTemplDetail">
+		SELECT MNG_GUBN_CD
+		     , MNG_CD
+		     , SEQ
+		     , DTIL_SEQ
+		     , TITLE_CT
+		     , TEXT_TX
+		     , IMG_ATCH_NO
+		     , VIDEO_ATCH_NO
+		     , MNG_SEQ
+		  FROM HP_MNG_TEMPL_DTIL
+		 WHERE 1 = 1
+		   AND MNG_GUBN_CD = #{MNG_GUBN_CD}
+		   AND MNG_CD = #{MNG_CD}
+		   AND MNG_SEQ = #{MNG_SEQ}
+	</select>
+	<select id="selectCTM" parameterType="fbcms.admin.hpm.ctm.service.Impl.CenterVO" resultMap="Center">
+		SELECT MNG_GUBN_CD
+		     , MNG_CD
+		     , MNG_SEQ
+		     , RLT_MEDI_USE_YN
+		     , IMP_DISS_USE_YN
+		     , SEARCH_TAGS
+		     , REG_DT
+		  FROM HP_HOSPITAL_MNG
+		 WHERE 1 = 1
+		   AND MNG_GUBN_CD = '02'
+		   AND MNG_CD = #{MNG_CD}
+		   AND MNG_SEQ = '1'
+	</select>
+</mapper>
